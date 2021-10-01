@@ -268,9 +268,9 @@ class past_data():
                         up_speed_index += baba_index_data[past_cd.birthday()] / ( self.dist_index[dist] + 1 )
                         pace_speed_index += baba_index_data[past_cd.birthday()] / ( self.dist_index[dist] + 1 )
                     except:
-                        speed_index += lib.baba_index( key_baba )
-                        up_speed_index += lib.baba_index( key_baba ) / ( self.dist_index[dist] + 1 )
-                        pace_speed_index += lib.baba_index( key_baba ) / ( self.dist_index[dist] + 1 )
+                        speed_index += fv.baba_index( key_baba )
+                        up_speed_index += fv.baba_index( key_baba ) / ( self.dist_index[dist] + 1 )
+                        pace_speed_index += fv.baba_index( key_baba ) / ( self.dist_index[dist] + 1 )
 
                     speed_index_data.append( speed_index )
                     up_speed_index_data.append( up_speed_index )
