@@ -50,7 +50,7 @@ class current_data():
         return fv.data_check( self.race_data[8] )
 
     def up_time( self ):
-        return fv.data_check( self.race_data[18] )
+        return fv.data_check( self.race_data[18].split( "-" )[0] )
 
     def money( self ):
         return fv.data_check( self.race_data[20] )
