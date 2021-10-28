@@ -19,6 +19,9 @@ class data_load():
         except:
             return None
 
+    def data_clear( self ):
+        self.data.clear()
+        
     def multi_load( self ):
         current_load = []
 

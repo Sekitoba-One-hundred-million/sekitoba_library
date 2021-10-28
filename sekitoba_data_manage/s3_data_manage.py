@@ -1,5 +1,6 @@
 import os
 import boto3
+import torch
 import pickle
 
 bucket_name = "sekitoba-data"
@@ -73,9 +74,9 @@ def pickle_upload( file_name, data ):
     bucket.upload_file( file_name, "pickle_data/" + file_name )
     os.remove( file_name )    
 
-def model_load( file_name ):
+def model_load( file_name, model ):
     bucket = s3.Bucket( bucket_name )
-    
+
     try:
         obj = bucket.Object( "model_data/" + file_name ).get()
     except:
@@ -83,15 +84,20 @@ def model_load( file_name ):
         return None
 
     byte_data = obj['Body'].read()
-    data = pickle.loads( byte_data )
+    f = open( file_name, "wb" )
+    f.write( byte_data )
+    f.close()
+    
+    model.load_state_dict( torch.load( file_name ) )
+    os.remove( file_name )
     print( file_name + " model download finish" )
-    return data
+    return model
 
-def model_upload( file_name, data ):
-    pickle_save( file_name, data )
+def model_upload( file_name, model ):
+    torch.save( model.to('cpu').state_dict(), file_name )
     bucket = s3.Bucket( bucket_name )
     bucket.upload_file( file_name, "model_data/" + file_name )
-    os.remove( file_name )    
+    os.remove( file_name )
     
 def other_upload( file_name ):
     bucket = s3.Bucket( 'sekitoba' )
