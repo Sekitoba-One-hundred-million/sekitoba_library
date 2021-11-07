@@ -87,10 +87,12 @@ class past_data():
         return diff
             
     #過去同じ距離の種類での平均順位(1つもなかったら0)
-    def dist_rank_average( self ):
+    def dist_rank_average( self, d_kind = None ):
         rank = 0.0
         count = 0.0
-        d_kind = self.cd.dist_kind()
+
+        if d_kind == None:
+            d_kind = self.cd.dist_kind()
 
         if not d_kind == 0:
             for i in range( 0, len( self.past_data ) ):
@@ -106,10 +108,12 @@ class past_data():
 
         return rank
 
-    def racekind_rank_average( self ):
+    def racekind_rank_average( self, r_kind = None  ):
         rank = 0.0
         count = 0.0
-        r_kind = self.cd.race_kind()
+
+        if r_kind == None:
+            r_kind = self.cd.race_kind()
 
         if not r_kind == 0:
             for i in range( 0, len( self.past_data ) ):
@@ -126,10 +130,12 @@ class past_data():
         return rank
 
     #過去同じ馬場状態での平均順位(1つもなかったら0)
-    def baba_rank_average( self ):
+    def baba_rank_average( self, baba = None ):
         rank = 0.0
         count = 0.0
-        baba = self.cd.baba_status()
+
+        if baba == None:
+            baba = self.cd.baba_status()
 
         if not baba == 0:
             for i in range( 0, len( self.past_data ) ):
@@ -146,10 +152,12 @@ class past_data():
         return rank
 
     #過去同じ騎手での平均順位(1つもなかったら0)
-    def jockey_rank_average( self ):
+    def jockey_rank_average( self, jockey = None ):
         rank = 0.0
         count = 0.0
-        jockey = self.cd.jockey_name_get()
+
+        if jockey == None:
+            jockey = self.cd.jockey_name_get()
 
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.current_data( self.past_data[i] )
@@ -286,7 +294,7 @@ class past_data():
 
         return speed_index_data, up_speed_index_data, pace_speed_index_data
     
-    def best_weight( self ):
+    def best_weight( self, current_weight = None ):
         all_w = 0
         count = 0
         
@@ -319,16 +327,19 @@ class past_data():
         except:
             result = -1
 
-        current_weight = self.cd.weight()
+        if current_weight == None:
+            current_weight = self.cd.weight()
             
         return abs( result - current_weight )
 
-    def race_interval( self ):
+    def race_interval( self, ymd = None ):
         if not len( self.past_data ) == 0:
             past_cd = crd.current_data( self.past_data[0] )
             p_ymd = past_cd.ymd()
-            ymd = self.cd.ymd()
             interval = 0
+
+            if ymd == None:
+                ymd = self.cd.ymd()
 
             if len( p_ymd ) == 3 \
                and len( ymd ) == 3:
