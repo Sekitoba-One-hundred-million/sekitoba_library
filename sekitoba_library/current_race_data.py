@@ -20,16 +20,15 @@ class current_data():
         return fv.data_check( self.race_data[7] )
 
     def weight( self ):
-        split_w = self.race_data[19].split( "(" )
+        split_w = self.race_data[20].split( "(" )
         
         try:
             return float( split_w[0] )
         except:
             return 0
-        
-        
+                
     def id_weight( self ):#馬体重の増減
-        return fv.weight( self.race_data[19] )
+        return fv.weight( self.race_data[20] )
 
     def weather( self ):#天気
         return fv.weather( self.race_data[2] )
@@ -53,7 +52,7 @@ class current_data():
         return fv.data_check( self.race_data[18].split( "-" )[0] )
 
     def money( self ):
-        return fv.data_check( self.race_data[20] )
+        return fv.data_check( self.race_data[21] )
 
     def pace( self ):
         data = self.race_data[17].split( "-" )
@@ -147,7 +146,7 @@ class current_data():
         try:
             result = np.array( current_jockey[before_year] )
         except:
-            return [ 0, 0, 0, 0, 0 ]    
+            return [ 0, 0, 0, 0, 0 ]
 
         return result
 
