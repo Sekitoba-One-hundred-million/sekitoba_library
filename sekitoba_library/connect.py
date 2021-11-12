@@ -3,10 +3,38 @@ import requests
 from os.path import expanduser
 from requests.exceptions import Timeout
 
-def request( url ):
+def netkeiba_login():
+    f = open( expanduser( "~" ) + "/.pwd/password.txt" )
+    str_data = f.readlines()
+    str_data = str_data[0].replace( "\n", "" ).split( " " )
+    f.close()
+
+    mail = str_data[0]
+    password = str_data[1]
+
+    data = {}
+    data["pid"] = "login"
+    data["action"] = "auth"
+    data["return_url2"] = ""
+    data["mem_tp"] = ""
+    data["login_id"] = mail
+    data["pswd"] = password
+    data["x"] = 270
+    data["y"] = 7
+
+    url = "https://regist.netkeiba.com/account/"
+    r = requests.post( url, data = data )
+
+    if len( r.history ) == 0:
+        print( "パスワードまたはメールアドレスが違います" )
+        return None
+    
+    return r.history[0].cookies        
+
+def request( url, cookie = None ):
     for i in range( 0, 15 ):
         try:
-            r = requests.get( url, timeout = 3 )
+            r = requests.get( url, cookies = cookie, timeout = 3 )
             return r, True
         except:
             time.sleep( 3 )
