@@ -49,13 +49,16 @@ class current_data():
         return fv.data_check( self.race_data[8] )
 
     def up_time( self ):
-        return fv.data_check( self.race_data[18].split( "-" )[0] )
+        return fv.data_check( self.race_data[19] )
 
     def money( self ):
         return fv.data_check( self.race_data[21] )
 
+    def passing_rank( self ):
+        return self.race_data[17]
+    
     def pace( self ):
-        data = self.race_data[17].split( "-" )
+        data = self.race_data[18].split( "-" )
 
         try:
             return float( data[0] ), float( data[1] )
@@ -121,6 +124,30 @@ class current_data():
 
     def jockey_name_get( self ):
         return self.race_data[11].replace( " ", "" )
+
+    def race_id( self ):
+        result = ""
+        birthday = self.birthday()
+        year = birthday.split( "/" )[0]
+        race_place_num = str( int( self.place() ) )
+        
+        try:
+            day = "0" + self.race_data[1][0]
+            num = "0" + self.race_data[1][3]
+        except:
+            return result
+
+        if len( race_place_num ) == 1:
+            race_place_num = "0" + race_place_num
+
+        race_num = str( int( self.race_num() ) )
+
+        if len( race_num ) == 1:
+            race_num = "0" + race_num
+
+        result = year + race_place_num + day + num + race_num
+
+        return result        
     
     def jockey_data( self, jockey_data_stprage ):
         jockey_name = self.race_data[11]

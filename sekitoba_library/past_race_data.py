@@ -228,6 +228,24 @@ class past_data():
 
         return rank
 
+    def one_rate( self ):
+        count = 0.0
+        rank = 0.0
+        
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+            
+            if not past_cd.rank() == 0:
+                count += 1
+
+                if past_cd.rank() == 1:
+                    rank += 1
+
+        if not count == 0:
+            rank = rank / count
+
+        return rank
+
     def get_money( self ):
         money_data = 0
         for i in range( 0, len( self.past_data ) ):
@@ -240,6 +258,32 @@ class past_data():
 
         return money_data
 
+    def race_id_get( self ):
+        result = []
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            result.append( past_cd.race_id() )
+
+        return result
+
+    def up_list( self ):
+        result = []
+        
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            up_time = past_cd.up_time()            
+            result.append( up_time )
+
+        return result            
+        
     #過去のスペード指数をlistで返す
     def speed_index( self, baba_index_data ):
         speed_index_data = []
@@ -380,6 +424,42 @@ class past_data():
         
         return up_change
 
+    def passing_get( self ):
+        result = []
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            result.append( past_cd.passing_rank() )
+
+        return result
+
+    def first_passing_rank( self ):
+        result = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            try:
+                passing_rank = past_cd.passing_rank()
+                first_rank = float( passing_rank.split( "-" )[0] )
+            except:
+                continue
+
+            result += first_rank
+            count += 1
+
+        if not count == 0:
+            result /= count
+
+        return result        
     
     def average_speed( self ):
         ave = 0
@@ -395,12 +475,70 @@ class past_data():
                 if not race_time == 0 \
                 and not dist == 0:
                     ave += race_time / dist
-                    
+                    count += 1                    
                 
         if not count == 0:
             ave /= count
 
         return ave
+
+    def diff_pace_time( self ):
+        result = -10000
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            pace1, pace2 = past_cd.pace()
+
+            if result == -10000:
+                result = 0
+            
+            result += pace1 - pace2
+            count += 1
+
+        if not count == 0:
+            result /= count
+
+        return result
+
+    def diff_pace_passing( self ):
+        result = -10000
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            pace1, pace2 = past_cd.pace()
+            diff_pace = pace1 - pace2
+            str_passing = past_cd.passing_rank()
+
+            try:
+                first_passing_rank = float( str_passing.split( "-" )[0] )
+            except:
+                continue
+
+            all_horce_num = past_cd.all_horce_num()
+
+            if all_horce_num == 0:
+                continue
+
+            if result == -10000:
+                result = 0
+
+            result += diff_pace * ( first_passing_rank / all_horce_num )            
+            count += 1
+
+        if not count == 0:
+            result /= count
+
+        return result
 
     def pace_up_check( self ):
         result = -100

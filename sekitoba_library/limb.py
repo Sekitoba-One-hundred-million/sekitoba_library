@@ -1,3 +1,5 @@
+from sekitoba_library.past_race_data import past_data
+
 limb_postion = {}
 limb_postion["10"] = [ "A", "B", "B", "C", "C", "D", "E", "E", "E", "E" ]
 limb_postion["11"] = [ "A", "B", "B", "C", "C", "D", "D", "E", "E", "E", "E" ]
@@ -11,12 +13,12 @@ limb_postion["18"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "C", "D", "D", "D
 
 limb_kind = { "逃げa": 1, "逃げb": 2, "先行a": 3, "先行b": 4, "差しa": 5, "差しb": 6, "追い": 7, "後方": 8 }
 
-def limb_passing( passing_data, all_horce_num ):
+def limb_passing( passing_data: list , all_horce_num: int ):
     result = ""
     
     try:
-        three_corner = int( passing_data[-1] )
-        four_corner = int( passing_data[-2] )
+        three_corner = int( passing_data[-2] )
+        four_corner = int( passing_data[-1] )
     except:
         return result        
     
@@ -48,9 +50,9 @@ def limb_passing( passing_data, all_horce_num ):
 
     return result
 
-def limb_search( past_passing_data, pd ):
+def limb_search( pd: past_data ):
     count = 0
-    use_passing_data = []
+    use_passing_data = []  
     past_day = pd.past_day_list()
     past_rank = pd.rank_list()
     all_horce_num_list = pd.all_horce_num_list()
@@ -63,11 +65,7 @@ def limb_search( past_passing_data, pd ):
     result["追い"] = []
     result["後方"] = []
 
-    for day in past_day:
-        try:
-            use_passing_data.append( past_passing_data[day] )
-        except:
-            continue
+    use_passing_data = pd.passing_get()
 
     for i in range( 0, len( use_passing_data ) ):
         try:
@@ -115,3 +113,33 @@ def limb_search( past_passing_data, pd ):
 
     return limb_kind[limb]
 
+def past_limb( pd ):
+    count = 0
+    use_passing_data = []
+    past_day = pd.past_day_list()
+    past_rank = pd.rank_list()
+    all_horce_num_list = pd.all_horce_num_list()
+
+    result = {}
+    result["逃げ"] = []
+    result["先行"] = []
+    result["差しa"] = []
+    result["差しb"] = []
+    result["追い"] = []
+    result["後方"] = []
+
+    use_passing_data = pd.passing_get()
+
+    for i in range( 0, len( use_passing_data ) ):
+        try:
+            passing_data = use_passing_data[i].split( "-" )
+        except:
+            continue
+
+        all_horce_num = all_horce_num_list[i]
+        limb = limb_passing( passing_data, all_horce_num )
+
+        if not len( limb ) == 0:
+            result[limb].append( i )
+
+    return result

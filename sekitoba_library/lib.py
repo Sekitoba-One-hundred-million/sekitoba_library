@@ -103,7 +103,6 @@ def xy_regression_line( x_data, y_data ):
     #b = 0
     y_ave = 0
     x_ave = 0
-
     for i in range( 0, len( x_data ) ):
         y_ave += y_data[i]
         x_ave += x_data[i]
