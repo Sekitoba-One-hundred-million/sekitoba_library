@@ -3,7 +3,7 @@ import math
 
 split_key = "race_id="
 home_dir = os.getcwd()
-current_year = 2020
+test_year = "2021"
 
 def id_get( url ):
     s_data = url.split( split_key )
