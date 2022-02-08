@@ -28,6 +28,7 @@ class Logger:
         os.makedirs( self.log_dir,  exist_ok = True )
         lgb.plot_tree( bst, figsize=(200, 200) )
         plt.savefig( self.log_dir + "/tree.png" )
+        plt.close()
         df = bst.trees_to_dataframe()
         df.to_csv( self.log_dir + "/tree.csv" )
         
@@ -37,5 +38,15 @@ class Logger:
         df_importance = pd.DataFrame( { 'feature':x_list, 'importance':f_importance } )
         df_importance = df_importance.sort_values( 'importance', ascending = False )
         df_importance.to_csv( self.log_dir + "/feature_importance.csv" )
-        
 
+    def plot( self, x, y, name ):
+        os.makedirs( self.log_dir,  exist_ok = True )        
+        plt.plot( x, y )
+        plt.savefig( self.log_dir + "/" + name + ".png" )
+        plt.close()
+
+    def scatter( self, x, y, name ):
+        os.makedirs( self.log_dir,  exist_ok = True )        
+        plt.scatter( x, y )
+        plt.savefig( self.log_dir + "/" + name + ".png" )
+        plt.close()

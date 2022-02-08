@@ -310,10 +310,10 @@ class past_data():
                     speed_index += ( loaf_weight - self.base_loaf_weight ) + 80
 
                     up_speed_index = ( self.up_standard_time[place_num][kind_num][dist]["data"] - up_time ) * self.dist_index[dist]
-                    up_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / self.dist_index[dist]
+                    up_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / self.dist_index[dist] + 80
 
                     pace_speed_index = ( ( self.standard_time[place_num][self.past_data[i][13]] - self.up_standard_time[place_num][kind_num][dist]["data"] ) - ( race_time - up_time ) ) * self.dist_index[dist]
-                    pace_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / self.dist_index[dist]
+                    pace_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / self.dist_index[dist] + 80
                     
                     try:
                         speed_index += baba_index_data[past_cd.birthday()]
@@ -502,6 +502,45 @@ class past_data():
 
         if not count == 0:
             result /= count
+
+        return result
+
+    def dist_list( self ):
+        result = []
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            result.append( past_cd.dist() )
+
+        return result
+
+    def time_list( self ):
+        result = []
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            result.append( past_cd.race_time() )
+
+        return result
+
+    def pace_list( self ):
+        result = []
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            result.append( past_cd.pace() )
 
         return result
 
