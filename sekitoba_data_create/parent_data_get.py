@@ -1,11 +1,5 @@
 import sekitoba_library as lib
 
-def max_check( s ):
-    try:
-        return max( s )
-    except:
-        return -100
-
 def main( horce_data, parent_id, baba_index ):
     result = {}
     result["rank"] = 0
@@ -34,9 +28,9 @@ def main( horce_data, parent_id, baba_index ):
     result["two_rate"] = parent_pd.two_rate()
     result["three_rate"] = parent_pd.three_rate()
     result["average_speed"] = parent_pd.average_speed()
-    result["speed_index"] = max_check( speed )
-    result["up_speed_index"] = max_check( up_speed )
-    result["pace_speed_index"] = max_check( pace_speed )
+    result["speed_index"] = lib.max_check( speed )
+    result["up_speed_index"] = lib.max_check( up_speed )
+    result["pace_speed_index"] = lib.max_check( pace_speed )
 
     try:
         result["limb"] = lib.limb_search( parent_pd )

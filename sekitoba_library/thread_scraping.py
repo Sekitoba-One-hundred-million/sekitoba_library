@@ -5,7 +5,6 @@ class thread_scraping():
         self.url_list = url_list
         self.key_list = key_list
 
-
     def data_get( self, func ):
         result = {}
         use_data = []

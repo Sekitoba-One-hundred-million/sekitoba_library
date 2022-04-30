@@ -1,3 +1,6 @@
+import os
+import pickle
+
 import sekitoba_data_manage as dm
 from concurrent.futures import ThreadPoolExecutor
 
@@ -5,6 +8,7 @@ class data_load():
     def __init__( self ):
         self.file_list = {} #ここに呼び出すファイルをセットする
         self.data = {} #ダウンロードされたデータが入る
+        self.dir_name = "./storage"
 
     def file_set( self, file_name ):
         if file_name not in self.data.keys():
@@ -12,6 +16,7 @@ class data_load():
 
     def data_get( self, file_name ):
         self.file_set( file_name )
+        self.local_download()
         self.multi_load()
         
         try:
@@ -21,7 +26,32 @@ class data_load():
 
     def data_clear( self ):
         self.data.clear()
+
+    def local_keep( self ):
+        self.multi_load()        
+        os.makedirs( self.dir_name,  exist_ok = True )
         
+        for file_name in self.data.keys():
+            f = open( self.dir_name + "/" + file_name, "wb" )
+            pickle.dump( self.data[file_name], f )
+            f.close()
+
+    def local_download( self ):
+        current_load = []
+
+        for k in self.file_list.keys():
+            if not self.file_list[k]:
+                current_load.append( k )
+
+        for file_name in current_load:
+            try:
+                f = open( self.dir_name + "/" + file_name, "rb" )
+                self.data[file_name] = pickle.load( f )
+                f.close()
+                self.file_list[file_name] = True
+            except:
+                continue
+            
     def multi_load( self ):
         current_load = []
 

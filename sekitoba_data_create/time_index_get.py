@@ -1,5 +1,7 @@
 import sekitoba_data_manage as dm
 
+dm.dl.file_set( "time_index_data.pickle" )
+
 class TimeIndexGet:
     def __init__( self ):
         self.time_index_data = dm.dl.data_get( "time_index_data.pickle" )

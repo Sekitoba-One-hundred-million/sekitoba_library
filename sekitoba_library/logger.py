@@ -9,11 +9,18 @@ class Logger:
     def __init__( self ):
         dt_now = datetime.datetime.now()
         self.log_dir = os.environ["HOME"] + "/Desktop/sekitoba_data/" + dt_now.strftime('%Y-%m-%d_%H:%M:%S')
+        self.w = True
 
     def set_name( self, log_name ):
         self.log_dir = self.log_dir + log_name
+
+    def set_write( self, w ):
+        self.w = w
         
     def write( self, text ):
+        if not self.w:
+            return
+            
         os.makedirs( self.log_dir,  exist_ok = True )
         file_name = "sekitoba.log"
         dt_now = datetime.datetime.now()

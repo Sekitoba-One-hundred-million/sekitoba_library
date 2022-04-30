@@ -37,6 +37,10 @@ class past_data():
 
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
             result.append( past_cd.rank() )
 
         return result
@@ -46,6 +50,10 @@ class past_data():
 
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.current_data( self.past_data[i] )
+            
+            if not past_cd.race_check():
+                continue
+            
             result.append( past_cd.all_horce_num() )
 
         return result
@@ -55,10 +63,14 @@ class past_data():
 
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
             result.append( past_cd.birthday() )
 
         return result
-        
+    
     #過去3レースの平均順位(3レース以下の場合あり)
     def three_average( self ):
         rank = 0.0
@@ -437,6 +449,39 @@ class past_data():
 
         return result
 
+    def passing_regression( self ):
+        result = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            passing_rank = past_cd.passing_rank().split( "-" )
+            ok = True
+
+            for r in range( 0, len( passing_rank ) ):
+                try:
+                    passing_rank[r] = float( passing_rank[r] )
+                except:
+                    ok = False
+                    break
+
+            if len( passing_rank ) < 2 or not ok:
+                continue
+            
+            a, _ = lib.regression_line( passing_rank )
+            result += a
+            count += 1
+
+        if count == 0:
+            return 1
+
+        result /= count
+        return result
+
     def first_passing_rank( self ):
         result = 0
         count = 0
@@ -482,6 +527,33 @@ class past_data():
 
         return ave
 
+    def best_passing_rank( self ):
+        result = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            rank = past_cd.rank()
+            
+            try:
+                passing_rank = past_cd.passing_rank()
+                first_rank = float( passing_rank.split( "-" )[0] )
+            except:
+                continue
+
+            n = max( 1, 6 - rank )
+            count += n
+            result += first_rank * n
+
+        if count == 0:
+            return -1
+
+        return result / count
+        
     def diff_pace_time( self ):
         result = -10000
         count = 0

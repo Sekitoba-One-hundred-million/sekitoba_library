@@ -190,7 +190,7 @@ class current_data():
             return False
         elif self.answer()[1] == 0 \
              or self.answer()[0] == 0:
-            return False                
+            return False
 
         return True
         

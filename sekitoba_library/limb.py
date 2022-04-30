@@ -46,7 +46,7 @@ def limb_passing( passing_data: list , all_horce_num: int ):
         if four_pos == "A" or four_pos == "B" or four_pos == "C" or four_pos == "D":
             result = "追い"
         else:
-            result = "後方" 
+            result = "後方"
 
     return result
 

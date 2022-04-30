@@ -21,6 +21,11 @@ s3 = boto3.resource('s3',
                   region_name='ap-northeast-1'
 )
 
+client_s3 = boto3.client('s3',
+                  aws_access_key_id = key_data["accsess_key"],
+                  aws_secret_access_key = key_data["secret_key"],
+                  region_name='ap-northeast-1'
+)
 
 def dist_index_get():
     bucket = s3.Bucket( bucket_name )
@@ -53,10 +58,15 @@ def pickle_save( file_name, data ):
     f = open( file_name, "wb" )
     pickle.dump( data, f )
     f.close()
+
+def pickle_delete( file_name ):
+    file_path = "pickle_data/" + file_name
+    bucket = s3.Bucket( bucket_name )
+    bucket.Object( file_path ).delete()
     
 def pickle_load( file_name ):
     bucket = s3.Bucket( bucket_name )
-    
+
     try:
         obj = bucket.Object( "pickle_data/" + file_name ).get()
     except:

@@ -3,7 +3,7 @@ import math
 
 split_key = "race_id="
 home_dir = os.getcwd()
-test_year = "2021"
+test_years = [ "2019", "2020", "2021" ]
 
 def id_get( url ):
     s_data = url.split( split_key )
@@ -20,6 +20,50 @@ def dic_append( dic, word, data ):
         a = dic[word]
     except:
         dic[word] = data
+
+def recovery_score_check( data: dict ):
+    max_score = 5
+    result = {}
+    year_list = list( data.keys() )
+    k_list = list( data[year_list[0]].keys() )
+    
+    for k in k_list:
+        dic_append( result, k, 0 )
+        for year in year_list:
+            score = 0
+
+            try:
+                if data[year][k]["recovery"] <= 0.75:
+                    score = -1
+                elif 0.85 < data[year][k]["recovery"]:
+                    score = 2
+                elif 0.75 < data[year][k]["recovery"]:
+                    score = 1
+                else:
+                    continue
+            except:
+                continue
+
+            result[k] += score
+
+    for k in result.keys():
+        result[k] = max( result[k], 0 )
+        result[k] = min( result[k], max_score )
+
+    return result                
+
+def softmax( data ):
+    result = []
+    sum_data = 0
+    value_max = max( data )
+
+    for i in range( 0, len( data ) ):
+        sum_data += math.exp( data[i] - value_max )
+
+    for i in range( 0, len( data ) ):
+        result.append( math.exp( data[i] - value_max ) / sum_data )
+
+    return result
 
 def deviation_value( data, remove_data ):
     result = [ 50 ] * len( data )
@@ -210,4 +254,48 @@ def key_zero( dic, data, key ):
         data.append( 0 )
 
     return data
+
+def speed_standardization( data ):
+    result = []
+    ave = 0
+    conv = 0
+    count = 0
+
+    for d in data:
+        if d < 0:
+            continue
+        
+        ave += d
+        count += 1
+
+    if count == 0:
+        return [0] * len( data )
+
+    ave /= count
+
+    for d in data:
+        if d < 0:
+            continue
+
+        conv += math.pow( d - ave, 2 )
+
+    conv /= count
+    conv = math.sqrt( conv )
+
+    if conv == 0:
+        return [0] * len( data )
+    
+    for d in data:
+        if d < 0:
+            result.append( 0 )
+        else:
+            result.append( ( d - ave ) / conv )
+
+    return result
+
+def max_check( data ):
+    try:
+        return max( data )
+    except:
+        return -1
 
