@@ -32,6 +32,18 @@ class past_data():
         except:
             return 0
 
+    def before_cd( self ) -> crd.current_data:
+
+        if len( self.past_data ) == 0:
+            return None
+        
+        cd = crd.current_data( self.past_data[0] )
+
+        if not cd.race_check():
+            cd = None
+
+        return cd        
+
     def rank_list( self ):
         result = []
 
