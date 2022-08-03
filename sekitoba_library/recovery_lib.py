@@ -1,49 +1,50 @@
 import os
+import statistics
 
 import sekitoba_library.lib as lib
 import sekitoba_data_manage as dm
 
-def recovery_score_check( data: dict ):
-    max_score = 5
-    base = 0.75
+def recovery_analyze( data: dict ):
     result = {}
-    year_list = list( data.keys() )
-    k_list = list( data[year_list[0]].keys() )
+    analyze_data = {}
     
-    for k in k_list:
-        r = 0
-        c = 0
-        lib.dic_append( result, k, 0 )
-        score = 0
-        
-        for year in year_list:
+    for year in data.keys():
+        for k in data[year].keys():
+            lib.dic_append( result, k, { "count": 0, "ave": 0, "conv": 0, "median": 0, "list": [] } )
+            
             try:
-                r += data[year][k]["recovery"] * data[year][k]["count"]
-                c += data[year][k]["count"]
-
-                score += ( data[year][k]["recovery"] - 0.75 ) * 10
+                result[k]["list"].append( data[year][k]["recovery"] )
+                result[k]["count"] += data[year][k]["count"]
+                result[k]["ave"] += data[year][k]["recovery"] * data[year][k]["count"]
             except:
                 continue
 
-        result[k] = int( score )
-        """
-        if 0.79 <= r:
-            result[k] = 3
-        elif 0.76 <= r:
-            result[k] = 1
-        elif 0.73 <= r:
-            result[k] = 0
-        elif 0.7 <= r:
-            result[k] = -1
-        else:
-            result[k] = -3
-        """
     for k in result.keys():
-        result[k] = max( result[k], -10 )
-        result[k] = min( result[k], 10 )
+        if not result[k]["count"] == 0:
+            result[k]["ave"] = result[k]["ave"] / result[k]["count"]
+            result[k]["conv"] = lib.conv( result[k]["list"], ave = result[k]["ave"] )
+            result[k]["ave"] = round( result[k]["ave"], 2 )
+            result[k]["conv"] = round( result[k]["conv"], 2 )
+            result[k]["median"] = statistics.median( result[k]["list"] )
 
-    return result                
+    return result
 
+def recovery_score_check( data: dict ):
+    result = {}
+    recovery_data = recovery_analyze( data )
+
+    for k in recovery_data.keys():
+        lib.dic_append( result, k, 0 )
+        score = ( recovery_data[k]["ave"] + recovery_data[k]["median"] ) / 2
+        #score -= 0.7
+        score *= 10
+
+        if 0.7 < recovery_data[k]["conv"]:
+            score *= 0.5
+            
+        result[k] = score
+        
+    return result
 
 def write_recovery_csv( data :dict , file_name :str ):
     data_dir = os.environ["HOME"] + "/Desktop/recovery_data/"
@@ -55,52 +56,52 @@ def write_recovery_csv( data :dict , file_name :str ):
         key_list[i] = int( key_list[i] )
 
     key_list = sorted( key_list )
-    first_write = "year/data,"
+    first_write = "year/data,\t"
 
-    for k in key_list:
-        k = str( k )
-        first_write += k + ","
+    for i in range( 0, len( key_list ) ):
+        key_list[i] = str( key_list[i] )
+        first_write += key_list[i] + ",\t"
 
-    recovery = {}
     f.write( first_write + "\n" )
     
     for year in data.keys():
         write_str = year + ","
         
         for k in key_list:
-            k = str( k )
-            lib.dic_append( recovery, k, { "count": 0, "recovery": 0 } )
-            
             try:
-                write_str += str( data[year][k]["recovery"] ) + ","
-                recovery[k]["count"] += data[year][k]["count"]
-                recovery[k]["recovery"] += data[year][k]["recovery"] * data[year][k]["count"]
+                write_str += str( data[year][k]["recovery"] ) + ",\t"
             except:
-                write_str += "0,"
+                write_str += "0,\t"
 
         write_str += "\n"
         f.write( write_str )
 
-    write_str = "all,"
-    count_str = "count,"
-    for k in recovery.keys():
-        if not recovery[k]["count"] == 0:
-            recovery[k]["recovery"] /= recovery[k]["count"]
-            
-        recovery[k]["recovery"] = round( recovery[k]["recovery"], 2 )
-        write_str += str( recovery[k]["recovery"] ) + ","
-        count_str += str( recovery[k]["count"] ) + ","
+    recovery_data = recovery_analyze( data )
+    ave_str = "all,\t"
+    count_str = "count,\t"
+    conv_str = "conv,\t"
+    median_str = "median,\t"
+    
+    for k in key_list:
+        ave_str += str( recovery_data[k]["ave"] ) + ",\t"
+        count_str += str( recovery_data[k]["count"] ) + ",\t"
+        conv_str += str( recovery_data[k]["conv"] ) + ",\t"
+        median_str += str( recovery_data[k]["median"] ) + ",\t"
 
-    write_str += "\n"
+    ave_str += "\n"
     count_str += "\n"
-
-    f.write( write_str )
+    conv_str += "\n"
+    median_str += "\n"
+    
+    f.write( ave_str )
+    f.write( median_str )
+    f.write( conv_str )
     f.write( count_str )
     
     f.close()
 
 def recovery_data_split( data_storage: list ):
-    max_count = 10
+    max_count = 20
     data_storage = sorted( data_storage, key = lambda x:x["key"] )
     base = int( len( data_storage ) / max_count )
     count = 1
@@ -128,10 +129,9 @@ def recovery_data_split( data_storage: list ):
         year = data_storage[i]["year"]
         lib.dic_append( result, year, {} )
         lib.dic_append( result[year], key, { "recovery": 0, "count": 0 } )
-
         result[year][key]["recovery"] += data_storage[i]["odds"]
-        result[year][key]["count"] += 1        
-
+        result[year][key]["count"] += 1
+        
     return result, split_list
 
 def recovery_data_upload( name: str, score: dict, split_list: list ):    

@@ -1,6 +1,8 @@
 import os
 import math
 
+import sekitoba_library.current_race_data as crd
+
 split_key = "race_id="
 home_dir = os.getcwd()
 test_years = [ "2019", "2020", "2021" ]
@@ -20,6 +22,24 @@ def dic_append( dic, word, data ):
         a = dic[word]
     except:
         dic[word] = data
+
+def text_replace( text: str ):
+    return text.replace( " ", "" ).replace( "\n", "" )
+
+def str_math_pull( text: str ):
+    result = ""
+    
+    for t in text:
+        if str.isdecimal( t ):
+            result += t
+
+    return result
+
+def math_check( text: str ):
+    try:
+        return float( text )
+    except:
+        return 0
 
 def recovery_score_check( data: dict ):
     max_score = 5
@@ -197,6 +217,32 @@ def race_check( all_data, year, day, num, race_place_num ):
     
     return current_data, past_data
 
+def next_race( all_data, ymd ) -> crd.current_data:
+    before_cd = None
+    
+    for str_data in all_data:
+        cd = crd.current_data( str_data )
+
+        if not cd.race_check():
+            continue
+
+        birthday = cd.birthday()
+        birthday = birthday.split( "/" )
+
+        if len( birthday ) < 3:
+            continue
+        
+        y = int( birthday[0] )
+        m = int( birthday[1] )
+        d = int( birthday[2] )
+
+        if y == ymd["y"] and m == ymd["m"] and d == ymd["d"]:
+            break
+
+        before_cd = cd
+
+    return before_cd
+
 def place_check( place_num ):
     if place_num == "01":
         return "札幌"
@@ -254,6 +300,20 @@ def key_zero( dic, data, key ):
         data.append( 0 )
 
     return data
+
+def conv( data_list, ave = None ):
+    result = 0
+
+    if ave == None:
+        ave = sum( data_list ) / len( data_list )
+
+    for d in data_list:
+        result += math.pow( d - ave, 2 )
+
+    result /= len( data_list )
+    result = math.sqrt( result )
+
+    return result
 
 def speed_standardization( data ):
     result = []

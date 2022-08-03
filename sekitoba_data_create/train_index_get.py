@@ -23,7 +23,6 @@ class TrainIndexGet:
         except:
             return result
 
-        
         n = len( self.train_time_data[race_id][key_horce_num]["time"] )
         t = 1
         try:

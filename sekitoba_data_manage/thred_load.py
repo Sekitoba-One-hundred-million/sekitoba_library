@@ -9,6 +9,7 @@ class data_load():
         self.file_list = {} #ここに呼び出すファイルをセットする
         self.data = {} #ダウンロードされたデータが入る
         self.dir_name = "./storage"
+        self.prod = False
 
     def file_set( self, file_name ):
         if file_name not in self.data.keys():
@@ -24,11 +25,14 @@ class data_load():
         except:
             return None
 
+    def prod_on( self ):
+        self.prod = True
+
     def data_clear( self ):
         self.data.clear()
 
     def local_keep( self ):
-        self.multi_load()        
+        self.multi_load()
         os.makedirs( self.dir_name,  exist_ok = True )
         
         for file_name in self.data.keys():
@@ -84,9 +88,6 @@ class data_load():
         elif file_name == "straight_dist.txt":
             result = dm.course_data_get();
         else:
-            result = dm.pickle_load( file_name )
+            result = dm.pickle_load( file_name, prod = self.prod )
 
         return ( file_name, result )
-
-
-

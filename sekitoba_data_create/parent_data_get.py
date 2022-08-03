@@ -17,6 +17,7 @@ def main( horce_data, parent_id, baba_index ):
         return result
 
     parent_pd = lib.past_data( parent_data, [] )
+    
     try:
         speed, up_speed, pace_speed = parent_pd.speed_index( baba_index[parent_id] )
     except:

@@ -10,5 +10,5 @@ setup(
     classifiers=[
         "Development Status :: 1 - Planning"
     ]
-    ,packages=[ 'sekitoba_library', 'sekitoba_data_manage', 'sekitoba_data_create' ]   #パッケージのサブフォルダー
+    ,packages=[ 'sekitoba_library', 'sekitoba_data_manage', 'sekitoba_data_create', 'sekitoba_logger']   #パッケージのサブフォルダー
 )

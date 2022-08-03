@@ -1,19 +1,15 @@
-import copy
-
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
 dm.dl.file_set( "race_info_data.pickle" )
-dm.dl.file_set( "jockey_anlyze_data.pickle" )
-dm.dl.file_set( "jockey_id_data.pickle" )
-dm.dl.file_set( "jockey_year_rank_data.pickle" )
+dm.dl.file_set( "trainer_analyze_data.pickle" )
+dm.dl.file_set( "race_trainer_id_data.pickle" )
 
-class JockeyData:
+class TrainerData:
     def __init__( self ):
         self.race_info_data = dm.dl.data_get( "race_info_data.pickle" )
-        self.race_jockey_id_data = dm.dl.data_get( "race_jockey_id_data.pickle" )
-        self.jockey_analyze_data = dm.dl.data_get( "jockey_analyze_data.pickle" )
-        self.jockey_year_rank_data = dm.dl.data_get( "jockey_year_rank_data.pickle" )
+        self.race_trainer_id_data = dm.dl.data_get( "race_trainer_id_data.pickle" )
+        self.trainer_analyze_data = dm.dl.data_get( "trainer_analyze_data.pickle" )
 
     def dist_check( self, di ):
         if di < 1400:#短距離
@@ -30,7 +26,7 @@ class JockeyData:
     def rank( self, race_id, horce_id ):
         try:
             race_info = self.race_info_data[race_id]
-            jockey_id = self.race_jockey_id_data[race_id][horce_id]
+            trainer_id = self.race_trainer_id_data[race_id][horce_id]
         except:
             return 0
 
@@ -43,7 +39,7 @@ class JockeyData:
         before_year = str( int( year ) - 1 )
 
         try:
-            jockey_data = self.jockey_analyze_data[jockey_id][before_year]
+            trainer_data = self.trainer_analyze_data[trainer_id][before_year]
         except:
             return 0
 
@@ -52,7 +48,7 @@ class JockeyData:
 
         for check_key in key_dict.keys():
             try:
-                rank += jockey_data[check_key][key_dict[check_key]]["rank"]
+                rank += trainer_data[check_key][key_dict[check_key]]["rank"]
                 count += 1
             except:
                 continue
@@ -61,18 +57,3 @@ class JockeyData:
             rank /= count
 
         return int( rank )
-
-    def year_rank( self, race_id, horce_id, key_year ):
-        result = -1
-        
-        try:
-            jockey_id = self.race_jockey_id_data[race_id][horce_id]
-        except:
-            return result
-
-        try:
-            result = self.jockey_year_rank_data[jockey_id][key_year]
-        except:
-            return result
-
-        return result

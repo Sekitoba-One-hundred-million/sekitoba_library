@@ -3,7 +3,6 @@ import numpy as np
 import sekitoba_library.feature_value as fv
 
 class current_data():
-
     def __init__( self, data ):
         self.race_data = data
 
@@ -179,6 +178,12 @@ class current_data():
 
     def race_time( self ):
         return fv.time( self.race_data[15] ) * 60
+
+    def speed( self ):
+        race_time = self.race_time()
+        dist = self.dist()
+
+        return race_time / dist
 
     def race_check( self ):
         if not len( self.race_data ) == 22:

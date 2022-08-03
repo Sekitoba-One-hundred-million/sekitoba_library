@@ -32,8 +32,20 @@ class past_data():
         except:
             return 0
 
-    def before_cd( self ) -> crd.current_data:
+    def past_cd_list( self ) -> list[ crd.current_data ]:
+        result = []
 
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            result.append( past_cd )
+
+        return result        
+
+    def before_cd( self ) -> crd.current_data:
         if len( self.past_data ) == 0:
             return None
         
@@ -215,6 +227,46 @@ class past_data():
                 rank = rank / count
 
         return rank
+
+    def match_rank( self ):
+        baba = self.cd.baba_status()
+        dist_kind = fv.dist_check( self.cd.dist() * 1000 )
+        place = self.cd.place()
+        rank = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+            c = 0
+
+            if baba == past_cd.baba_status():
+                c += 1
+
+            if dist_kind == fv.dist_check( past_cd.dist() * 1000 ):
+                c += 1
+
+            if place == past_cd.place():
+                c += 1
+
+            rank += past_cd.rank() * c
+            count += c
+
+        if not count == 0:
+            rank /= count
+
+        return rank
+
+    def dist_kind_count( self ):
+        count = 0
+        dist_kind = fv.dist_check( self.cd.dist() * 1000 )
+        
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if dist_kind == fv.dist_check( past_cd.dist() * 1000 ):
+                count += 1
+
+        return count
 
     def three_rate( self ):
         count = 0.0
@@ -711,5 +763,21 @@ class past_data():
 
                     result["rank"].append( rank )
                     result["temperature"].append( temp )
+
+        return result
+
+    def before_continue_not_three_rank( self ):
+        result = 0
+        
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            if 3 < past_cd.rank():
+                result += 1
+            else:
+                 break
 
         return result

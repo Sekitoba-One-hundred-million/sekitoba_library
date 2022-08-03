@@ -1,3 +1,14 @@
+def dist_check( di ):
+    if di < 1400:#短距離
+        return 1
+    elif di < 1800:#マイル
+        return 2
+    elif di < 2200:#中距離
+        return 3
+    elif di < 2800:#中長距離
+        return 4
+    else:#長距離
+        return 5
 
 def weather( we ):
     if we == "晴":
@@ -130,6 +141,17 @@ def place_num( place ):
         return 10
     else:
         return 0
+
+def stright_slope( place_num ):
+    if place_num == 1 or place_num == 2 or place_num == 3 or \
+      place_num == 4 or place_num == 8 or place_num == 10:
+        return 1 # 平坦
+    elif place_num == 5:
+        return 2 # やや坂
+    elif place_num == 6 or place_num == 7 or place_num == 9:
+        return 2 # 急坂
+
+    return 0
 
 def baba( b ):
     if b == "良":
