@@ -3,52 +3,73 @@ import sekitoba_data_manage as dm
 
 dm.dl.file_set( "train_time_data.pickle" )
 dm.dl.file_set( "train_ave_data.pickle" )
+dm.dl.file_set( "train_ave_key_data.pickle" )
 
 class TrainIndexGet:
     def __init__( self ):
         self.train_time_data = dm.dl.data_get( "train_time_data.pickle" )
         self.train_ave_data = dm.dl.data_get( "train_ave_data.pickle" )
+        self.train_ave_key_data = dm.dl.data_get( "train_ave_key_data.pickle" )
+        self.base_time = self.train_ave_data["美"]["坂"]["馬也"]["time"]
+        self.base_wrap = self.train_ave_data["美"]["坂"]["馬也"]["wrap"]
 
-    def main( self, race_id, key_horce_num ):
-        result = {}
-        result["score"] = 0
-        result["a"] = 0
-        result["b"] = 0        
+    def score_get( self, race_id, horce_num, prod_train_data = None ):
+        result = 100
+        key_horce_num = str( int( horce_num ) )
 
-        try:
-            load = self.train_time_data[race_id][key_horce_num]["load"]
-            cource = self.train_time_data[race_id][key_horce_num]["cource"] 
-            t_time = self.train_time_data[race_id][key_horce_num]["time"][0]
-            wrap = self.train_time_data[race_id][key_horce_num]["wrap"]
-        except:
+        if dm.dl.prod:
+            if not key_horce_num in prod_train_data.keys():
+                return result
+            
+            load = prod_train_data[key_horce_num]["load"]
+            cource = prod_train_data[key_horce_num]["cource"] 
+            t_time = prod_train_data[key_horce_num]["time"]
+            wrap = prod_train_data[key_horce_num]["wrap"]
+        else:
+            try:
+                load = self.train_time_data[race_id][key_horce_num]["load"]
+                cource = self.train_time_data[race_id][key_horce_num]["cource"] 
+                t_time = self.train_time_data[race_id][key_horce_num]["time"]
+                wrap = self.train_time_data[race_id][key_horce_num]["wrap"]
+            except:
+                return result
+
+        if len( t_time ) == 0 or len( wrap ) == 0:
             return result
 
-        n = len( self.train_time_data[race_id][key_horce_num]["time"] )
-        t = 1
+        if not len( cource ) == 2:
+            return result
+        
+        place_key = ""
+        cource_key = ""
+        load_key = ""
+
+        for key in self.train_ave_key_data["place"]:
+            if cource[0] in key:
+                place_key = key
+                break
+            
+        for key in self.train_ave_key_data["cource"]:
+            if cource[1] in key:
+                cource_key = key
+                break
+
+        for key in self.train_ave_key_data["load"]:
+            if load in key:
+                load_key = key
+                break
+
+        if len( place_key ) == 0 or len( cource_key ) == 0 or len( load_key ) == 0:
+            return result
+
         try:
-            a, b = lib.regression_line( wrap )
+            ave_time = self.train_ave_data[place_key][cource_key][load_key]["time"]
+            ave_wrap = self.train_ave_data[place_key][cource_key][load_key]["wrap"]
         except:
-            a = 0
-            b = 0
-
-        result["a"] = a
-        result["b"] = b        
-
-        if not n == 1:
-            t = n + 1
-
-        t_time /= t
-
-        try:
-            ave_load = self.train_ave_data["load"][load]["time"]
-        except:
-            ave_load = t_time
-
-        try:
-            ave_cource = self.train_ave_data["cource"][cource]["time"]
-        except:
-            ave_cource = t_time
-
-        result["score"] = ( ave_load - t_time ) + ( ave_cource - t_time )
+            return result
+        
+        time_score = ( self.base_time / ave_time )
+        wrap_score = ( self.base_wrap / ave_wrap )
+        result = wrap_score + time_score
 
         return result

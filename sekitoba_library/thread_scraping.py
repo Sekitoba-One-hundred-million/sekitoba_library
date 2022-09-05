@@ -4,6 +4,7 @@ class thread_scraping():
     def __init__( self, url_list, key_list ):
         self.url_list = url_list
         self.key_list = key_list
+        #self.show = show
 
     def data_get( self, func ):
         result = {}
@@ -34,7 +35,7 @@ class thread_scraping():
         return self.jisaku_func(*args)
 
     def jisaku_func( self, func, url, key, num ):
-        print( num )
+        #print( num )
         result = func( url )
         
         return ( key, result )

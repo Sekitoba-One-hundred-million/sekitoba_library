@@ -3,7 +3,7 @@ import datetime
 class Logger:
     def __init__( self, log_dir ):
         self.log_dir = log_dir
-        self.file_name = ""
+        #self.file_name = ""
 
     def create_timestamp( self ):
         now = datetime.datetime.now()
@@ -15,12 +15,7 @@ class Logger:
 
     def write( self, message ):
         write_file_name = ""
-
-        if len( self.file_name ) == 0:
-            write_file_name = self.log_dir + self.file_name()
-        else:
-            write_file_name = self.file_name
-            
+        write_file_name = self.log_dir + self.file_name()            
         f = open( self.log_dir + self.file_name(), "a" )
         f.write( message )
         f.close()

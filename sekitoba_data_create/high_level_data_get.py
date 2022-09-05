@@ -38,7 +38,7 @@ class RaceHighLevel:
         past_rank_list = pd.rank_list()
         current_race_rank = self.race_rank_data[race_id]
 
-        for i in range( 0, len( past_id_list ) ):
+        for i in range( 0, min( len( past_id_list ), 3 ) ):
             past_id = past_id_list[i]
             past_day = past_day_list[i]
             past_rank = past_rank_list[i]

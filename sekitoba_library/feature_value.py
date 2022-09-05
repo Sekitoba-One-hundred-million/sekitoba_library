@@ -36,6 +36,14 @@ def baba_index( baba ):
 
     return 0
 
+def sex_num( str_sex ):
+    if str_sex == "牡":
+        return 1
+    elif str_sex == "牝":
+        return 2
+
+    return 0
+
 def money_class_get( money ):
     money_class = 0
                 

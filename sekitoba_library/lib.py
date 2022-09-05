@@ -2,6 +2,7 @@ import os
 import math
 
 import sekitoba_library.current_race_data as crd
+import sekitoba_library.past_race_data as prd
 
 split_key = "race_id="
 home_dir = os.getcwd()
@@ -359,3 +360,68 @@ def max_check( data ):
     except:
         return -1
 
+def match_rank_score( target_pd: prd.past_data, \
+                     cd: crd.current_data, \
+                     place = None, \
+                     baba_status = None, \
+                     dist_kind = None ):
+    count = 0
+    score = 0
+
+    if not cd == None:
+        place = cd.place()
+        baba_status = cd.baba_status()
+        dist_kind = cd.dist_kind()
+            
+    for target_cd in target_pd.past_cd_list():
+        c = 0
+                
+        if target_cd.place() == place:
+            c += 1
+                
+        if target_cd.baba_status() == baba_status:
+            c += 1
+
+        if target_cd.dist_kind() == dist_kind:
+            c += 1
+
+        count += c
+        score += target_cd.rank() * c
+
+    if not count == 0:
+        score /= count
+                
+    return int( score )
+
+def foot_used_create( current_wrap ):
+    score = 0
+    
+    if len( current_wrap ) == 0:
+        return score
+    
+    key_list = list( current_wrap.keys() )
+    wrap_key_list = []
+
+    for wrap_key in key_list:
+        wrap_key_list.append( int( wrap_key ) )
+
+    s1 = len( wrap_key_list ) - 4
+    s2 = len( wrap_key_list )
+    wrap_key_list = sorted( wrap_key_list )
+    use_wrap_key_list = wrap_key_list[s1:s2]
+
+    if not len( use_wrap_key_list ) == 4:
+        return score
+
+    check_wrap_list = []
+    for wrap_key in use_wrap_key_list:
+        key = str( wrap_key )
+        check_wrap_list.append( current_wrap[key] )
+
+    score = min( check_wrap_list )
+    foot_score = 1 #long
+
+    if score < 11.6:
+        foot_score = 2 #change
+
+    return foot_score

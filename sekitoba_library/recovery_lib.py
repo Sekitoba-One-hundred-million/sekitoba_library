@@ -29,6 +29,31 @@ def recovery_analyze( data: dict ):
 
     return result
 
+def rank_analyze( data: dict ):
+    result = {}
+    analyze_data = {}
+    
+    for year in data.keys():
+        for k in data[year].keys():
+            lib.dic_append( result, k, { "count": 0, "ave": 0, "conv": 0, "median": 0, "list": [] } )
+            
+            try:
+                result[k]["list"].append( data[year][k]["rank"] )
+                result[k]["count"] += data[year][k]["count"]
+                result[k]["ave"] += data[year][k]["rank"] * data[year][k]["count"]
+            except:
+                continue
+
+    for k in result.keys():
+        if not result[k]["count"] == 0:
+            result[k]["ave"] = result[k]["ave"] / result[k]["count"]
+            result[k]["conv"] = lib.conv( result[k]["list"], ave = result[k]["ave"] )
+            result[k]["ave"] = round( result[k]["ave"], 2 )
+            result[k]["conv"] = round( result[k]["conv"], 2 )
+            result[k]["median"] = statistics.median( result[k]["list"] )
+
+    return result
+
 def recovery_score_check( data: dict ):
     result = {}
     recovery_data = recovery_analyze( data )
@@ -46,8 +71,8 @@ def recovery_score_check( data: dict ):
         
     return result
 
-def write_recovery_csv( data :dict , file_name :str ):
-    data_dir = os.environ["HOME"] + "/Desktop/recovery_data/"
+def write_recovery_csv( data :dict , file_name :str, add_dir = "" ):
+    data_dir = os.environ["HOME"] + "/Desktop/recovery_data/" + add_dir
     f = open( data_dir + file_name, "w" )
     key = list( data.keys() )[0]
     key_list = list( data[key].keys() )
@@ -77,6 +102,61 @@ def write_recovery_csv( data :dict , file_name :str ):
         f.write( write_str )
 
     recovery_data = recovery_analyze( data )
+    ave_str = "all,\t"
+    count_str = "count,\t"
+    conv_str = "conv,\t"
+    median_str = "median,\t"
+    
+    for k in key_list:
+        ave_str += str( recovery_data[k]["ave"] ) + ",\t"
+        count_str += str( recovery_data[k]["count"] ) + ",\t"
+        conv_str += str( recovery_data[k]["conv"] ) + ",\t"
+        median_str += str( recovery_data[k]["median"] ) + ",\t"
+
+    ave_str += "\n"
+    count_str += "\n"
+    conv_str += "\n"
+    median_str += "\n"
+    
+    f.write( ave_str )
+    f.write( median_str )
+    f.write( conv_str )
+    f.write( count_str )
+    
+    f.close()
+
+
+def write_rank_csv( data :dict , file_name :str, add_dir = "" ):
+    data_dir = os.environ["HOME"] + "/Desktop/rank_data/" + add_dir
+    f = open( data_dir + file_name, "w" )
+    key = list( data.keys() )[0]
+    key_list = list( data[key].keys() )
+
+    for i in range( 0, len( key_list ) ):
+        key_list[i] = int( key_list[i] )
+
+    key_list = sorted( key_list )
+    first_write = "year/data,\t"
+
+    for i in range( 0, len( key_list ) ):
+        key_list[i] = str( key_list[i] )
+        first_write += key_list[i] + ",\t"
+
+    f.write( first_write + "\n" )
+    
+    for year in data.keys():
+        write_str = year + ","
+        
+        for k in key_list:
+            try:
+                write_str += str( data[year][k]["rank"] ) + ",\t"
+            except:
+                write_str += "0,\t"
+
+        write_str += "\n"
+        f.write( write_str )
+
+    recovery_data = rank_analyze( data )
     ave_str = "all,\t"
     count_str = "count,\t"
     conv_str = "conv,\t"

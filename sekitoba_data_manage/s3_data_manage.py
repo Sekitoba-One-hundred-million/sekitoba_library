@@ -111,7 +111,10 @@ def pickle_load( file_name, prod = False ):
             return data
     
     if file_check( dir_name + "/" + file_name ):
-        data = local_pickle_load( dir_name + "/" + file_name )
+        try:
+            data = local_pickle_load( dir_name + "/" + file_name )
+        except:
+            data = None
 
         if not data == None:
             print( file_name + " download finish Gilgamesh" )

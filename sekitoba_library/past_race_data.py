@@ -256,9 +256,11 @@ class past_data():
 
         return rank
 
-    def dist_kind_count( self ):
+    def dist_kind_count( self, dist_kind = None ):
         count = 0
-        dist_kind = fv.dist_check( self.cd.dist() * 1000 )
+        
+        if dist_kind == None:
+            dist_kind = fv.dist_check( self.cd.dist() * 1000 )
         
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.current_data( self.past_data[i] )
