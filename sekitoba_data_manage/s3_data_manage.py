@@ -98,10 +98,7 @@ def pickle_load( file_name, prod = False ):
 
         if not data == None:
             print( file_name + " download finish Prod" )
-        else:
-            print( file_name + " download fail Prod" )
-
-        return data
+            return data
     
     if file_check( local_name + "/" + file_name ):
         data = local_pickle_load( local_name + "/" + file_name )
