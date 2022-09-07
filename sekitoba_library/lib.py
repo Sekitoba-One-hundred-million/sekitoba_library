@@ -219,7 +219,7 @@ def race_check( all_data, year, day, num, race_place_num ):
     return current_data, past_data
 
 def next_race( all_data, ymd ) -> crd.current_data:
-    before_cd = None
+    next_cd = None
     
     for str_data in all_data:
         cd = crd.current_data( str_data )
@@ -240,9 +240,9 @@ def next_race( all_data, ymd ) -> crd.current_data:
         if y == ymd["y"] and m == ymd["m"] and d == ymd["d"]:
             break
 
-        before_cd = cd
+        next_cd = cd
 
-    return before_cd
+    return next_cd
 
 def place_check( place_num ):
     if place_num == "01":

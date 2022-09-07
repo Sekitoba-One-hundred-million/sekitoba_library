@@ -10,7 +10,6 @@ dm.dl.file_set( "up_average.pickle" )
 dm.dl.file_set( "up_pace_regressin.pickle" )
 
 class past_data():
-
     def __init__( self, past_data, current_data ):
         self.past_data = past_data
         self.cd = crd.current_data( current_data )
