@@ -13,25 +13,35 @@ class Logger:
         now = datetime.datetime.now()
         return now.strftime( '%Y-%m-%d' )
 
-    def write( self, message ):
-        write_file_name = ""
-        write_file_name = self.log_dir + self.file_name()            
+    def message_list_create( self, message, kind ):
+        message_list = []
+        split_message = message.split( "\n" )
+
+        for m in split_message:
+            if len( m ) == 0:
+                continue
+
+            message_list.append( self.create_timestamp() + " " + kind + " " + m + "\n" )
+
+        return message_list
+
+    def write( self, message_list ):
+        write_file_name = self.log_dir + self.file_name()
         f = open( self.log_dir + self.file_name(), "a" )
-        f.write( message )
+
+        for message in message_list:
+            f.write( message )
+            
         f.close()
 
     def info( self, message ):
-        write_str = self.create_timestamp() + " INFO " + message + "\n"
-        self.write( write_str )
+        self.write( self.message_list_create( message, "INFO" ) )
 
     def warning( self, message ):
-        write_str = self.create_timestamp() + " WARN " + message + "\n"
-        self.write( write_str )
+        self.write( self.message_list_create( message, "WARN" ) )
 
     def error( self, message ):
-        write_str = self.create_timestamp() + " ERROR " + message + "\n"
-        self.write( write_str )
+        self.write( self.message_list_create( message, "ERROR" ) )
 
     def fatal( self, message ):
-        write_str = self.create_timestamp() + " FATAL " + message + "\n"
-        self.write( write_str )
+        self.write( self.message_list_create( message, "FATAL" ) )

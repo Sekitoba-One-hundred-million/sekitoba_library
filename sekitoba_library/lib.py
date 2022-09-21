@@ -12,6 +12,9 @@ def id_get( url ):
     s_data = url.split( split_key )
     return s_data[len(s_data)-1]
 
+def race_data_key_get( race_id ):
+    return "https://race.netkeiba.com/race/shutuba.html?race_id=" + race_id
+
 def current_check( current_data ):
     if len( current_data ) == 22:
         return True
@@ -19,9 +22,7 @@ def current_check( current_data ):
     return False
     
 def dic_append( dic, word, data ):
-    try:
-        a = dic[word]
-    except:
+    if not word in dic:
         dic[word] = data
 
 def text_replace( text: str ):
