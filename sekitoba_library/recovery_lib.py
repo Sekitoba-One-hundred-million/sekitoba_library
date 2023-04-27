@@ -72,7 +72,7 @@ def recovery_score_check( data: dict ):
     return result
 
 def write_recovery_csv( data :dict , file_name :str, add_dir = "" ):
-    data_dir = os.environ["HOME"] + "/Desktop/recovery_data/" + add_dir
+    data_dir = "/Volumes/Gilgamesh/sekitoba-recovery/" + add_dir
     f = open( data_dir + file_name, "w" )
     key = list( data.keys() )[0]
     key_list = list( data[key].keys() )
@@ -88,8 +88,15 @@ def write_recovery_csv( data :dict , file_name :str, add_dir = "" ):
         first_write += key_list[i] + ",\t"
 
     f.write( first_write + "\n" )
+    year_list = list( data.keys() )
+
+    for i in range( 0, len( year_list ) ):
+        year_list[i] = int( year_list[i] )
+
+    year_list = sorted( year_list )
     
-    for year in data.keys():
+    for math_year in year_list:
+        year = str( math_year )
         write_str = year + ","
         
         for k in key_list:

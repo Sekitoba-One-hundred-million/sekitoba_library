@@ -2,7 +2,7 @@ import sekitoba_data_manage as dm
 import sekitoba_library as lib
 
 dm.dl.file_set( "race_rank_data.pickle" )
-dm.dl.file_set( "race_level_data.pickle" )
+#dm.dl.file_set( "race_level_data.pickle" )
 dm.dl.file_set( "next_race_data.pickle" )
 
 class RaceHighLevel:
@@ -29,6 +29,20 @@ class RaceHighLevel:
             return False
 
         return False
+
+    def current_high_level( self, race_id ):
+        try:
+            next_cd_data = self.next_racd_data[race_id]
+        except:
+            return 0
+
+        count = 0
+
+        for horce_id in next_cd_data.keys():
+            if next_cd_data[horce_id].rank() == 1:
+                count += 1
+
+        return count
         
     def data_get( self, cd: lib.current_data, pd: lib.past_data, ymd: dict ):
         result = 1000
@@ -60,6 +74,9 @@ class RaceHighLevel:
                 past_ymd = { "y": int( birthday[0] ), "m": int( birthday[1] ), "d": int( birthday[2] ) }
 
                 if not self.day_check( ymd, past_ymd ):
+                    continue
+
+                if not next_cd.race_check():
                     continue
 
                 if next_cd.rank() == 1:

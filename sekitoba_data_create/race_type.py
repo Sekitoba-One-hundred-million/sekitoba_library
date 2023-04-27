@@ -60,6 +60,47 @@ class RaceType:
 
         return score
 
+    def best_foot_used( self, cd: lib.current_data, pd: lib.past_data, prod_race_rank = None ):
+        if dm.dl.prod:
+            current_race_rank = prod_race_rank
+        else:
+            race_id = cd.race_id()
+            current_race_rank = self.race_rank_data[race_id]
+
+        good_foot_used = "0"
+        past_cd_list = pd.past_cd_list()
+        foot_score = { "1": { "count": 0, "rank": 0 }, "2": { "count": 0, "rank": 0 } }
+        
+        for past_cd in past_cd_list:
+            past_race_id = past_cd.race_id()
+            
+            try:
+                past_race_rank = self.race_rank_data[past_race_id]
+                foot_used = self.foot_used_data[past_race_id]
+            except:
+                continue
+            
+            if past_race_rank < current_race_rank:
+                continue
+
+            if foot_used == 0:
+                continue
+            
+            key_foot_used = str( foot_used )
+            foot_score[key_foot_used]["rank"] += past_cd.rank()
+            foot_score[key_foot_used]["count"] += 1
+
+        for k in foot_score.keys():
+            if not foot_score[k]["count"] == 0:
+                foot_score[k]["rank"] /= foot_score[k]["count"]
+
+        if foot_score["1"]["rank"] < foot_score["2"]["rank"]:
+            good_foot_used = "1"
+        else:
+            good_foot_used = "2"
+
+        return good_foot_used
+
     def foot_used_score_get( self, cd: lib.current_data, pd: lib.past_data, prod_race_rank = None ):
         if dm.dl.prod:
             current_race_rank = prod_race_rank
@@ -109,6 +150,39 @@ class RaceType:
                     score = min( past_cd_list[i].rank(), score )
 
         return score
+
+    def best_deployment( self, pd: lib.past_race_data ):
+        best_dep = "-1"
+        past_cd_list = pd.past_cd_list()
+        check_deployment = { "1": 100, "2": 100, "3": 100, "4": 100, "5": 100, "6": 100 }
+
+        for past_cd in past_cd_list:
+            if past_cd == None:
+                continue
+                
+            past_race_id = past_cd.race_id()
+
+            try:
+                past_wrap_data = self.wrap_data[past_race_id]
+            except:
+                continue
+
+            past_deployment = lib.pace_create( past_wrap_data )
+
+            if past_deployment == -1:
+                continue
+                
+            key_past_deployment = str( int( past_deployment ) )
+            check_deployment[key_past_deployment] = min( past_cd.rank(), check_deployment[key_past_deployment] )
+
+        best_dep_score = 100
+            
+        for dk in check_deployment.keys():
+            if check_deployment[dk] < best_dep_score:
+                best_dep_score = check_deployment[dk]
+                best_dep = dk
+
+        return best_dep
 
     def deploypent( self, pd: lib.past_race_data ):
         score = 0

@@ -13,7 +13,7 @@ class data_load():
 
     def file_set( self, file_name ):
         if file_name not in self.data.keys():
-            self.file_list[file_name] = False
+            self.file_list[file_name] = None
 
     def data_get( self, file_name ):
         self.file_set( file_name )
@@ -65,17 +65,26 @@ class data_load():
 
         if len( current_load ) == 0:
             return
-        
+
+        for k_list in current_load:
+            name, d = self.jisaku_func( k_list[0] )
+            self.data[name] = d
+            self.file_list[name] = True
+
+        return
+        """
+        thread_count = min( len( current_load ), 5 )
         # スレッドプールを作ります。
         # プロセスプールとちがって、スレッドの数は
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        with ThreadPoolExecutor(max_workers=thread_count) as executor:
             # 『関数』と『引数リスト』を渡して、実行します。
             results = executor.map(
                 self.jisaku_func_wrapper, current_load, timeout=None )
-        
-            for result in results :
+            
+            for result in results:
                 self.data[result[0]] = result[1]
                 self.file_list[result[0]] = True
+        """
 
     def jisaku_func_wrapper( self, args ):
         return self.jisaku_func(*args)

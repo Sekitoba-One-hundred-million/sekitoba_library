@@ -236,6 +236,10 @@ class past_data():
 
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
             c = 0
 
             if baba == past_cd.baba_status():

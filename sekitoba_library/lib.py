@@ -6,7 +6,7 @@ import sekitoba_library.past_race_data as prd
 
 split_key = "race_id="
 home_dir = os.getcwd()
-test_years = [ "2019", "2020", "2021" ]
+test_years = [ "2022", "2023" ]
 
 def id_get( url ):
     s_data = url.split( split_key )
