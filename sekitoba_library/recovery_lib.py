@@ -134,7 +134,7 @@ def write_recovery_csv( data :dict , file_name :str, add_dir = "" ):
 
 
 def write_rank_csv( data :dict , file_name :str, add_dir = "" ):
-    data_dir = os.environ["HOME"] + "/Desktop/rank_data/" + add_dir
+    data_dir = "/Volumes/Gilgamesh/sekitoba-rank/" + add_dir
     f = open( data_dir + file_name, "w" )
     key = list( data.keys() )[0]
     key_list = list( data[key].keys() )

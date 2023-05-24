@@ -46,8 +46,8 @@ def sex_num( str_sex ):
 
 def money_class_get( money ):
     money_class = 0
-                
-    if money < 500:
+
+    if money <= 501:
         money_class = 1
     elif money < 1000:
         money_class = 2

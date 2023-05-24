@@ -8,7 +8,7 @@ dm.dl.file_set( "next_race_data.pickle" )
 class RaceHighLevel:
     def __init__( self ):
         self.race_rank_data = dm.dl.data_get( "race_rank_data.pickle" )
-        self.next_racd_data: dict[ str, dict[ str, lib.current_data ] ] = dm.pickle_load( "next_race_data.pickle" )
+        self.next_racd_data: dict[ str, dict[ str, lib.current_data ] ] = dm.dl.data_get( "next_race_data.pickle" )
         #self.race_level_data = dm.dl.data_get( "race_level_data.pickle" )
         #self.race_level_split_data = dm.dl.data_get( "race_level_split_data.pickle" )
 

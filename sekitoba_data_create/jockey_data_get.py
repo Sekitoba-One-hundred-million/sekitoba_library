@@ -4,7 +4,7 @@ import sekitoba_library as lib
 import sekitoba_data_manage as dm
 
 dm.dl.file_set( "race_info_data.pickle" )
-dm.dl.file_set( "jockey_anlyze_data.pickle" )
+dm.dl.file_set( "jockey_analyze_data.pickle" )
 dm.dl.file_set( "jockey_id_data.pickle" )
 dm.dl.file_set( "jockey_year_rank_data.pickle" )
 

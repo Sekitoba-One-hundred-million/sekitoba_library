@@ -8,6 +8,10 @@ dm.dl.file_set( "dist_index.txt" )
 dm.dl.file_set( "standard_time.pickle" )
 dm.dl.file_set( "up_average.pickle" )
 dm.dl.file_set( "up_pace_regressin.pickle" )
+dm.dl.file_set( "up_kind_ave_data.pickle" )
+dm.dl.file_set( "money_class_true_skill_data.pickle" )
+dm.dl.file_set( "race_ave_true_skill.pickle" )
+dm.dl.file_set( "race_money_data.pickle" )
 
 class past_data():
     def __init__( self, past_data, current_data ):
@@ -18,7 +22,11 @@ class past_data():
         self.standard_time = dm.dl.data_get( "standard_time.pickle" )
         self.up_standard_time = dm.dl.data_get( "up_average.pickle" )
         self.regressin_data = dm.dl.data_get( "up_pace_regressin.pickle" )
-
+        self.up_kind_ave_data = dm.dl.data_get( "up_kind_ave_data.pickle" )
+        self.money_class_true_skill_data = dm.dl.data_get( "money_class_true_skill_data.pickle" )
+        self.race_ave_true_skill_data = dm.dl.data_get( "race_ave_true_skill.pickle" )
+        self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
+        
     def diff_get( self ):
         try:
             return fv.data_check( self.past_data[0][16] )
@@ -45,15 +53,17 @@ class past_data():
         return result        
 
     def before_cd( self ) -> crd.current_data:
+        result = None
+
         if len( self.past_data ) == 0:
-            return None
+            return result
         
         cd = crd.current_data( self.past_data[0] )
 
-        if not cd.race_check():
-            cd = None
+        if cd.race_check():
+            result = cd
 
-        return cd        
+        return result     
 
     def rank_list( self ):
         result = []
@@ -786,3 +796,112 @@ class past_data():
                  break
 
         return result
+
+    def corner_diff_rank( self ):
+        result = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+
+            passing_rank = past_cd.passing_rank()
+            split_passing_rank = passing_rank.split( "-" )
+
+            if len( split_passing_rank ) < 2:
+                continue
+
+            three_corner = int( split_passing_rank[-2] )
+            four_corner = int( split_passing_rank[-1] )
+
+            count += 1
+            result += three_corner - four_corner
+
+        if count == 0:
+            result = 1000
+        else:
+            result /= count
+
+        return result
+
+    def up_rate( self, race_money_rank ):
+        PLACE_DIST = "place_dist"
+        BABA = "baba"
+        MONEY = "money"
+
+        if not race_money_rank in self.up_kind_ave_data[MONEY]:
+            return -1
+
+        race_money_up = self.up_kind_ave_data[MONEY][race_money_rank]
+        result = 0
+        count = 0
+            
+        for past_cd in self.past_cd_list():
+            if not past_cd.race_check():
+                continue
+                
+            baba = str( int( past_cd.baba_status() ) )
+            dist = str( int( past_cd.dist() * 1000 ) )
+            place = str( int( past_cd.place() ) )
+
+            if not baba in self.up_kind_ave_data[BABA]:
+                continue
+
+            if not place in self.up_kind_ave_data[PLACE_DIST] or not dist in self.up_kind_ave_data[PLACE_DIST][place]:
+                continue
+
+            up_time = past_cd.up_time()
+
+            if up_time == 0:
+                continue
+                
+            baba_up = self.up_kind_ave_data[BABA][baba]
+            place_dist_up = self.up_kind_ave_data[PLACE_DIST][place][dist]
+            up_score = ( race_money_up / up_time )
+            up_score += ( baba_up / up_time )
+            up_score += ( place_dist_up / up_time )
+            up_score /= len( self.up_kind_ave_data.keys() )
+            result += up_score
+            count += 1
+
+        if count == 0:
+            result = -1
+        else:
+            result /= count
+
+        return result
+
+    def level_score( self ):
+        c = 0
+        score = 0
+        
+        for past_cd in self.past_cd_list():
+            past_race_id = past_cd.race_id()
+
+            if not past_race_id in self.race_ave_true_skill_data:
+                continue
+            
+            if not past_race_id in self.race_money_data:
+                continue
+            
+            past_rank = past_cd.rank()
+            
+            if past_rank == 0:
+                continue
+
+            key_past_money_class = str( int( fv.money_class_get( self.race_money_data[past_race_id] ) ) )
+            past_race_true_skill = self.race_ave_true_skill_data[past_race_id]
+            score_rate = past_race_true_skill / self.money_class_true_skill_data[key_past_money_class]
+            rank_score = ( 1 / past_rank )
+            rank_score *= score_rate
+            score += rank_score
+            c += 1
+            
+        if c == 0:
+            score = -1
+        else:
+            score /= c
+
+        return score

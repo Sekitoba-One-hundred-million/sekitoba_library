@@ -11,7 +11,7 @@ limb_postion["16"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "D", "D", "E", "E
 limb_postion["17"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "D", "D", "D", "E", "E", "E", "E", "E", "E" ]
 limb_postion["18"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "C", "D", "D", "D", "E", "E", "E", "E", "E", "E" ]
 
-limb_kind = { "逃げa": 1, "逃げb": 2, "先行a": 3, "先行b": 4, "差しa": 5, "差しb": 6, "追い": 7, "後方": 8 }
+limb_kind = { "逃げa": 1, "逃げb": 2, "先行a": 3, "先行b": 4, "差しa": 5, "差しb": 6, "追い": 7, "後方": 8, "None": -1 }
 
 def limb_passing( passing_data: list , all_horce_num: int ):
     result = ""
@@ -20,7 +20,7 @@ def limb_passing( passing_data: list , all_horce_num: int ):
         three_corner = int( passing_data[-2] )
         four_corner = int( passing_data[-1] )
     except:
-        return result        
+        return result
     
     if all_horce_num < 10:
         key_horce_num = "10"
@@ -83,8 +83,8 @@ def limb_search( pd: past_data ):
         if count == 5:
             break
 
-    max_size = -1
-    limb = ""
+    max_size = 0
+    limb = "None"
 
     for k in result.keys():
         if max_size < len( result[k] ):

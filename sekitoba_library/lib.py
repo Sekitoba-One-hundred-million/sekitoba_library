@@ -246,25 +246,25 @@ def next_race( all_data, ymd ) -> crd.current_data:
     return next_cd
 
 def place_check( place_num ):
-    if place_num == "01":
+    if int( place_num ) == 1:
         return "札幌"
-    elif place_num == "02":
+    elif int( place_num ) == 2:
         return "函館"
-    elif place_num == "03":
+    elif int( place_num ) == 3:
         return "福島"
-    elif place_num == "04":
+    elif int( place_num ) == 4:
         return "新潟"
-    elif place_num == "05":
+    elif int( place_num ) == 5:
         return "東京"    
-    elif place_num == "06":
+    elif int( place_num ) == 6:
         return "中山"
-    elif place_num == "07":
+    elif int( place_num ) == 7:
         return "中京"
-    elif place_num == "08":
+    elif int( place_num ) == 8:
         return "京都"    
-    elif place_num == "09":
+    elif int( place_num ) == 9:
         return "阪神"
-    elif place_num == "10":
+    elif int( place_num ) == 10:
         return "小倉"
 
     return "None"
@@ -426,3 +426,51 @@ def foot_used_create( current_wrap ):
         foot_score = 2 #change
 
     return foot_score
+
+def pace_data( current_wrap ):
+    wrap_key_list = list( current_wrap.keys() )
+    n = len( wrap_key_list )
+
+    if n == 0:
+        return None
+        
+    s1 = int( n / 2 )
+    before_wrap_key_list = wrap_key_list[0:s1]
+    after_wrap_key_list = wrap_key_list[s1:n]
+        
+    if not len( before_wrap_key_list ) == len( after_wrap_key_list ):
+        after_wrap_key_list.pop( 0 )
+
+    before_time = 0
+    after_time = 0
+
+    for key in before_wrap_key_list:
+        before_time += current_wrap[key]
+        
+    for key in after_wrap_key_list:
+        after_time += current_wrap[key]
+
+    if before_wrap_key_list[0] == "100":
+        after_time -= round( current_wrap[after_wrap_key_list[0]] / 2 )
+
+    return before_time - after_time
+
+def kind_score_get( data, key_list, key_data, base_key ):
+    score = 0
+    count = 0
+    
+    for i in range( 0, len( key_list ) ):
+        k1 = key_list[i]
+        for r in range( i + 1, len( key_list ) ):
+            k2 = key_list[r]
+            key_name = k1 + "_" + k2
+            try:
+                score += data[key_name][key_data[k1]][key_data[k2]][base_key]
+                count += 1
+            except:
+                continue
+
+    if not count == 0:
+        score /= count
+        
+    return score
