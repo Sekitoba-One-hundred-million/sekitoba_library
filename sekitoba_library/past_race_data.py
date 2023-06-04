@@ -606,7 +606,7 @@ class past_data():
 
         return ave
 
-    def best_passing_rank( self ):
+    def best_first_passing_rank( self ):
         result = 0
         count = 0
 
@@ -632,7 +632,34 @@ class past_data():
             return -1
 
         return result / count
-        
+
+    def best_second_passing_rank( self ):
+        result = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            rank = past_cd.rank()
+            
+            try:
+                passing_rank = past_cd.passing_rank()
+                second_rank = float( passing_rank.split( "-" )[1] )
+            except:
+                continue
+
+            n = max( 1, 6 - rank )
+            count += n
+            result += second_rank * n
+
+        if count == 0:
+            return -1
+
+        return result / count
+
     def diff_pace_time( self ):
         result = -10000
         count = 0
@@ -695,7 +722,7 @@ class past_data():
 
         return result
 
-    def diff_pace_passing( self ):
+    def diff_pace_first_passing( self ):
         result = -10000
         count = 0
 
@@ -905,3 +932,33 @@ class past_data():
             score /= c
 
         return score
+
+    def ave_odds( self ):
+        ave_odds = 0
+        count = 0
+        
+        for past_cd in self.past_cd_list():
+            ave_odds += past_cd.odds()
+            count += 1
+
+        if count == 0:
+            return -1
+        
+        return ave_odds / count
+
+    def ave_three_odds( self ):
+        ave_odds = 0
+        count = 0
+        
+        for past_cd in self.past_cd_list():
+            ave_odds += past_cd.odds()
+            count += 1
+
+            if count == 3:
+                break
+
+        if count == 0:
+            return -1
+        
+        return ave_odds / count
+

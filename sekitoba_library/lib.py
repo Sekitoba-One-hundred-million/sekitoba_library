@@ -87,6 +87,30 @@ def softmax( data ):
 
     return result
 
+def normalization( data ):
+    result = []
+
+    if len( data ) == 0:
+        return result
+    
+    ave_data = sum( data ) / len( data )
+    std_data = 0
+
+    for d in data:
+        std_data += math.pow( ave_data - d, 2 )
+
+    std_data /= len( data )
+
+    if std_data == 0:
+        return data
+    
+    std_data = math.sqrt( std_data )
+
+    for d in data:
+        result.append( ( d - ave_data ) / std_data )
+
+    return result
+
 def deviation_value( data, remove_data ):
     result = [ 50 ] * len( data )
     average = 0
@@ -159,7 +183,11 @@ def regression_line( data ):
         a1 += ( i + 1 - x_ave ) * ( data[i] - y_ave )
         a2 += math.pow( i + 1 - x_ave, 2 )
 
-    a = a1 / a2
+    a = 0
+    
+    if not a2 == 0:
+        a = a1 / a2
+        
     b = y_ave - a * x_ave
 
     return a, b
