@@ -962,3 +962,15 @@ class past_data():
         
         return ave_odds / count
 
+    def ave_first_last_diff( self ):
+        ave_diff = 0
+        count = 0
+        
+        for past_cd in self.past_cd_list():
+            ave_diff += past_cd.first_last_diff()
+            count += 1
+
+        if not count == 0:
+            ave_diff /= count
+
+        return ave_diff

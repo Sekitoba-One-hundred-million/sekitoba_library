@@ -55,6 +55,19 @@ class current_data():
 
     def passing_rank( self ):
         return self.race_data[17]
+
+    def first_last_diff( self ):
+        first = -1
+        last = -1
+
+        try:
+            split_rank = self.passing_rank().split( "-" )
+            first = int( split_rank[0] )
+            last = int( split_rank[-1] )
+        except:
+            return 0
+
+        return first - last
     
     def pace( self ):
         data = self.race_data[18].split( "-" )

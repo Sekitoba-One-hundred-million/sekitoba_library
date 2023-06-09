@@ -247,6 +247,16 @@ def race_check( all_data, year, day, num, race_place_num ):
     
     return current_data, past_data
 
+def standardization( data ):
+    result = []
+    ave = sum( data ) / len( data )
+    std = stdev( data )
+
+    for i in range( 0, len( data ) ):
+        result.append( ( data[i] - ave ) / std )
+
+    return result
+
 def next_race( all_data, ymd ) -> crd.current_data:
     next_cd = None
     
