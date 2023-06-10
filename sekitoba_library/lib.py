@@ -1,5 +1,6 @@
 import os
 import math
+from statistics import stdev
 
 import sekitoba_library.current_race_data as crd
 import sekitoba_library.past_race_data as prd
@@ -251,6 +252,9 @@ def standardization( data ):
     result = []
     ave = sum( data ) / len( data )
     std = stdev( data )
+
+    if std == 0:
+        return [0] * len( data )
 
     for i in range( 0, len( data ) ):
         result.append( ( data[i] - ave ) / std )
