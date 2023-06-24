@@ -2,6 +2,7 @@ import time
 import requests
 from os.path import expanduser
 from requests.exceptions import Timeout
+from selenium.webdriver.common.by import By
 
 def netkeiba_login():
     f = open( expanduser( "~" ) + "/.pwd/password.txt" )
@@ -62,13 +63,15 @@ def login( driver ):
     mail = str_data[0]
     password = str_data[1]
     driver, _ = driver_request( driver, 'https://regist.netkeiba.com/account/?pid=login' )
-    id_box = driver.find_element_by_name("login_id")
+    time.sleep( 1 )
+    
+    id_box = driver.find_element( By.NAME, "login_id" )
     id_box.send_keys( mail )
 
-    ps_box = driver.find_element_by_name("pswd")
+    ps_box = driver.find_element( By.NAME, "pswd" )
     ps_box.send_keys( password )
 
-    driver.find_element_by_xpath( '/html/body/div[1]/div/div/form/div/div[1]/input' ).click()
+    driver.find_element( By.XPATH, '/html/body/div[1]/div/div/form/div/div[1]/input' ).click()
     time.sleep( 3 )
     return driver
 

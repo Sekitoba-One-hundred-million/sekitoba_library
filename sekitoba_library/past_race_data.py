@@ -584,7 +584,31 @@ class past_data():
             result /= count
 
         return result        
-    
+
+    def last_passing_rank( self ):
+        result = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            try:
+                passing_rank = past_cd.passing_rank()
+                last_rank = float( passing_rank.split( "-" )[-1] )
+            except:
+                continue
+
+            result += last_rank
+            count += 1
+
+        if not count == 0:
+            result /= count
+
+        return result        
+
     def average_speed( self ):
         ave = 0
         count = 0
@@ -974,3 +998,4 @@ class past_data():
             ave_diff /= count
 
         return ave_diff
+
