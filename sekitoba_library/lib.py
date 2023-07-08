@@ -88,6 +88,17 @@ def softmax( data ):
 
     return result
 
+def softmax_test( data ):
+    result = []
+    sum_data = 0
+    value_max = max( data )
+    value_min = min( data )
+
+    for i in range( 0, len( data ) ):
+        result.append( ( data[i] - value_min ) / ( value_max - value_min ) )
+
+    return result
+
 def normalization( data ):
     result = []
 

@@ -67,7 +67,7 @@ class RaceType:
             race_id = cd.race_id()
             current_race_rank = self.race_rank_data[race_id]
 
-        good_foot_used = "0"
+        good_foot_used = 0
         past_cd_list = pd.past_cd_list()
         foot_score = { "1": { "count": 0, "rank": 0 }, "2": { "count": 0, "rank": 0 } }
         
@@ -95,9 +95,9 @@ class RaceType:
                 foot_score[k]["rank"] /= foot_score[k]["count"]
 
         if foot_score["1"]["rank"] < foot_score["2"]["rank"]:
-            good_foot_used = "1"
-        else:
-            good_foot_used = "2"
+            good_foot_used = 1
+        elif foot_score["2"]["rank"] < foot_score["1"]["rank"]:
+            good_foot_used = 2
 
         return good_foot_used
 
@@ -130,9 +130,11 @@ class RaceType:
             key_foot_used = str( foot_used )
             foot_score[key_foot_used] = min( foot_score[key_foot_used], past_cd.rank() )
 
-        if not foot_score["1"] == 100 and \
-          not foot_score["2"] == 100 and \
-          not foot_score["1"] == foot_score["2"]:
+        if foot_score["1"] == 100:
+            score = foot_score["2"]
+        elif foot_score["2"] == 100:
+            score = foot_score["1"]
+        else:
             good_foot_used = 0
             
             if foot_score["1"] < foot_score["2"]:
@@ -140,7 +142,7 @@ class RaceType:
             else:
                 good_foot_used = 2
 
-            for i in range( 0, min( len( past_cd_list ), 3 ) ):
+            for i in range( 0, len( past_cd_list ) ):
                 try:
                     past_foot_used = self.foot_used_data[past_cd_list[i].race_id()]
                 except:
