@@ -269,6 +269,51 @@ class past_data():
 
         return rank
 
+    def match_up3( self ):
+        baba = self.cd.baba_status()
+        dist_kind = fv.dist_check( self.cd.dist() * 1000 )
+        place = self.cd.place()
+        up3 = 0
+        count = 0
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            c = 0
+
+            if baba == past_cd.baba_status():
+                c += 1
+
+            if dist_kind == fv.dist_check( past_cd.dist() * 1000 ):
+                c += 1
+
+            if place == past_cd.place():
+                c += 1
+
+            up3 += past_cd.up_time() * c
+            count += c
+
+        if not count == 0:
+            up3 /= count
+
+        return up3
+
+    def min_up3( self ):
+        up3 = 1000
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            up3 = min( past_cd.up_time(), up3 )
+
+        return up3
+
     def dist_kind_count( self, dist_kind = None ):
         count = 0
         
