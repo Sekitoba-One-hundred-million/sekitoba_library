@@ -44,6 +44,12 @@ def math_check( text: str ):
     except:
         return 0
 
+def padding_str_math( text: str ):
+    if len( text ) == 1:
+        return "0" + text
+
+    return text
+
 def recovery_score_check( data: dict ):
     max_score = 5
     result = {}

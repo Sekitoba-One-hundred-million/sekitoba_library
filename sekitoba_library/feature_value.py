@@ -206,7 +206,6 @@ def m_dist( d, change_math ):
         return di
 
 def data_check( d ):
-
     try:
         return float( d )
     except:
