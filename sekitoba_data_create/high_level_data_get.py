@@ -50,7 +50,10 @@ class RaceHighLevel:
         past_id_list = pd.race_id_get()
         past_day_list = pd.past_day_list()
         past_rank_list = pd.rank_list()
-        current_race_rank = self.race_rank_data[race_id]
+        current_race_rank = 1#self.race_rank_data[race_id]
+
+        if race_id in self.race_rank_data:
+            current_race_rank = self.race_rank_data[race_id]
 
         for i in range( 0, min( len( past_id_list ), 3 ) ):
             past_id = past_id_list[i]

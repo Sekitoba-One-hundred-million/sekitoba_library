@@ -27,7 +27,10 @@ class RaceType:
         else:
             race_id = cd.race_id()
             current_slope = lib.stright_slope( cd.place() )
-            current_race_rank = self.race_rank_data[race_id]
+            current_race_rank = 1
+
+            if race_id in self.race_rank_data:
+                current_race_rank = self.race_rank_data[race_id]
             
         past_cd_list = pd.past_cd_list()
         before_cd = pd.before_cd()
@@ -65,7 +68,10 @@ class RaceType:
             current_race_rank = prod_race_rank
         else:
             race_id = cd.race_id()
-            current_race_rank = self.race_rank_data[race_id]
+            current_race_rank = 1
+
+            if race_id in self.race_rank_data:
+                current_race_rank = self.race_rank_data[race_id]
 
         good_foot_used = 0
         past_cd_list = pd.past_cd_list()
@@ -106,7 +112,10 @@ class RaceType:
             current_race_rank = prod_race_rank
         else:
             race_id = cd.race_id()
-            current_race_rank = self.race_rank_data[race_id]
+            current_race_rank = 1
+
+            if race_id in self.race_rank_data:
+                current_race_rank = self.race_rank_data[race_id]
 
         score = 100            
         past_cd_list = pd.past_cd_list()
