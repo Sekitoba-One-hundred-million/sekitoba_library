@@ -234,4 +234,115 @@ def recovery_data_upload( name: str, score: dict, split_list: list ):
     recovery_score_data[name] = score
     split_data[name] = split_list    
     dm.pickle_upload( "split_data.pickle", split_data )
-    dm.pickle_upload( "recovery_score_data.pickle", recovery_score_data )    
+    dm.pickle_upload( "recovery_score_data.pickle", recovery_score_data )
+
+def recovery_best_select( data, show = True ):
+    #from tqdm import tqdm
+    import math
+    import copy
+    
+    DATA = "recovery"
+    COUNT = "count"
+    
+    def base10int(value, base):
+        if (int(value / base)):
+            return base10int(int(value / base), base) + str(value % base)
+        return str(value % base)
+
+    def str_hexadecimal( value, base, l ):
+        str_data = base10int( value, base )
+
+        if l < len( str_data ):
+            return None
+    
+        str_data = int( l - len( str_data ) ) * '0' + str_data
+        return str_data
+
+    best_select = []
+    best_score = 0
+    best_recovery = 0
+    year_list = list( data.keys() )
+    key_list = {}#list( data[year_list[0]].keys() )
+    key_data = {}
+
+    for year in year_list:
+        for score_key in data[year].keys():
+            lib.dic_append( key_data, score_key, 0 )
+            key_data[score_key] += data[year][score_key][COUNT]
+
+    score_key_list = []
+    key_data = sorted( key_data.items(), key = lambda x:x[1] ,reverse = True )
+    
+    for i in range( 0, len( key_data ) ):
+        if key_data[i][1] < 3000 or len( score_key_list ) == 20:
+            break
+        
+        score_key_list.append( key_data[i][0] )
+
+    c = 2
+    l = len( score_key_list )
+
+    for i in range( 0, pow( c, l ) ):
+        use_score_key_list = []
+        str_check = str_hexadecimal( i, c, l )
+
+        if str_check == None:
+            print( i )
+            continue
+
+        for r, s in enumerate( str_check ):
+            if not s == "1":
+                continue
+
+            use_score_key_list.append( score_key_list[r] )
+
+        if len( use_score_key_list ) == 0:
+            continue
+
+        recovery = 0
+        count = 0
+        ave = {}
+        conv = 0
+
+        for year in year_list:
+            lib.dic_append( ave, year, 0 )
+            for score_key in use_score_key_list:
+
+                if not score_key in data[year]:
+                    continue
+                
+                recovery += data[year][score_key][DATA] * data[year][score_key][COUNT]
+                count += data[year][score_key][COUNT]
+                ave[year] += data[year][score_key][DATA]
+
+        conv_count = 0
+        recovery /= count
+
+        for year in year_list:
+            if ave[year] == 0:
+                continue
+            
+            ave[year] /= len( use_score_key_list )
+            conv += pow( recovery - ave[year], 2 )
+            conv_count += 1
+
+        conv = math.sqrt( conv / conv_count )
+        score = recovery - conv
+        #print( str_check, recovery, conv )
+        
+        if best_score < score:
+            best_score = score
+            best_recovery = recovery
+            best_select = copy.deepcopy( use_score_key_list )
+
+    for i in range( 0, len( best_select ) ):
+        best_select[i] = int( best_select[i] )
+
+    best_select = sorted( best_select )
+
+    if show:
+        print( "score: {}".format( best_score ) )
+        print( "recovery: {}".format( best_recovery ) )
+        print( best_select )
+
+    return best_select

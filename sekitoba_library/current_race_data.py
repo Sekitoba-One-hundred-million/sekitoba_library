@@ -201,6 +201,8 @@ class current_data():
     def race_check( self ):
         if not len( self.race_data ) == 22:
             return False
+        elif self.popular() == 0:
+            return False
         elif self.place() == 0:
             return False
         elif not self.race_kind() == 1 \
