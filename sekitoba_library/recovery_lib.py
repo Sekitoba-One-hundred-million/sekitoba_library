@@ -1,4 +1,5 @@
 import os
+import copy
 import statistics
 
 import sekitoba_library.lib as lib
@@ -236,10 +237,36 @@ def recovery_data_upload( name: str, score: dict, split_list: list ):
     dm.pickle_upload( "split_data.pickle", split_data )
     dm.pickle_upload( "recovery_score_data.pickle", recovery_score_data )
 
-def recovery_best_select( data, show = True ):
-    #from tqdm import tqdm
+def recovery_best_select( data, show = True ):    
+    one_recovery = copy.deepcopy( data )
+    plus_best_select = plus_recovery_select( one_recovery, show = show )
+    for mk in plus_best_select:
+        k = str( mk )
+        for year in one_recovery.keys():
+            if not k in one_recovery[year]:
+                continue
+            
+            del one_recovery[year][k]
+
+    middle_best_select = plus_recovery_select( one_recovery, show = show )
+
+    for mk in middle_best_select:
+        k = str( mk )
+        for year in one_recovery.keys():
+            if not k in one_recovery[year]:
+                continue
+
+            del one_recovery[year][k]
+
+    minus_best_select = list( one_recovery[year].keys() )
+
+    for i in range( 0, len( middle_best_select ) ):
+        middle_best_select[i] = int( middle_best_select[i] )
+    
+    return plus_best_select, minus_best_select
+
+def plus_recovery_select( data, show = True ):
     import math
-    import copy
     
     DATA = "recovery"
     COUNT = "count"
@@ -317,6 +344,8 @@ def recovery_best_select( data, show = True ):
 
         conv_count = 0
         recovery /= count
+        min_recovery = 1
+        max_recovery = -1
 
         for year in year_list:
             if ave[year] == 0:
@@ -325,9 +354,11 @@ def recovery_best_select( data, show = True ):
             ave[year] /= len( use_score_key_list )
             conv += pow( recovery - ave[year], 2 )
             conv_count += 1
+            min_recovery = min( min_recovery, ave[year] )
+            max_recovery = max( max_recovery, ave[year] )
 
         conv = math.sqrt( conv / conv_count )
-        score = recovery - conv
+        score = recovery - conv# - ( recovery - min_recovery )
         #print( str_check, recovery, conv )
         
         if best_score < score:
