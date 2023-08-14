@@ -260,8 +260,8 @@ def recovery_best_select( data, show = True ):
 
     minus_best_select = list( one_recovery[year].keys() )
 
-    for i in range( 0, len( middle_best_select ) ):
-        middle_best_select[i] = int( middle_best_select[i] )
+    for i in range( 0, len( minus_best_select ) ):
+        minus_best_select[i] = int( minus_best_select[i] )
     
     return plus_best_select, minus_best_select
 
