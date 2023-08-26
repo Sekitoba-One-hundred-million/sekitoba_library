@@ -1,7 +1,9 @@
 import time
 import requests
+import os
 from os.path import expanduser
 from requests.exceptions import Timeout
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 def netkeiba_login():
@@ -41,6 +43,9 @@ def request( url, cookie = None ):
             time.sleep( 3 )
 
     return 0, False
+
+def driver_start():
+    return webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
 
 def driver_request( driver, url ):
     driver.set_page_load_timeout( 6 )
