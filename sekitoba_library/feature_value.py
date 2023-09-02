@@ -22,6 +22,18 @@ def weather( we ):
     else:
         return 0
 
+def str_weather( we ):
+    if we == 1:
+        return "晴"
+    elif we == 2:
+        return "曇"
+    elif we == 3:
+        return "雨"
+    elif we == 4:
+        return "小雨"
+    
+    return None
+
 def baba_index( baba ):
     if len( baba ) == 0:
         return 0
