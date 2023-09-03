@@ -267,6 +267,12 @@ def race_check( all_data, year, day, num, race_place_num ):
 
 def standardization( data ):
     result = []
+
+    if len( data ) == 0:
+        return []
+    elif len( data ) == 1:
+        return [ 0 ]
+    
     ave = sum( data ) / len( data )
     std = stdev( data )
 

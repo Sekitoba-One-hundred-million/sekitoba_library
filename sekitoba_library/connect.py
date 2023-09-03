@@ -5,6 +5,7 @@ from os.path import expanduser
 from requests.exceptions import Timeout
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+import chromedriver_binary_sync
 
 def netkeiba_login():
     f = open( expanduser( "~" ) + "/.pwd/password.txt" )
@@ -45,15 +46,16 @@ def request( url, cookie = None ):
     return 0, False
 
 def driver_start():
-    return webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
+    chromedriver_binary_sync.download()
+    return webdriver.Chrome()
 
 def driver_request( driver, url ):
     driver.set_page_load_timeout( 6 )
 
-    for i in range( 0, 15 ):
+    for i in range( 0, 10 ):
         try:
             driver.get( url )
-            return driver, False
+            break
         except:
             time.sleep( 2 )
 
