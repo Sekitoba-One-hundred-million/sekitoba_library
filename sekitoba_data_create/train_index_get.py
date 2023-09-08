@@ -13,25 +13,16 @@ class TrainIndexGet:
         self.train_ave_data = dm.dl.data_get( "train_ave_data.pickle" )
         self.train_ave_key_data = dm.dl.data_get( "train_ave_key_data.pickle" )
 
-    def data_check( self, race_id, horce_num, prod_train_data = None ):
+    def data_check( self, race_id, horce_num ):
         key_horce_num = str( int( horce_num ) )
 
-        if dm.dl.prod:
-            if not key_horce_num in prod_train_data.keys():
-                return None
-            
-            load = prod_train_data[key_horce_num]["load"]
-            cource = prod_train_data[key_horce_num]["cource"] 
-            t_time = prod_train_data[key_horce_num]["time"]
-            wrap = prod_train_data[key_horce_num]["wrap"]
-        else:
-            try:
-                load = self.train_time_data[race_id][key_horce_num]["load"]
-                cource = self.train_time_data[race_id][key_horce_num]["cource"] 
-                t_time = self.train_time_data[race_id][key_horce_num]["time"]
-                wrap = self.train_time_data[race_id][key_horce_num]["wrap"]
-            except:
-                return None
+        try:
+            load = self.train_time_data[race_id][key_horce_num]["load"]
+            cource = self.train_time_data[race_id][key_horce_num]["cource"] 
+            t_time = self.train_time_data[race_id][key_horce_num]["time"]
+            wrap = self.train_time_data[race_id][key_horce_num]["wrap"]
+        except:
+            return None
 
         if len( t_time ) == 0 or len( wrap ) == 0:
             return None
@@ -41,10 +32,10 @@ class TrainIndexGet:
 
         return { "load": load, "cource": cource, "t_time": t_time, "wrap": wrap }
 
-    def train_time_rate( self, race_id, horce_num, prod_train_data = None ):
+    def train_time_rate( self, race_id, horce_num ):
         score = 100
 
-        train_data = self.data_check( race_id, horce_num, prod_train_data = prod_train_data )
+        train_data = self.data_check( race_id, horce_num )
 
         if train_data == None:
             return score
@@ -87,10 +78,10 @@ class TrainIndexGet:
 
         return score
 
-    def wrap_rate( self, race_id, horce_num, prod_train_data = None ):
+    def wrap_rate( self, race_id, horce_num ):
         score = 100
 
-        train_data = self.data_check( race_id, horce_num, prod_train_data = prod_train_data )
+        train_data = self.data_check( race_id, horce_num )
 
         if train_data == None:
             return score
@@ -132,8 +123,8 @@ class TrainIndexGet:
 
         return score
 
-    def train_time_slope_slice( self, race_id, horce_num, prod_train_data = None ):
-        train_data = self.data_check( race_id, horce_num, prod_train_data = prod_train_data )
+    def train_time_slope_slice( self, race_id, horce_num ):
+        train_data = self.data_check( race_id, horce_num )
 
         if train_data == None:
             return 100, 100
@@ -142,8 +133,8 @@ class TrainIndexGet:
 
         return a, b
 
-    def wrap_slope_slice( self, race_id, horce_num, prod_train_data = None ):
-        train_data = self.data_check( race_id, horce_num, prod_train_data = prod_train_data )
+    def wrap_slope_slice( self, race_id, horce_num ):
+        train_data = self.data_check( race_id, horce_num )
 
         if train_data == None:
             return 100, 100
@@ -152,24 +143,24 @@ class TrainIndexGet:
 
         return a, b
 
-    def first_wrap( self, race_id, horce_num, prod_train_data = None ):
-        train_data = self.data_check( race_id, horce_num, prod_train_data = prod_train_data )
+    def first_wrap( self, race_id, horce_num ):
+        train_data = self.data_check( race_id, horce_num )
 
         if train_data == None:
             return -1
 
         return train_data["wrap"][0]
 
-    def final_wrap( self, race_id, horce_num, prod_train_data = None ):
-        train_data = self.data_check( race_id, horce_num, prod_train_data = prod_train_data )
+    def final_wrap( self, race_id, horce_num ):
+        train_data = self.data_check( race_id, horce_num )
 
         if train_data == None:
             return -1
 
         return train_data["wrap"][-1]
 
-    def wrap_std( self, race_id, horce_num, prod_train_data = None ):
-        train_data = self.data_check( race_id, horce_num, prod_train_data = prod_train_data )
+    def wrap_std( self, race_id, horce_num ):
+        train_data = self.data_check( race_id, horce_num )
 
         if train_data == None:
             return -1

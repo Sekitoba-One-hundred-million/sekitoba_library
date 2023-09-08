@@ -20,17 +20,13 @@ class RaceType:
     def set_wrap_data( self, wrap_data ):
         self.wrap_data = wrap_data
 
-    def stright_slope( self, cd: lib.current_data, pd: lib.past_data, prod_race_rank = None, prod_current_slope = None ):
-        if dm.dl.prod:
-            current_slope = prod_current_slope
-            current_race_rank = prod_race_rank
-        else:
-            race_id = cd.race_id()
-            current_slope = lib.stright_slope( cd.place() )
-            current_race_rank = 1
-
-            if race_id in self.race_rank_data:
-                current_race_rank = self.race_rank_data[race_id]
+    def stright_slope( self, cd: lib.current_data, pd: lib.past_data ):
+        race_id = cd.race_id()
+        current_slope = lib.stright_slope( cd.place() )
+        current_race_rank = 1
+        
+        if race_id in self.race_rank_data:
+            current_race_rank = self.race_rank_data[race_id]
             
         past_cd_list = pd.past_cd_list()
         before_cd = pd.before_cd()
@@ -63,15 +59,12 @@ class RaceType:
 
         return score
 
-    def best_foot_used( self, cd: lib.current_data, pd: lib.past_data, prod_race_rank = None ):
-        if dm.dl.prod:
-            current_race_rank = prod_race_rank
-        else:
-            race_id = cd.race_id()
-            current_race_rank = 1
+    def best_foot_used( self, cd: lib.current_data, pd: lib.past_data):
+        race_id = cd.race_id()
+        current_race_rank = 1
 
-            if race_id in self.race_rank_data:
-                current_race_rank = self.race_rank_data[race_id]
+        if race_id in self.race_rank_data:
+            current_race_rank = self.race_rank_data[race_id]
 
         good_foot_used = 0
         past_cd_list = pd.past_cd_list()
