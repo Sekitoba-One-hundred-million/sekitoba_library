@@ -23,12 +23,14 @@ class TrainerData:
         else:#長距離
             return 5
 
-    def rank( self, race_id, horce_id ):
-        try:
-            race_info = self.race_info_data[race_id]
-            trainer_id = self.race_trainer_id_data[race_id][horce_id]
-        except:
-            return 0
+    def rank( self, race_id, horce_id, race_info = None, trainer_id = None ):
+
+        if race_info == None or trainer_id == None:
+            try:
+                race_info = self.race_info_data[race_id]
+                trainer_id = self.race_trainer_id_data[race_id][horce_id]
+            except:
+                return 0
 
         dist = self.dist_check( race_info["dist"] )
         kind = race_info["kind"]
