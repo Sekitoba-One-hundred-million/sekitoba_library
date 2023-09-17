@@ -72,7 +72,7 @@ class RaceType:
         
         for past_cd in past_cd_list:
             past_race_id = past_cd.race_id()
-            
+
             try:
                 past_race_rank = self.race_rank_data[past_race_id]
                 foot_used = self.foot_used_data[past_race_id]
@@ -101,14 +101,11 @@ class RaceType:
         return good_foot_used
 
     def foot_used_score_get( self, cd: lib.current_data, pd: lib.past_data, prod_race_rank = None ):
-        if dm.dl.prod:
-            current_race_rank = prod_race_rank
-        else:
-            race_id = cd.race_id()
-            current_race_rank = 1
+        race_id = cd.race_id()
+        current_race_rank = 1
 
-            if race_id in self.race_rank_data:
-                current_race_rank = self.race_rank_data[race_id]
+        if race_id in self.race_rank_data:
+            current_race_rank = self.race_rank_data[race_id]
 
         score = 100            
         past_cd_list = pd.past_cd_list()
