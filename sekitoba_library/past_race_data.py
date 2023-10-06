@@ -237,6 +237,24 @@ class past_data():
 
         return rank
 
+    #過去同じ競馬場での平均順位(1つもなかったら0)
+    def place_rank_average( self ):
+        rank = 0.0
+        count = 0.0
+        place = self.cd.place()
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+            
+            if past_cd.place() == place:
+                rank += past_cd.rank()
+                count += 1
+                
+        if not count == 0:
+            rank = rank / count
+
+        return rank
+
     def match_rank( self ):
         baba = self.cd.baba_status()
         dist_kind = fv.dist_check( self.cd.dist() * 1000 )
@@ -918,6 +936,48 @@ class past_data():
         if count == 0:
             result = 1000
         else:
+            result /= count
+
+        return result
+
+    def first_result_rank_diff( self ):
+        count = 0
+        result = 0
+        
+        for past_cd in self.past_cd_list():
+            if not past_cd.race_check():
+                continue
+
+            diff_rank = past_cd.first_result_diff()
+
+            if diff_rank == -1000:
+                continue
+
+            result += diff_rank
+            count += 1
+
+        if not count == 0:
+            result /= count
+
+        return result
+
+    def last_result_rank_diff( self ):
+        count = 0
+        result = 0
+        
+        for past_cd in self.past_cd_list():
+            if not past_cd.race_check():
+                continue
+
+            diff_rank = past_cd.last_result_diff()
+
+            if diff_rank == -1000:
+                continue
+
+            result += diff_rank
+            count += 1
+
+        if not count == 0:
             result /= count
 
         return result
