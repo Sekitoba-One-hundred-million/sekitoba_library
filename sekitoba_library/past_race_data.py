@@ -12,6 +12,7 @@ dm.dl.file_set( "up_kind_ave_data.pickle" )
 dm.dl.file_set( "money_class_true_skill_data.pickle" )
 dm.dl.file_set( "race_ave_true_skill.pickle" )
 dm.dl.file_set( "race_money_data.pickle" )
+dm.dl.file_set( "race_time_analyze_data.pickle" )
 
 class past_data():
     def __init__( self, past_data, current_data ):
@@ -26,6 +27,7 @@ class past_data():
         self.money_class_true_skill_data = dm.dl.data_get( "money_class_true_skill_data.pickle" )
         self.race_ave_true_skill_data = dm.dl.data_get( "race_ave_true_skill.pickle" )
         self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
+        self.race_time_analyze_data = dm.dl.data_get( "race_time_analyze_data.pickle" )
         
     def diff_get( self ):
         try:
@@ -437,7 +439,27 @@ class past_data():
             result.append( up_time )
 
         return result            
-        
+
+    def max_time_point( self ):
+        max_time_point = -1000
+
+        for i in range( 0, min( len( self.past_data ), 5 ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+            
+            if past_cd.race_check():
+                key_place_num = str( past_cd.place() )
+                race_time = past_cd.race_time()
+                key_dist = str( int( past_cd.dist() * 1000 ) )
+
+                if key_place_num in self.race_time_analyze_data and \
+                  key_dist in self.race_time_analyze_data[key_place_num] and \
+                   not race_time == 0:
+                    time_point = ( self.race_time_analyze_data[key_place_num][key_dist]["ave"] - race_time ) / self.race_time_analyze_data[key_place_num][key_dist]["conv"]
+                    time_point = max( time_point * 10 + 50, 0 )
+                    max_time_point = max( max_time_point, time_point )
+
+        return max_time_point
+    
     #過去のスペード指数をlistで返す
     def speed_index( self, baba_index_data ):
         speed_index_data = []

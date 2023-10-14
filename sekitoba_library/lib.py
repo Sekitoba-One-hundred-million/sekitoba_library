@@ -265,22 +265,77 @@ def race_check( all_data, year, day, num, race_place_num ):
     
     return current_data, past_data
 
-def standardization( data ):
+def standardization( data, abort = [ -1000 ] ):
     result = []
+    abort_index = []
+
+    ave = 0
+    count = 0
 
     if len( data ) == 0:
         return []
-    elif len( data ) == 1:
-        return [ 0 ]
-    
-    ave = sum( data ) / len( data )
+
+    for d in data:
+        if not d in abort:
+            ave += d
+            count += 1
+
+    if count <= 1:
+        return [0] * len( data )
+
+    ave /= count
     std = stdev( data )
 
     if std == 0:
         return [0] * len( data )
 
     for i in range( 0, len( data ) ):
-        result.append( ( data[i] - ave ) / std )
+        if data[i] in abort:
+            result.append( data[i] )
+        else:
+            result.append( ( data[i] - ave ) / std )
+
+    return result
+
+def deviation_value( data, abort = [ -1000 ] ):
+    result = []
+    abort_index = []
+
+    ave = 0
+    count = 0
+
+    if len( data ) == 0:
+        return []
+
+    for d in data:
+        if d in abort:
+            continue
+        
+        ave += d
+        count += 1
+
+    if count <= 1:
+        return [50] * len( data )
+
+    ave /= count
+    conv = 0
+
+    for d in data:
+        if d in abort:
+            continue
+
+        conv += math.pow( ave - d, 2 )
+
+    conv = math.sqrt( conv / count )
+
+    if conv == 0:
+        return [50] * len( data )
+
+    for i in range( 0, len( data ) ):
+        if data[i] in abort:
+            result.append( data[i] )
+        else:
+            result.append( ( ( data[i] - ave ) / conv ) * 10 + 50 )
 
     return result
 
