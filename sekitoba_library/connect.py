@@ -6,7 +6,6 @@ from os.path import expanduser
 from requests.exceptions import Timeout
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import chromedriver_binary_sync
 
 driver_login_check = False
 
@@ -49,8 +48,7 @@ def request( url, cookie = None ):
     return 0, False
 
 def driver_start():
-    chromedriver_binary_sync.download()
-    return webdriver.Chrome()
+    return webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
 
 @timeout_decorator.timeout( 10 )
 def driver_get( driver, url ):

@@ -479,7 +479,7 @@ def max_check( data ):
     try:
         return max( data )
     except:
-        return -1
+        return -1000
 
 def match_rank_score( target_pd: prd.past_data, \
                      cd: crd.current_data, \

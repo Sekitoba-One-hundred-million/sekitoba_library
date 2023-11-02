@@ -13,6 +13,7 @@ dm.dl.file_set( "money_class_true_skill_data.pickle" )
 dm.dl.file_set( "race_ave_true_skill.pickle" )
 dm.dl.file_set( "race_money_data.pickle" )
 dm.dl.file_set( "race_time_analyze_data.pickle" )
+dm.dl.file_set( "up3_analyze_data.pickle" )
 
 class past_data():
     def __init__( self, past_data, current_data ):
@@ -28,6 +29,7 @@ class past_data():
         self.race_ave_true_skill_data = dm.dl.data_get( "race_ave_true_skill.pickle" )
         self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
         self.race_time_analyze_data = dm.dl.data_get( "race_time_analyze_data.pickle" )
+        self.up3_analyze_data = dm.dl.data_get( "up3_analyze_data.pickle" )
         
     def diff_get( self ):
         try:
@@ -321,6 +323,19 @@ class past_data():
 
         return up3
 
+    def max_up3( self ):
+        up3 = -1
+
+        for i in range( 0, len( self.past_data ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+
+            if not past_cd.race_check():
+                continue
+            
+            up3 = max( past_cd.up_time(), up3 )
+
+        return up3
+
     def min_up3( self ):
         up3 = 1000
 
@@ -459,7 +474,38 @@ class past_data():
                     max_time_point = max( max_time_point, time_point )
 
         return max_time_point
-    
+
+    def max_up3_time_point( self, key_limb ):
+        max_time_point = -1000
+
+        for i in range( 0, min( len( self.past_data ), 5 ) ):
+            past_cd = crd.current_data( self.past_data[i] )
+            
+            if past_cd.race_check():
+                key_place_num = str( int( past_cd.place() ) )
+                key_kind = str( int( past_cd.race_kind() ) )
+                key_dist_kind = str( int( past_cd.dist_kind() ) )
+                up_time = past_cd.up_time()
+
+
+                if key_place_num in self.up3_analyze_data and \
+                  key_kind in self.up3_analyze_data[key_place_num] and \
+                  key_dist_kind in self.up3_analyze_data[key_place_num][key_kind] and \
+                  key_limb in self.up3_analyze_data[key_place_num][key_kind][key_dist_kind]:
+                    time_point = 0
+                    
+                    try:
+                        time_point = \
+                        ( self.up3_analyze_data[key_place_num][key_kind][key_dist_kind][key_limb]["ave"] - up_time ) \
+                        / self.up3_analyze_data[key_place_num][key_kind][key_dist_kind][key_limb]["conv"]
+                    except:
+                        pass
+                    
+                    time_point = max( time_point * 10 + 50, 0 )
+                    max_time_point = max( max_time_point, time_point )
+
+        return max_time_point
+
     #過去のスペード指数をlistで返す
     def speed_index( self, baba_index_data ):
         speed_index_data = []
@@ -1075,6 +1121,38 @@ class past_data():
             rank_score = ( 1 / past_rank )
             rank_score *= score_rate
             score += rank_score
+            c += 1
+            
+        if c == 0:
+            score = -1
+        else:
+            score /= c
+
+        return score
+
+    def level_up3( self ):
+        c = 0
+        score = 0
+        
+        for past_cd in self.past_cd_list():
+            past_race_id = past_cd.race_id()
+
+            if not past_race_id in self.race_ave_true_skill_data:
+                continue
+            
+            if not past_race_id in self.race_money_data:
+                continue
+            
+            past_up3 = past_cd.up_time()
+            
+            if past_up3 == 0:
+                continue
+
+            key_past_money_class = str( int( fv.money_class_get( self.race_money_data[past_race_id] ) ) )
+            past_race_true_skill = self.race_ave_true_skill_data[past_race_id]
+            score_rate = past_race_true_skill / self.money_class_true_skill_data[key_past_money_class]
+            up3_score = ( 1 / past_up3 ) * score_rate
+            score += up3_score
             c += 1
             
         if c == 0:
