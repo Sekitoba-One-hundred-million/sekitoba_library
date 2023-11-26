@@ -240,3 +240,13 @@ def limb_math( limb ):
         return 7
     else:
         return 8
+
+def netkeiba_pace( str_pace ):
+    if str_pace == "S":
+        return 1
+    elif str_pace == "M":
+        return 2
+    elif str_pace == "H":
+        return 3
+    
+    return -1
