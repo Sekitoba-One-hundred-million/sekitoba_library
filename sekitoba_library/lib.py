@@ -7,7 +7,18 @@ import sekitoba_library.past_race_data as prd
 
 split_key = "race_id="
 home_dir = os.getcwd()
-test_years = [ "2022", "2023" ]
+test_years = [ "2021", "2022", "2023" ]
+valid_years = [ test_years[0] ]
+score_years = [ test_years[1] ]
+simu_years = [ test_years[2] ]
+prod_check = False
+
+def test_year_check( year ):
+    if ( not prod_check and year in valid_years ) \
+       or ( prod_check and year in test_years ):
+        return True
+
+    return False
 
 def id_get( url ):
     s_data = url.split( split_key )
