@@ -5,6 +5,7 @@ from statistics import stdev
 import sekitoba_library.current_race_data as crd
 import sekitoba_library.past_race_data as prd
 
+base_abort = -1000
 split_key = "race_id="
 home_dir = os.getcwd()
 test_years = [ "2021", "2022", "2023" ]
@@ -276,7 +277,57 @@ def race_check( all_data, year, day, num, race_place_num ):
     
     return current_data, past_data
 
-def standardization( data, abort = [ -1000 ] ):
+def minus( data1, data2, abort = [ base_abort ] ):
+    if data1 in abort or data2 in abort:
+        return -1000
+
+    return data1 - data2
+
+def average( data, abort = [ base_abort ] ):
+    ave = 0
+    count = 0
+
+    for d in data:
+        if d in abort:
+            continue
+
+        ave += d
+        count += 1
+
+    if count == 0:
+        return -1000
+
+    return ave / count
+
+def stdev( data, abort = [ base_abort ] ):
+    std_data = 0
+    count = 0
+    ave_data = average( data )
+
+    for d in data:
+        if d in abort:
+            continue
+
+        std_data += math.pow( ave_data - d, 2 )
+        count += 1
+
+    if count == 0:
+        return -1000
+
+    return math.sqrt( std_data / count )
+
+def minimum( data, abort = [ base_abort ] ):
+    min_data = max_check( data )
+
+    for d in data:
+        if d in abort:
+            continue
+
+        min_data = min( min_data, d )
+
+    return min_data
+
+def standardization( data, abort = [ base_abort ] ):
     result = []
     abort_index = []
 
