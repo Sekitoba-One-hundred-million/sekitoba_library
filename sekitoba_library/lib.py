@@ -8,10 +8,10 @@ import sekitoba_library.past_race_data as prd
 base_abort = -1000
 split_key = "race_id="
 home_dir = os.getcwd()
-test_years = [ "2021", "2022", "2023" ]
+test_years = [ "2021", "2022", "2023", "2024" ]
 valid_years = [ test_years[0] ]
 score_years = [ test_years[1] ]
-simu_years = [ test_years[2] ]
+simu_years = [ test_years[2], test_years[3] ]
 prod_check = False
 
 def test_year_check( year ):
