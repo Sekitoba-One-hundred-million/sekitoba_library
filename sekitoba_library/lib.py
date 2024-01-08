@@ -250,29 +250,38 @@ def xy_regression_line( x_data, y_data ):
 
     return a, b
 
-def race_check( all_data, year, day, num, race_place_num ):
+def race_check( all_data, race_day ):
     current_data = []
     past_data = []
+    current_time = int( race_day["year"] * 365 + race_day["month"] * 30 + race_day["day"] )
     check = False
+
+    def day_check( str_day ):
+        day_result = ""
+        split_day = str_day.split( "/" )
+
+        try:
+            race_time = int( int( split_day[0] ) * 365 + int( split_day[1] ) * 30 + int( split_day[2] ) )
+        except:
+            return day_result
+
+        if race_time == current_time:
+            day_result = "C"
+        elif race_time < current_time:
+            day_result = "P"
+        else:
+            day_result = "F"
+
+        return day_result
 
     for i in range( 0, len( all_data ) ):        
         str_data = all_data[i]
-        y = str_data[0].split( "/" )
-        place = ""
-        
-        for r in range( 0, len( str_data[1] ) ):
-            if not str.isdecimal( str_data[1][r] ):
-                place += str_data[1][r]
+        str_day = str_data[0]
+        dc = day_check( str_day )
 
-        #対象のレースを選択
-        if not len( str_data[1] ) == 0 \
-           and y[0] == year \
-           and str_data[1][0] == num \
-           and str_data[1][ len( str_data[1] ) - 1 ] == day \
-           and place_check( race_place_num ) == place:
+        if dc == "C":
             current_data = str_data
-            check = True 
-        elif check:
+        elif dc == "P":
             past_data.append( str_data )
     
     return current_data, past_data
