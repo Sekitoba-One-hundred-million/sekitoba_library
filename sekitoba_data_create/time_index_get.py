@@ -21,6 +21,9 @@ class TimeIndexGet:
         
         for i in range( 0, len( day_list ) ):
             d = day_list[i]
+
+            if not d in time_index:
+                continue
             
             if not time_index[d] == 0:
                 count += 1
