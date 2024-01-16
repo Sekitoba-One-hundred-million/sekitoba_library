@@ -18,6 +18,9 @@ class StrideAblity:
         self.first_up3_halon = dm.dl.data_get( "first_up3_halon.pickle" )
         self.stride_ablity_analyze_data = dm.dl.data_get( "stride_ablity_analyze_data.pickle" )
 
+    def set_first_up3_halon( self, first_up3_halon ):
+        self.first_up3_halon.update( first_up3_halon )
+
     def data_check( self, race_id, horce_num ):
         if not race_id in self.first_up3_halon or \
           not horce_num in self.first_up3_halon[race_id]:
@@ -91,5 +94,5 @@ class StrideAblity:
         if not count == 0:
             for data_key in analyze_data.keys():
                 analyze_data[data_key][AVE] /= count
-                
+
         return analyze_data
