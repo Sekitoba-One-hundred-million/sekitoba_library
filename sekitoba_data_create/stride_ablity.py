@@ -68,9 +68,10 @@ class StrideAblity:
             dist_kind = int( past_cd.dist_kind() )
             baba = int( past_cd.baba_status() )
 
-            if not race_kind in self.stride_ablity_analyze_data or \
-              not dist_kind in self.stride_ablity_analyze_data[race_kind] or \
-              not baba in self.stride_ablity_analyze_data[race_kind][dist_kind]:
+            if not race_id in self.stride_ablity_analyze_data or \
+              not race_kind in self.stride_ablity_analyze_data[race_id] or \
+              not dist_kind in self.stride_ablity_analyze_data[race_id][race_kind] or \
+              not baba in self.stride_ablity_analyze_data[race_id][race_kind][dist_kind]:
                 continue
 
             instance_data = {}
@@ -84,9 +85,12 @@ class StrideAblity:
             instance_data[EXPLOSIVE] = first_up3
 
             for data_key in instance_data.keys():
+                if self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["conv"] == 0:
+                    continue
+                print( data_key )
                 instance_data[data_key] = \
-                  ( ( ( instance_data[data_key] - self.stride_ablity_analyze_data[race_kind][dist_kind][baba][data_key]["ave"] ) * 10 ) \
-                   / self.stride_ablity_analyze_data[race_kind][dist_kind][baba][data_key]["conv"] ) + 50
+                  ( ( ( instance_data[data_key] - self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["ave"] ) * 10 ) \
+                   / self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["conv"] ) + 50
                 self.data_add( analyze_data[data_key], instance_data[data_key] )
             
             count += 1

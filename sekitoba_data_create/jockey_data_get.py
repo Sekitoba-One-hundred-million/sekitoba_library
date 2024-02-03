@@ -28,18 +28,16 @@ class JockeyData:
             return 5
 
     def rank( self, race_id, horce_id, jockey_id = None,  race_info = None ):
-        if jockey_id == None:
-            if race_id in self.race_info_data:
-                race_info = self.race_info_data[race_id]
-            else:
-                return 0
+        if race_info == None and race_id in self.race_info_data:
+            race_info = self.race_info_data[race_id]
+        else:
+            return 0
 
-        if race_info == None:
-            if race_id in self.race_jockey_id_data and \
-              horce_id in self.race_jockey_id_data[race_id]:
-                jockey_id = self.race_jockey_id_data[race_id][horce_id]
-            else:
-                return 0
+        if jockey_id == None and ( race_id in self.race_jockey_id_data and \
+                                  horce_id in self.race_jockey_id_data[race_id] ):
+            jockey_id = self.race_jockey_id_data[race_id][horce_id]
+        else:
+            return 0
 
         dist = self.dist_check( race_info["dist"] )
         kind = race_info["kind"]
@@ -69,12 +67,13 @@ class JockeyData:
 
         return int( rank )
 
-    def year_rank( self, race_id, horce_id, key_year ):
-        result = -1
-        
-        try:
+    def year_rank( self, race_id, horce_id, key_year, jockey_id = None ):
+        result = -1000
+
+        if jockey_id == None and ( race_id in self.race_jockey_id_data and \
+                                  horce_id in self.race_jockey_id_data[race_id] ):
             jockey_id = self.race_jockey_id_data[race_id][horce_id]
-        except:
+        else:
             return result
 
         try:

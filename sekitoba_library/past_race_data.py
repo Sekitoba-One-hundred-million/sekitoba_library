@@ -477,6 +477,10 @@ class past_data():
 
     def max_up3_time_point( self, key_limb ):
         max_time_point = -1000
+        race_id = self.cd.race_id()
+
+        if not race_id in self.up3_analyze_data:
+            return max_time_point
 
         for i in range( 0, min( len( self.past_data ), 5 ) ):
             past_cd = crd.current_data( self.past_data[i] )
@@ -487,17 +491,16 @@ class past_data():
                 key_dist_kind = str( int( past_cd.dist_kind() ) )
                 up_time = past_cd.up_time()
 
-
-                if key_place_num in self.up3_analyze_data and \
-                  key_kind in self.up3_analyze_data[key_place_num] and \
-                  key_dist_kind in self.up3_analyze_data[key_place_num][key_kind] and \
-                  key_limb in self.up3_analyze_data[key_place_num][key_kind][key_dist_kind]:
+                if key_place_num in self.up3_analyze_data[race_id] and \
+                  key_kind in self.up3_analyze_data[race_id][key_place_num] and \
+                  key_dist_kind in self.up3_analyze_data[race_id][key_place_num][key_kind] and \
+                  key_limb in self.up3_analyze_data[race_id][key_place_num][key_kind][key_dist_kind]:
                     time_point = 0
                     
                     try:
                         time_point = \
-                        ( self.up3_analyze_data[key_place_num][key_kind][key_dist_kind][key_limb]["ave"] - up_time ) \
-                        / self.up3_analyze_data[key_place_num][key_kind][key_dist_kind][key_limb]["conv"]
+                        ( self.up3_analyze_data[race_id][key_place_num][key_kind][key_dist_kind][key_limb]["ave"] - up_time ) \
+                        / self.up3_analyze_data[race_id][key_place_num][key_kind][key_dist_kind][key_limb]["conv"]
                     except:
                         pass
                     
@@ -1054,14 +1057,17 @@ class past_data():
         PLACE_DIST = "place_dist"
         BABA = "baba"
         MONEY = "money"
+        race_id = self.cd.race_id()
 
-        if not race_money_rank in self.up_kind_ave_data[MONEY]:
-            return -1
+        if not race_id in self.up_kind_ave_data or \
+          not MONEY in self.up_kind_ave_data[race_id] or \
+          not race_money_rank in self.up_kind_ave_data[race_id][MONEY]:
+            return -1000
 
-        race_money_up = self.up_kind_ave_data[MONEY][race_money_rank]
+        race_money_up = self.up_kind_ave_data[race_id][MONEY][race_money_rank]
         result = 0
         count = 0
-            
+        
         for past_cd in self.past_cd_list():
             if not past_cd.race_check():
                 continue
@@ -1070,10 +1076,10 @@ class past_data():
             dist = str( int( past_cd.dist() * 1000 ) )
             place = str( int( past_cd.place() ) )
 
-            if not baba in self.up_kind_ave_data[BABA]:
+            if not baba in self.up_kind_ave_data[race_id][BABA]:
                 continue
 
-            if not place in self.up_kind_ave_data[PLACE_DIST] or not dist in self.up_kind_ave_data[PLACE_DIST][place]:
+            if not place in self.up_kind_ave_data[race_id][PLACE_DIST] or not dist in self.up_kind_ave_data[race_id][PLACE_DIST][place]:
                 continue
 
             up_time = past_cd.up_time()
@@ -1081,17 +1087,17 @@ class past_data():
             if up_time == 0:
                 continue
                 
-            baba_up = self.up_kind_ave_data[BABA][baba]
-            place_dist_up = self.up_kind_ave_data[PLACE_DIST][place][dist]
+            baba_up = self.up_kind_ave_data[race_id][BABA][baba]
+            place_dist_up = self.up_kind_ave_data[race_id][PLACE_DIST][place][dist]
             up_score = ( race_money_up / up_time )
             up_score += ( baba_up / up_time )
             up_score += ( place_dist_up / up_time )
-            up_score /= len( self.up_kind_ave_data.keys() )
+            up_score /= len( self.up_kind_ave_data[race_id].keys() )
             result += up_score
             count += 1
 
         if count == 0:
-            result = -1
+            result = -1000
         else:
             result /= count
 

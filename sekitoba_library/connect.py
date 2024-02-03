@@ -48,7 +48,8 @@ def request( url, cookie = None ):
     return 0, False
 
 def driver_start():
-    return webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
+    driver = webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
+    return driver
 
 @timeout_decorator.timeout( 10 )
 def driver_get( driver, url ):
@@ -56,7 +57,7 @@ def driver_get( driver, url ):
     return driver
 
 def driver_request( driver, url ):
-    driver.set_page_load_timeout( 6 )
+    driver.set_page_load_timeout( 20 )
 
     for i in range( 0, 10 ):
         try:
