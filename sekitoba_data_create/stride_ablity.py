@@ -87,7 +87,7 @@ class StrideAblity:
             for data_key in instance_data.keys():
                 if self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["conv"] == 0:
                     continue
-                print( data_key )
+
                 instance_data[data_key] = \
                   ( ( ( instance_data[data_key] - self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["ave"] ) * 10 ) \
                    / self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["conv"] ) + 50
