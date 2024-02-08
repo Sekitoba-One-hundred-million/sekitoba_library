@@ -30,6 +30,9 @@ class past_data():
         self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
         self.race_time_analyze_data = dm.dl.data_get( "race_time_analyze_data.pickle" )
         self.up3_analyze_data = dm.dl.data_get( "up3_analyze_data.pickle" )
+
+    def set_up3_analyze_data( self, up3_analyze ):
+        self.up3_analyze_data.update( up3_analyze )
         
     def diff_get( self ):
         try:

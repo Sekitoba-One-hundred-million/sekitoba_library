@@ -21,6 +21,9 @@ class StrideAblity:
     def set_first_up3_halon( self, first_up3_halon ):
         self.first_up3_halon.update( first_up3_halon )
 
+    def set_stride_ablity_analuze_data( self, stride_ablity ):
+        self.stride_ablity_analyze_data.update( stride_ablity )
+
     def data_check( self, race_id, horce_num ):
         if not race_id in self.first_up3_halon or \
           not horce_num in self.first_up3_halon[race_id]:
