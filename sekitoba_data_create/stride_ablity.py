@@ -1,32 +1,26 @@
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
+from sekitoba_psql.psql_race_data import RaceData
 
-dm.dl.file_set( "first_up3_halon.pickle" )
-dm.dl.file_set( "stride_ablity_analyze_data.pickle" )
+dm.dl.file_set( "wrap_data.pickle" )
 
 AVE = "ave"
 MAX = "max"
 MIN = "min"
 LEADING="leading_power"
+LEADING_RATE="leading_power_rate"
 PURSUING="pursuing_power"
 ENDURANCE="endurance_power"
 SUSTAIN="sustain_power"
 EXPLOSIVE="explosive_power"
 
 class StrideAblity:
-    def __init__( self ):
-        self.first_up3_halon = dm.dl.data_get( "first_up3_halon.pickle" )
-        self.stride_ablity_analyze_data = dm.dl.data_get( "stride_ablity_analyze_data.pickle" )
+    def __init__( self, race_data: RaceData ):
+        self.race_data: RaceData = race_data
+        self.wrap_data = dm.dl.data_get( "wrap_data.pickle" )
 
-    def set_first_up3_halon( self, first_up3_halon ):
-        self.first_up3_halon.update( first_up3_halon )
-
-    def set_stride_ablity_analuze_data( self, stride_ablity ):
-        self.stride_ablity_analyze_data.update( stride_ablity )
-
-    def data_check( self, race_id, horce_num ):
-        if not race_id in self.first_up3_halon or \
-          not horce_num in self.first_up3_halon[race_id]:
+    def data_check( self, horce_num ):
+        if not horce_num in self.race_data.data["first_up3_halon"]:
             return False
 
         return True
@@ -44,15 +38,16 @@ class StrideAblity:
     def ablity_create( self, cd: lib.current_data, pd: lib.past_data ):
         analyze_data = {}
         analyze_data[LEADING] = { AVE: -1000, MAX: -1000, MIN: -1000 }
+        analyze_data[LEADING_RATE] = { AVE: -1000, MAX: -1000, MIN: -1000 }
         analyze_data[PURSUING] = { AVE: -1000, MAX: -1000, MIN: -1000 }
         analyze_data[ENDURANCE] = { AVE: -1000, MAX: -1000, MIN: -1000 }
         analyze_data[SUSTAIN] = { AVE: -1000, MAX: -1000, MIN: -1000 }
         analyze_data[EXPLOSIVE] = { AVE: -1000, MAX: -1000, MIN: -1000 }
 
         race_id = cd.race_id()
-        horce_num = int( cd.horce_number() )
+        horce_num = str( int( cd.horce_number() ) )
 
-        if not self.data_check( race_id, horce_num ):
+        if not self.data_check( horce_num ):
             return analyze_data
 
         count = 0
@@ -64,36 +59,44 @@ class StrideAblity:
         for past_cd in pd.past_cd_list():
             past_race_id = past_cd.race_id()
 
-            if not past_race_id in self.first_up3_halon[race_id][horce_num]:
+            if not past_race_id in self.race_data.data["first_up3_halon"][horce_num]:
                 continue
 
-            race_kind = int( past_cd.race_kind() )
-            dist_kind = int( past_cd.dist_kind() )
-            baba = int( past_cd.baba_status() )
+            if not past_race_id in self.wrap_data:
+                continue
 
-            if not race_id in self.stride_ablity_analyze_data or \
-              not race_kind in self.stride_ablity_analyze_data[race_id] or \
-              not dist_kind in self.stride_ablity_analyze_data[race_id][race_kind] or \
-              not baba in self.stride_ablity_analyze_data[race_id][race_kind][dist_kind]:
+            try:
+                first_three_wrap = sum( lib.one_hundred_pace( self.wrap_data[past_race_id] )[0:6] )
+            except:
+                continue
+                
+            race_kind = str( int( past_cd.race_kind() ) )
+            dist_kind = str( int( past_cd.dist_kind() ) )
+            baba = str( int( past_cd.baba_status() ) )
+            
+            if not race_kind in self.race_data.data["stride_ablity_analyze"] or \
+              not dist_kind in self.race_data.data["stride_ablity_analyze"][race_kind] or \
+              not baba in self.race_data.data["stride_ablity_analyze"][race_kind][dist_kind]:
                 continue
 
             instance_data = {}
-            first_up3 = self.first_up3_halon[race_id][horce_num][past_race_id]
+            first_up3 = self.race_data.data["first_up3_halon"][horce_num][past_race_id]
             race_time = past_cd.race_time()
             final_up3 = past_cd.up_time()
             instance_data[LEADING] = first_up3
+            instance_data[LEADING_RATE] = first_up3 / first_three_wrap
             instance_data[PURSUING] = race_time - final_up3
             instance_data[ENDURANCE] = race_time - final_up3 - first_up3
             instance_data[SUSTAIN] = race_time - first_up3
             instance_data[EXPLOSIVE] = first_up3
 
             for data_key in instance_data.keys():
-                if self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["conv"] == 0:
-                    continue
+                #if self.race_data.data["stride_ablity_analyze"][race_kind][dist_kind][baba][data_key]["conv"] == 0:
+                #    continue
 
-                instance_data[data_key] = \
-                  ( ( ( instance_data[data_key] - self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["ave"] ) * 10 ) \
-                   / self.stride_ablity_analyze_data[race_id][race_kind][dist_kind][baba][data_key]["conv"] ) + 50
+                #instance_data[data_key] = \
+                #  ( ( ( instance_data[data_key] - self.race_data.data["stride_ablity_analyze"][race_kind][dist_kind][baba][data_key]["ave"] ) * 10 ) \
+                #   / self.race_data.data["stride_ablity_analyze"][race_kind][dist_kind][baba][data_key]["conv"] ) + 50
                 self.data_add( analyze_data[data_key], instance_data[data_key] )
             
             count += 1

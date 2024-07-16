@@ -3,36 +3,24 @@ import sekitoba_library.current_race_data as crd
 import sekitoba_library.lib as lib
 import sekitoba_library.current_race_data as crd
 import sekitoba_data_manage as dm
+import sekitoba_psql.psql_race_data as ps
 
-dm.dl.file_set( "dist_index.txt" )
-dm.dl.file_set( "standard_time.pickle" )
-dm.dl.file_set( "up_average.pickle" )
-dm.dl.file_set( "up_pace_regressin.pickle" )
-dm.dl.file_set( "up_kind_ave_data.pickle" )
-dm.dl.file_set( "money_class_true_skill_data.pickle" )
-dm.dl.file_set( "race_ave_true_skill.pickle" )
-dm.dl.file_set( "race_money_data.pickle" )
-dm.dl.file_set( "race_time_analyze_data.pickle" )
-dm.dl.file_set( "up3_analyze_data.pickle" )
+race_money_data = ps.RaceData().get_select_data( "money" )
+race_ave_true_skill_data = ps.RaceData().get_select_data( "race_ave_true_skill" )
+corner_horce_body_data = ps.RaceData().get_select_data( "corner_horce_body" )
+wrap_data = ps.RaceData().get_select_data( "wrap" )
 
 class past_data():
-    def __init__( self, past_data, current_data ):
+    def __init__( self, past_data,\
+                 current_data,\
+                 race_data: ps.RaceData ):
         self.past_data = past_data
         self.cd = crd.current_data( current_data )
+        self.race_data: ps.RaceData = race_data        
         self.base_loaf_weight = 55
-        self.dist_index = dm.dl.data_get( "dist_index.txt" )
-        self.standard_time = dm.dl.data_get( "standard_time.pickle" )
-        self.up_standard_time = dm.dl.data_get( "up_average.pickle" )
-        self.regressin_data = dm.dl.data_get( "up_pace_regressin.pickle" )
-        self.up_kind_ave_data = dm.dl.data_get( "up_kind_ave_data.pickle" )
-        self.money_class_true_skill_data = dm.dl.data_get( "money_class_true_skill_data.pickle" )
-        self.race_ave_true_skill_data = dm.dl.data_get( "race_ave_true_skill.pickle" )
-        self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
-        self.race_time_analyze_data = dm.dl.data_get( "race_time_analyze_data.pickle" )
-        self.up3_analyze_data = dm.dl.data_get( "up3_analyze_data.pickle" )
 
     def set_up3_analyze_data( self, up3_analyze ):
-        self.up3_analyze_data.update( up3_analyze )
+        self.race_data.data["up3_analyze"] = up3_analyze
         
     def diff_get( self ):
         try:
@@ -458,7 +446,7 @@ class past_data():
 
         return result            
 
-    def max_time_point( self ):
+    def max_time_point( self, race_time_analyze_data ):
         max_time_point = -1000
 
         for i in range( 0, min( len( self.past_data ), 5 ) ):
@@ -469,10 +457,10 @@ class past_data():
                 race_time = past_cd.race_time()
                 key_dist = str( int( past_cd.dist() * 1000 ) )
 
-                if key_place_num in self.race_time_analyze_data and \
-                  key_dist in self.race_time_analyze_data[key_place_num] and \
+                if key_place_num in race_time_analyze_data and \
+                  key_dist in race_time_analyze_data[key_place_num] and \
                    not race_time == 0:
-                    time_point = ( self.race_time_analyze_data[key_place_num][key_dist]["ave"] - race_time ) / self.race_time_analyze_data[key_place_num][key_dist]["conv"]
+                    time_point = ( race_time_analyze_data[key_place_num][key_dist]["ave"] - race_time ) / race_time_analyze_data[key_place_num][key_dist]["conv"]
                     time_point = max( time_point * 10 + 50, 0 )
                     max_time_point = max( max_time_point, time_point )
 
@@ -481,9 +469,6 @@ class past_data():
     def max_up3_time_point( self, key_limb ):
         max_time_point = -1000
         race_id = self.cd.race_id()
-
-        if not race_id in self.up3_analyze_data:
-            return max_time_point
 
         for i in range( 0, min( len( self.past_data ), 5 ) ):
             past_cd = crd.current_data( self.past_data[i] )
@@ -494,16 +479,16 @@ class past_data():
                 key_dist_kind = str( int( past_cd.dist_kind() ) )
                 up_time = past_cd.up_time()
 
-                if key_place_num in self.up3_analyze_data[race_id] and \
-                  key_kind in self.up3_analyze_data[race_id][key_place_num] and \
-                  key_dist_kind in self.up3_analyze_data[race_id][key_place_num][key_kind] and \
-                  key_limb in self.up3_analyze_data[race_id][key_place_num][key_kind][key_dist_kind]:
+                if key_place_num in self.race_data.data["up3_analyze"] and \
+                  key_kind in self.race_data.data["up3_analyze"][key_place_num] and \
+                  key_dist_kind in self.race_data.data["up3_analyze"][key_place_num][key_kind] and \
+                  key_limb in self.race_data.data["up3_analyze"][key_place_num][key_kind][key_dist_kind]:
                     time_point = 0
                     
                     try:
                         time_point = \
-                        ( self.up3_analyze_data[race_id][key_place_num][key_kind][key_dist_kind][key_limb]["ave"] - up_time ) \
-                        / self.up3_analyze_data[race_id][key_place_num][key_kind][key_dist_kind][key_limb]["conv"]
+                        ( self.race_data.data["up3_analyze"][key_place_num][key_kind][key_dist_kind][key_limb]["ave"] - up_time ) \
+                        / self.race_data.data["up3_analyze"][key_place_num][key_kind][key_dist_kind][key_limb]["conv"]
                     except:
                         pass
                     
@@ -529,40 +514,47 @@ class past_data():
                 dist = str( int( past_cd.dist() * 1000 ) )
                 loaf_weight = past_cd.burden_weight()
                 key_baba = str( int( past_cd.baba_status() ) )
-
-                if self.standard_time[place_num].get( past_cd.key_dist() ) and \
-                   self.dist_index.get( dist ) and \
-                   not loaf_weight == 0 and \
-                   not race_time == 0:
-                    speed_index = ( self.standard_time[place_num][past_cd.key_dist()] - race_time ) * self.dist_index[dist]
+                speed_index = -100
+                up_speed_index = -100
+                pace_speed_index = -100
+                
+                try:
+                    speed_index = ( self.race_data.data["standard_time"][place_num][dist][kind_num][key_baba] - \
+                                   race_time ) * self.race_data.data["dist_index"][dist]
                     speed_index += ( loaf_weight - self.base_loaf_weight ) + 80
+                except:
+                    pass
 
-                    up_speed_index = ( self.up_standard_time[place_num][kind_num][dist]["data"] - up_time ) * self.dist_index[dist]
-                    up_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / self.dist_index[dist] + 80
+                try:
+                    up_speed_index = ( self.race_data.data["up3_standard_time"][place_num][dist][kind_num][key_baba] - \
+                                      up_time ) * self.race_data.data["dist_index"][dist]
+                    up_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / \
+                      self.race_data.data["dist_index"][dist] + 80
+                except:
+                    pass
 
-                    pace_speed_index = ( ( self.standard_time[place_num][self.past_data[i][13]] - self.up_standard_time[place_num][kind_num][dist]["data"] ) - ( race_time - up_time ) ) * self.dist_index[dist]
-                    pace_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / self.dist_index[dist] + 80
+                try:
+                    pace_speed_index = ( ( self.race_data.data["standard_time"][place_num][dist][kind_num][key_baba] - \
+                                          self.race_data.data["up3_standard_time"][place_num][dist][kind_num][key_baba] ) - \
+                                        ( race_time - up_time ) ) * self.race_data.data["dist_index"][dist]
+                    pace_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / \
+                      self.race_data.data["dist_index"][dist] + 80
+                except:
+                    pass
                     
-                    try:
-                        speed_index += baba_index_data[past_cd.birthday()]
-                        up_speed_index += baba_index_data[past_cd.birthday()] / ( self.dist_index[dist] + 1 )
-                        pace_speed_index += baba_index_data[past_cd.birthday()] / ( self.dist_index[dist] + 1 )
-                    except:
-                        speed_index += fv.baba_index( key_baba )
-                        up_speed_index += fv.baba_index( key_baba ) / ( self.dist_index[dist] + 1 )
-                        pace_speed_index += fv.baba_index( key_baba ) / ( self.dist_index[dist] + 1 )
 
-                    speed_index_data.append( speed_index )
-                    up_speed_index_data.append( up_speed_index )
-                    pace_speed_index_data.append( pace_speed_index )
-                else:
-                    speed_index_data.append( -100 )
-                    up_speed_index_data.append( -100 )
-                    pace_speed_index_data.append( -100 )
-            else:
-                speed_index_data.append( -100 )
-                up_speed_index_data.append( -100 )
-                pace_speed_index_data.append( -100 )                
+                try:
+                    speed_index += baba_index_data[past_cd.birthday()]
+                    up_speed_index += baba_index_data[past_cd.birthday()] / ( self.race_data.data["dist_index"][dist] + 1 )
+                    pace_speed_index += baba_index_data[past_cd.birthday()] / ( self.race_data.data["dist_index"][dist] + 1 )
+                except:
+                    speed_index += fv.baba_index( key_baba )
+                    up_speed_index += fv.baba_index( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
+                    pace_speed_index += fv.baba_index( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
+
+                speed_index_data.append( speed_index )
+                up_speed_index_data.append( up_speed_index )
+                pace_speed_index_data.append( pace_speed_index )
 
         return speed_index_data, up_speed_index_data, pace_speed_index_data
     
@@ -918,7 +910,7 @@ class past_data():
 
         return result
 
-    def pace_up_check( self ):
+    def pace_up_check( self, regressin_data ):
         result = -100
         
         for i in range( 0, len( self.past_data ) ):
@@ -935,8 +927,8 @@ class past_data():
                     key_race_kind = str( int ( race_kind ) )
                     key_dist = str( int( dist * 1000 ) )
                     try:
-                        a = self.regressin_data[key_race_kind][key_dist]["a"]
-                        b = self.regressin_data[key_race_kind][key_dist]["b"]
+                        a = regressin_data[key_race_kind][key_dist]["a"]
+                        b = regressin_data[key_race_kind][key_dist]["b"]
                         result = max( ( pace1 - pace2 ) * a + b - up_time, result )
                     except:
                         continue
@@ -970,13 +962,16 @@ class past_data():
         return result
 
     def before_continue_not_three_rank( self ):
-        result = 0
+        result = -1000
         
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.current_data( self.past_data[i] )
 
             if not past_cd.race_check():
                 continue
+
+            if result == -1000:
+                result = 0
 
             if 3 < past_cd.rank():
                 result += 1
@@ -1055,19 +1050,46 @@ class past_data():
             result /= count
 
         return result
+    
+    def pace_up_rate( self ):
+        pace_up_rate_list = []
+        
+        for past_cd in self.past_cd_list():
+            if not past_cd.race_check():
+                continue
 
-    def up_rate( self, race_money_rank ):
+            past_race_id = past_cd.race_id()
+
+            if not past_race_id in wrap_data or len( wrap_data[past_race_id]["wrap"] ) == 0:
+                continue
+
+            one_hudred_wrap = lib.one_hundred_pace( wrap_data[past_race_id]["wrap"] )
+            last_up3 = sum( one_hudred_wrap[int(len(one_hudred_wrap)-6):len(one_hudred_wrap)] )
+            
+            if last_up3 <= 0:
+                continue
+
+            pace_up_rate_list.append( past_cd.up_time() / last_up3 )
+
+        result = {}
+        result["ave"] = lib.average( pace_up_rate_list )
+        result["conv"] = lib.conv( pace_up_rate_list )
+        result["max"] = lib.max_check( pace_up_rate_list )
+        result["min"] = lib.min_check( pace_up_rate_list )
+
+        return result
+
+    def up_rate( self, race_money_rank, up_kind_ave_data ):
         PLACE_DIST = "place_dist"
         BABA = "baba"
         MONEY = "money"
         race_id = self.cd.race_id()
 
-        if not race_id in self.up_kind_ave_data or \
-          not MONEY in self.up_kind_ave_data[race_id] or \
-          not race_money_rank in self.up_kind_ave_data[race_id][MONEY]:
+        if not MONEY in up_kind_ave_data or \
+          not race_money_rank in up_kind_ave_data[MONEY]:
             return -1000
 
-        race_money_up = self.up_kind_ave_data[race_id][MONEY][race_money_rank]
+        race_money_up = up_kind_ave_data[MONEY][race_money_rank]
         result = 0
         count = 0
         
@@ -1079,10 +1101,10 @@ class past_data():
             dist = str( int( past_cd.dist() * 1000 ) )
             place = str( int( past_cd.place() ) )
 
-            if not baba in self.up_kind_ave_data[race_id][BABA]:
+            if not baba in up_kind_ave_data[BABA]:
                 continue
 
-            if not place in self.up_kind_ave_data[race_id][PLACE_DIST] or not dist in self.up_kind_ave_data[race_id][PLACE_DIST][place]:
+            if not place in up_kind_ave_data[PLACE_DIST] or not dist in up_kind_ave_data[PLACE_DIST][place]:
                 continue
 
             up_time = past_cd.up_time()
@@ -1090,12 +1112,12 @@ class past_data():
             if up_time == 0:
                 continue
                 
-            baba_up = self.up_kind_ave_data[race_id][BABA][baba]
-            place_dist_up = self.up_kind_ave_data[race_id][PLACE_DIST][place][dist]
+            baba_up = up_kind_ave_data[BABA][baba]
+            place_dist_up = up_kind_ave_data[PLACE_DIST][place][dist]
             up_score = ( race_money_up / up_time )
             up_score += ( baba_up / up_time )
             up_score += ( place_dist_up / up_time )
-            up_score /= len( self.up_kind_ave_data[race_id].keys() )
+            up_score /= len( up_kind_ave_data.keys() )
             result += up_score
             count += 1
 
@@ -1106,17 +1128,17 @@ class past_data():
 
         return result
 
-    def level_score( self ):
+    def level_score( self, money_class_true_skill_data ):
         c = 0
         score = 0
         
         for past_cd in self.past_cd_list():
             past_race_id = past_cd.race_id()
 
-            if not past_race_id in self.race_ave_true_skill_data:
+            if not past_race_id in race_ave_true_skill_data:
                 continue
             
-            if not past_race_id in self.race_money_data:
+            if not past_race_id in race_money_data:
                 continue
             
             past_rank = past_cd.rank()
@@ -1124,9 +1146,9 @@ class past_data():
             if past_rank == 0:
                 continue
 
-            key_past_money_class = str( int( fv.money_class_get( self.race_money_data[past_race_id] ) ) )
-            past_race_true_skill = self.race_ave_true_skill_data[past_race_id]
-            score_rate = past_race_true_skill / self.money_class_true_skill_data[key_past_money_class]
+            key_past_money_class = str( int( fv.money_class_get( race_money_data[past_race_id]["money"] ) ) )
+            past_race_true_skill = race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
+            score_rate = past_race_true_skill / money_class_true_skill_data[key_past_money_class]
             rank_score = ( 1 / past_rank )
             rank_score *= score_rate
             score += rank_score
@@ -1139,17 +1161,17 @@ class past_data():
 
         return score
 
-    def level_up3( self ):
+    def level_up3( self, money_class_true_skill_data ):
         c = 0
         score = 0
         
         for past_cd in self.past_cd_list():
             past_race_id = past_cd.race_id()
 
-            if not past_race_id in self.race_ave_true_skill_data:
+            if not past_race_id in race_ave_true_skill_data:
                 continue
             
-            if not past_race_id in self.race_money_data:
+            if not past_race_id in race_money_data:
                 continue
             
             past_up3 = past_cd.up_time()
@@ -1157,9 +1179,9 @@ class past_data():
             if past_up3 == 0:
                 continue
 
-            key_past_money_class = str( int( fv.money_class_get( self.race_money_data[past_race_id] ) ) )
-            past_race_true_skill = self.race_ave_true_skill_data[past_race_id]
-            score_rate = past_race_true_skill / self.money_class_true_skill_data[key_past_money_class]
+            key_past_money_class = str( int( fv.money_class_get( race_money_data[past_race_id]["money"] ) ) )
+            past_race_true_skill = race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
+            score_rate = past_race_true_skill / money_class_true_skill_data[key_past_money_class]
             up3_score = ( 1 / past_up3 ) * score_rate
             score += up3_score
             c += 1
@@ -1213,3 +1235,34 @@ class past_data():
 
         return ave_diff
 
+    def past_first_horce_body_list( self ):
+        result = []
+
+        for past_cd in  self.past_cd_list():
+            past_race_id = past_cd.race_id()
+            past_key_horce_num = str( int( past_cd.horce_number() ) )
+
+            if past_race_id in corner_horce_body_data and \
+              not len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
+                past_min_corner_key = min( corner_horce_body_data[past_race_id]["corner_horce_body"] )
+
+                if past_key_horce_num in corner_horce_body_data[past_race_id]["corner_horce_body"][past_min_corner_key]:
+                    result.append( corner_horce_body_data[past_race_id]["corner_horce_body"][past_min_corner_key][past_key_horce_num] )
+
+        return result
+
+    def past_last_horce_body_list( self ):
+        result = []
+
+        for past_cd in  self.past_cd_list():
+            past_race_id = past_cd.race_id()
+            past_key_horce_num = str( int( past_cd.horce_number() ) )
+
+            if past_race_id in corner_horce_body_data and \
+              not len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
+                past_max_corner_key = max( corner_horce_body_data[past_race_id]["corner_horce_body"] )
+
+                if past_key_horce_num in corner_horce_body_data[past_race_id]["corner_horce_body"][past_max_corner_key]:
+                    result.append( corner_horce_body_data[past_race_id]["corner_horce_body"][past_max_corner_key][past_key_horce_num] )
+
+        return result

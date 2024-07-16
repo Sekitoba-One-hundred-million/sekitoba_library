@@ -1,31 +1,28 @@
 import sekitoba_data_manage as dm
 import sekitoba_library as lib
 
-dm.dl.file_set( "race_rank_data.pickle" )
-#dm.dl.file_set( "race_level_data.pickle" )
+dm.dl.file_set( "race_money_data.pickle" )
 dm.dl.file_set( "next_race_data.pickle" )
 
 class RaceHighLevel:
     def __init__( self ):
-        self.race_rank_data = dm.dl.data_get( "race_rank_data.pickle" )
+        self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
         self.next_racd_data: dict[ str, dict[ str, lib.current_data ] ] = dm.dl.data_get( "next_race_data.pickle" )
-        #self.race_level_data = dm.dl.data_get( "race_level_data.pickle" )
-        #self.race_level_split_data = dm.dl.data_get( "race_level_split_data.pickle" )
 
     def day_check( self, ymd, past_ymd ):
-        if past_ymd["y"] < ymd["y"]:
+        if past_ymd["year"] < ymd["year"]:
             return True
-        elif ymd["y"] < past_ymd["y"]:
+        elif ymd["year"] < past_ymd["year"]:
             return False
 
-        if past_ymd["m"] < ymd["m"]:
+        if past_ymd["month"] < ymd["month"]:
             return True
-        elif ymd["m"] < past_ymd["m"]:
+        elif ymd["month"] < past_ymd["month"]:
             return False
 
-        if past_ymd["d"] < ymd["d"]:
+        if past_ymd["day"] < ymd["day"]:
             return True
-        elif ymd["d"] < past_ymd["d"]:
+        elif ymd["day"] < past_ymd["day"]:
             return False
 
         return False
@@ -52,8 +49,8 @@ class RaceHighLevel:
         past_rank_list = pd.rank_list()
         current_race_rank = 1#self.race_rank_data[race_id]
 
-        if race_id in self.race_rank_data:
-            current_race_rank = self.race_rank_data[race_id]
+        if race_id in self.race_money_data:
+            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
 
         for i in range( 0, min( len( past_id_list ), 3 ) ):
             past_id = past_id_list[i]
@@ -62,7 +59,7 @@ class RaceHighLevel:
             
             try:
                 next_cd_data = self.next_racd_data[past_id]
-                past_race_rank = self.race_rank_data[past_id]
+                past_race_rank = lib.money_class_get( self.race_money_data[past_id] )
             except:
                 continue
 
@@ -74,7 +71,7 @@ class RaceHighLevel:
             for horce_id in next_cd_data.keys():
                 next_cd = next_cd_data[horce_id]
                 birthday = next_cd.ymd()
-                past_ymd = { "y": int( birthday[0] ), "m": int( birthday[1] ), "d": int( birthday[2] ) }
+                past_ymd = { "year": int( birthday[0] ), "month": int( birthday[1] ), "day": int( birthday[2] ) }
 
                 if not self.day_check( ymd, past_ymd ):
                     continue

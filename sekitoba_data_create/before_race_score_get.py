@@ -1,15 +1,12 @@
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
+import sekitoba_psql as ps
 
-dm.dl.file_set( "wrap_data.pickle" )
-dm.dl.file_set( "slow_start_data.pickle" )
-dm.dl.file_set( "waku_three_rate_data.pickle" )
+wrap_data = ps.RaceData().get_select_data( "wrap" )
 
 class BeforeRaceScore:
-    def __init__( self ):
-        self.wrap_data = dm.dl.data_get( "wrap_data.pickle" )
-        self.slow_start_data = dm.dl.data_get( "slow_start_data.pickle" )
-        self.waku_three_rate_data = dm.dl.data_get( "waku_three_rate_data.pickle" )
+    def __init__( self, race_data: ps.RaceData ):
+        self.race_data : ps.RaceData = race_data
 
     def score_get( self, before_cd: lib.current_data, limb, horce_id ):
         score = 1000
@@ -22,10 +19,10 @@ class BeforeRaceScore:
 
         before_race_id = before_cd.race_id()
 
-        if not before_race_id in self.wrap_data:
+        if not before_race_id in wrap_data:
             return score
 
-        pace = lib.pace_data( self.wrap_data[before_race_id] )
+        pace = lib.pace_data( wrap_data[before_race_id]["wrap"] )
 
         if pace == None:
             return score
@@ -33,9 +30,9 @@ class BeforeRaceScore:
         waku_key = ""
 
         if before_cd.horce_number() < before_cd.all_horce_num() / 2:
-            waku = "1"
+            waku_key = "1"
         else:
-            waku = "2"
+            waku_key = "2"
 
         before_kind_key_data = {}
         before_kind_key_data["place"] = str( int( before_cd.place() ) )
@@ -43,7 +40,7 @@ class BeforeRaceScore:
         before_kind_key_data["baba"] = str( int( before_cd.baba_status() ) )
         before_kind_key_data["kind"] = str( int( before_cd.race_kind() ) )
         before_kind_key_data["limb"] = str( int( limb ) )
-        before_waku_three_rate = lib.kind_score_get( self.waku_three_rate_data, \
+        before_waku_three_rate = lib.kind_score_get( self.race_data.data["waku_three_rate"], \
                                                     list( before_kind_key_data.keys() ), \
                                                     before_kind_key_data, \
                                                     waku_key )

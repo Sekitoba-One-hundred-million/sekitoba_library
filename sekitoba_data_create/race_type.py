@@ -1,18 +1,19 @@
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
+import sekitoba_psql as ps
 
 dm.dl.file_set( "foot_used.pickle" )
-dm.dl.file_set( "race_rank_data.pickle" )
 dm.dl.file_set( "wrap_data.pickle" )
+dm.dl.file_set( "race_money_data.pickle" )
 
 class RaceType:
     def __init__( self ):
-        self.race_rank_data = dm.dl.data_get( "race_rank_data.pickle" )
+        self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
         self.foot_used_data = dm.dl.data_get( "foot_used.pickle" )
         self.wrap_data = dm.dl.data_get( "wrap_data.pickle" )
 
-    def set_race_rank_data( self, race_rank_data ):
-        self.race_rank_data = race_rank_data
+    def set_race_money( self, race_money ):
+        self.race_money_data.update( race_money )
 
     def set_foot_used_data( self, foot_used_data ):
         self.foot_used_data = foot_used_data
@@ -22,12 +23,12 @@ class RaceType:
 
     def stright_slope( self, cd: lib.current_data, pd: lib.past_data ):
         race_id = cd.race_id()
+        current_race_rank = 0
         current_slope = lib.stright_slope( cd.place() )
-        current_race_rank = 1
         
-        if race_id in self.race_rank_data:
-            current_race_rank = self.race_rank_data[race_id]
-            
+        if race_id in self.race_money_data:
+            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
+
         past_cd_list = pd.past_cd_list()
         before_cd = pd.before_cd()
         
@@ -39,9 +40,11 @@ class RaceType:
             return 0
 
         for past_cd in past_cd_list:
-            try:
-                past_race_rank = self.race_rank_data[past_cd.race_id()]
-            except:
+            past_race_id = past_cd.race_id()
+            
+            if past_race_id in self.race_money_data:
+                past_race_rank = lib.money_class_get( self.race_money_data[past_race_id] )
+            else:
                 continue
 
             if past_race_rank < current_race_rank:
@@ -63,8 +66,8 @@ class RaceType:
         race_id = cd.race_id()
         current_race_rank = 1
 
-        if race_id in self.race_rank_data:
-            current_race_rank = self.race_rank_data[race_id]
+        if race_id in self.race_money_data:
+            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
 
         good_foot_used = 0
         past_cd_list = pd.past_cd_list()
@@ -72,9 +75,14 @@ class RaceType:
         
         for past_cd in past_cd_list:
             past_race_id = past_cd.race_id()
+            past_race_rank = -1
+            
+            if past_race_id in self.race_money_data:
+                past_race_rank = lib.money_class_get( self.race_money_data[past_race_id] )
+            else:
+                continue
 
             try:
-                past_race_rank = self.race_rank_data[past_race_id]
                 foot_used = self.foot_used_data[past_race_id]
             except:
                 continue
@@ -104,8 +112,8 @@ class RaceType:
         race_id = cd.race_id()
         current_race_rank = 1
 
-        if race_id in self.race_rank_data:
-            current_race_rank = self.race_rank_data[race_id]
+        if race_id in self.race_money_data:
+            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
 
         score = 100            
         past_cd_list = pd.past_cd_list()
@@ -113,9 +121,13 @@ class RaceType:
         
         for past_cd in past_cd_list:
             past_race_id = past_cd.race_id()
-            
+
+            if past_race_id in self.race_money_data:
+                past_race_rank = lib.money_class_get( self.race_money_data[past_race_id] )
+            else:
+                continue
+
             try:
-                past_race_rank = self.race_rank_data[past_race_id]
                 foot_used = self.foot_used_data[past_race_id]
             except:
                 continue

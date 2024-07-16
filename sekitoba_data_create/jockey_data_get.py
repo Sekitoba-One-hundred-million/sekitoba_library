@@ -2,18 +2,13 @@ import copy
 
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
+import sekitoba_psql as ps
 
-dm.dl.file_set( "race_info_data.pickle" )
-dm.dl.file_set( "jockey_analyze_data.pickle" )
-dm.dl.file_set( "jockey_id_data.pickle" )
-dm.dl.file_set( "jockey_year_rank_data.pickle" )
-
-class JockeyData:
-    def __init__( self ):
-        self.race_info_data = dm.dl.data_get( "race_info_data.pickle" )
-        self.race_jockey_id_data = dm.dl.data_get( "race_jockey_id_data.pickle" )
-        self.jockey_analyze_data = dm.dl.data_get( "jockey_analyze_data.pickle" )
-        self.jockey_year_rank_data = dm.dl.data_get( "jockey_year_rank_data.pickle" )
+class JockeyAnalyze:
+    def __init__( self, race_data: ps.RaceData, race_horce_data: ps.RaceHorceData, jockey_data: ps.JockeyData ):
+        self.race_data: ps.RaceData = race_data
+        self.race_horce_data: ps.RaceHorceData = race_horce_data
+        self.jockey_data: ps.JockeyData = jockey_data
 
     def dist_check( self, di ):
         if di < 1400:#短距離
@@ -27,37 +22,29 @@ class JockeyData:
         else:#長距離
             return 5
 
-    def rank( self, race_id, horce_id, jockey_id = None,  race_info = None ):
-        if race_info == None and race_id in self.race_info_data:
-            race_info = self.race_info_data[race_id]
-        else:
-            return 0
-
-        if jockey_id == None and ( race_id in self.race_jockey_id_data and \
-                                  horce_id in self.race_jockey_id_data[race_id] ):
-            jockey_id = self.race_jockey_id_data[race_id][horce_id]
-        else:
-            return 0
-
-        dist = self.dist_check( race_info["dist"] )
-        kind = race_info["kind"]
-        baba = race_info["baba"]
+    def rank( self, race_id, horce_id ):
+        jockey_id = self.race_horce_data.data[horce_id]["jockey_id"]
+        dist = self.dist_check( self.race_data.data["dist"] )
+        kind = self.race_data.data["kind"]
+        baba = self.race_data.data["baba"]
         key_dict = { "baba": str( baba ), "dist": str( dist ), "kind": str( kind ) }
 
         year = race_id[0:4]
         before_year = str( int( year ) - 1 )
-
-        try:
-            jockey_data = self.jockey_analyze_data[jockey_id][before_year]
-        except:
-            return 0
+        jockey_analyze = {}
+        
+        if jockey_id in self.jockey_data.data and \
+          before_year in self.jockey_data.data[jockey_id]["jockey_analyze"]:
+            jockey_analyze = self.jockey_data.data[jockey_id]["jockey_analyze"][before_year]
+        else:
+            return -1000
 
         rank = 0
         count = 0
 
         for check_key in key_dict.keys():
             try:
-                rank += jockey_data[check_key][key_dict[check_key]]["rank"]
+                rank += jockey_analyze[check_key][key_dict[check_key]]["rank"]
                 count += 1
             except:
                 continue
@@ -67,17 +54,12 @@ class JockeyData:
 
         return int( rank )
 
-    def year_rank( self, race_id, horce_id, key_year, jockey_id = None ):
+    def year_rank( self, horce_id, key_year ):
         result = -1000
-
-        if jockey_id == None and ( race_id in self.race_jockey_id_data and \
-                                  horce_id in self.race_jockey_id_data[race_id] ):
-            jockey_id = self.race_jockey_id_data[race_id][horce_id]
-        else:
-            return result
+        jockey_id = self.race_horce_data.data[horce_id]["jockey_id"]
 
         try:
-            result = self.jockey_year_rank_data[jockey_id][key_year]
+            result = self.jockey_data.data[jockey_id]["jockey_year_rank"][key_year]
         except:
             return result
 

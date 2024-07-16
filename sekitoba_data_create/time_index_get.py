@@ -1,11 +1,10 @@
 import sekitoba_data_manage as dm
-
-dm.dl.file_set( "time_index_data.pickle" )
+from sekitoba_psql.horce_data import HorceData
 
 class TimeIndexGet:
-    def __init__( self ):
-        self.time_index_data = dm.dl.data_get( "time_index_data.pickle" )
-
+    def __init__( self, horce_data: HorceData ):
+        self.horce_data: HorceData = horce_data
+    
     def main( self, horce_id, day_list ):
         result = {}
         result["max"] = 0
@@ -13,7 +12,7 @@ class TimeIndexGet:
         result["average"] = 0
 
         try:
-            time_index = self.time_index_data[horce_id]
+            time_index = self.horce_data.data[horce_id]["time_index"]
         except:
             return result
 

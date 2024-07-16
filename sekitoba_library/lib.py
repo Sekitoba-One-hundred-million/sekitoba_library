@@ -12,14 +12,19 @@ test_years = [ "2021", "2022", "2023", "2024" ]
 valid_years = [ test_years[0] ]
 score_years = [ test_years[1] ]
 simu_years = [ test_years[2], test_years[3] ]
+predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3" ]
 prod_check = False
 
-def test_year_check( year ):
-    if ( not prod_check and year in valid_years ) \
-       or ( prod_check and year in test_years ):
-        return True
+def test_year_check( year, state ):
+    if ( state == "optuna" and year in valid_years ) \
+       or ( state == "test" and ( year in valid_years or year in score_years ) ) \
+       or ( state == "prod" and year in simu_years ):
+        return "test"
 
-    return False
+    if ( state == "optuna" and year in score_years ) or year in simu_years:
+        return "None"
+
+    return "teacher"
 
 def id_get( url ):
     s_data = url.split( split_key )
@@ -429,7 +434,7 @@ def next_race( all_data, ymd ) -> crd.current_data:
         m = int( birthday[1] )
         d = int( birthday[2] )
 
-        if y == ymd["y"] and m == ymd["m"] and d == ymd["d"]:
+        if y == ymd["year"] and m == ymd["month"] and d == ymd["day"]:
             break
 
         next_cd = cd
@@ -495,6 +500,9 @@ def key_zero( dic, data, key ):
     return data
 
 def conv( data_list, ave = None ):
+    if len( data_list ) == 0:
+        return -1000
+    
     result = 0
 
     if ave == None:
@@ -551,6 +559,12 @@ def max_check( data ):
         return max( data )
     except:
         return -1000
+
+def min_check( data ):
+    try:
+        return min( data )
+    except:
+        return 1000
 
 def match_rank_score( target_pd: prd.past_data, \
                      cd: crd.current_data, \
@@ -618,17 +632,62 @@ def foot_used_create( current_wrap ):
 
     return foot_score
 
+def one_hundred_pace( wrap_data ):
+    wrap_list = []
+        
+    if len( wrap_data ) == 0:
+        return 0
+            
+    ave_wrap = 0
+    all_wrap = 0
+
+    for key in wrap_data.keys():
+        wrap = wrap_data[key]
+    
+        if key == '100':
+            wrap *= 2
+
+        ave_wrap += wrap
+        all_wrap += wrap
+            
+    ave_wrap /= len( wrap_data )
+    before_wrap = ave_wrap
+    w = 0
+
+    for key in wrap_data.keys():
+        if key == '100':
+            wrap_list.append( wrap_data[key] )
+            before_wrap = wrap_data[key] * 2
+            continue
+
+        current_wrap = wrap_data[key]
+        a = ( before_wrap - current_wrap ) / -200
+        b = before_wrap
+        middle_wrap = a * 100 + b
+        wrap_list.append( middle_wrap / 2 )
+        wrap_list.append( current_wrap / 2 )
+        before_wrap = current_wrap
+
+    return wrap_list
+
+def pace_regression( wrap_data ):
+    N = len( wrap_data )
+    a, b = regression_line( wrap_data )
+    berfore_a, _ = regression_line( wrap_data[0:int(N/2)] )
+    after_a, _ = regression_line( wrap_data[int(N/2):N] )
+    return a, berfore_a, after_a
+
 def pace_data( current_wrap ):
     wrap_key_list = list( current_wrap.keys() )
     n = len( wrap_key_list )
 
     if n == 0:
-        return None
-        
+        return 0
+
     s1 = int( n / 2 )
     before_wrap_key_list = wrap_key_list[0:s1]
     after_wrap_key_list = wrap_key_list[s1:n]
-        
+
     if not len( before_wrap_key_list ) == len( after_wrap_key_list ):
         after_wrap_key_list.pop( 0 )
 
@@ -652,9 +711,11 @@ def kind_score_get( data, key_list, key_data, base_key ):
     
     for i in range( 0, len( key_list ) ):
         k1 = key_list[i]
+        
         for r in range( i + 1, len( key_list ) ):
             k2 = key_list[r]
             key_name = k1 + "_" + k2
+
             try:
                 score += data[key_name][key_data[k1]][key_data[k2]][base_key]
                 count += 1

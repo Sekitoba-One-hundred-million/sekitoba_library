@@ -1,15 +1,12 @@
 import sekitoba_library as lib
 import sekitoba_data_manage as dm
+import sekitoba_psql as ps
 
-dm.dl.file_set( "race_info_data.pickle" )
-dm.dl.file_set( "trainer_analyze_data.pickle" )
-dm.dl.file_set( "race_trainer_id_data.pickle" )
-
-class TrainerData:
-    def __init__( self ):
-        self.race_info_data = dm.dl.data_get( "race_info_data.pickle" )
-        self.race_trainer_id_data = dm.dl.data_get( "race_trainer_id_data.pickle" )
-        self.trainer_analyze_data = dm.dl.data_get( "trainer_analyze_data.pickle" )
+class TrainerAnalyze:
+    def __init__( self, race_data: ps.RaceData, race_horce_data: ps.RaceHorceData, trainer_data: ps.TrainerData ):
+        self.race_data: ps.RaceData  = race_data
+        self.race_horce_data: ps.RaceHorceData  = race_horce_data
+        self.trainer_data: ps.TrainerData = trainer_data
 
     def dist_check( self, di ):
         if di < 1400:#短距離
@@ -23,34 +20,29 @@ class TrainerData:
         else:#長距離
             return 5
 
-    def rank( self, race_id, horce_id, race_info = None, trainer_id = None ):
-
-        if race_info == None or trainer_id == None:
-            try:
-                race_info = self.race_info_data[race_id]
-                trainer_id = self.race_trainer_id_data[race_id][horce_id]
-            except:
-                return 0
-
-        dist = self.dist_check( race_info["dist"] )
-        kind = race_info["kind"]
-        baba = race_info["baba"]
+    def rank( self, race_id, horce_id ):
+        trainer_id = self.race_horce_data.data[horce_id]["trainer_id"]
+        dist = self.dist_check( self.race_data.data["dist"] )
+        kind = self.race_data.data["kind"]
+        baba = self.race_data.data["baba"]
         key_dict = { "baba": str( baba ), "dist": str( dist ), "kind": str( kind ) }
 
         year = race_id[0:4]
         before_year = str( int( year ) - 1 )
-
-        try:
-            trainer_data = self.trainer_analyze_data[trainer_id][before_year]
-        except:
-            return 0
+        trainer_analyze = {}
+        
+        if trainer_id in self.trainer_data.data and \
+          before_year in self.trainer_data.data[trainer_id]["trainer_analyze"]:
+            trainer_analyze = self.trainer_data.data[trainer_id]["trainer_analyze"][before_year]
+        else:
+            return -1000        
 
         rank = 0
         count = 0
 
         for check_key in key_dict.keys():
             try:
-                rank += trainer_data[check_key][key_dict[check_key]]["rank"]
+                rank += trainer_analyze[check_key][key_dict[check_key]]["rank"]
                 count += 1
             except:
                 continue
