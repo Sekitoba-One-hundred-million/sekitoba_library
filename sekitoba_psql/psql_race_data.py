@@ -36,7 +36,9 @@ class RaceData:
                                   "predict_netkeiba_deployment": "text", \
                                   "first_up3_halon": "text", \
                                   "stride_ablity_analyze": "text", \
-                                  "flame_evaluation": "text" }
+                                  "flame_evaluation": "text", \
+                                  "before_pace": "text", \
+                                  "win_rate": "text" }
         self.json_data = [ "standard_time", \
                           "up3_standard_time", \
                           "up3_analyze", \
@@ -51,7 +53,9 @@ class RaceData:
                           "predict_netkeiba_deployment", \
                           "first_up3_halon", \
                           "stride_ablity_analyze", \
-                          "flame_evaluation" ]
+                          "flame_evaluation", \
+                          "before_pace", \
+                          "win_rate" ]
         self.data = {}
 
     def get_all_data( self, race_id ):

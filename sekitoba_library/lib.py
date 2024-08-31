@@ -705,6 +705,34 @@ def pace_data( current_wrap ):
 
     return before_time - after_time
 
+def before_after_pace( current_wrap ):
+    wrap_key_list = list( current_wrap.keys() )
+    n = len( wrap_key_list )
+
+    if n == 0:
+        return 0
+
+    s1 = int( n / 2 )
+    before_wrap_key_list = wrap_key_list[0:s1]
+    after_wrap_key_list = wrap_key_list[s1:n]
+
+    if not len( before_wrap_key_list ) == len( after_wrap_key_list ):
+        after_wrap_key_list.pop( 0 )
+
+    before_time = 0
+    after_time = 0
+
+    for key in before_wrap_key_list:
+        before_time += current_wrap[key]
+        
+    for key in after_wrap_key_list:
+        after_time += current_wrap[key]
+
+    if before_wrap_key_list[0] == "100":
+        after_time -= round( current_wrap[after_wrap_key_list[0]] / 2 )
+
+    return before_time, after_time
+
 def kind_score_get( data, key_list, key_data, base_key ):
     score = 0
     count = 0

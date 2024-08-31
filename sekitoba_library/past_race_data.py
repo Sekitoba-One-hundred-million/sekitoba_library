@@ -1266,3 +1266,107 @@ class past_data():
                     result.append( corner_horce_body_data[past_race_id]["corner_horce_body"][past_max_corner_key][past_key_horce_num] )
 
         return result
+
+    def stamina_create( self, key_limb ):
+        count = 0
+        ave_stamina = 0
+
+        for past_cd in self.past_cd_list():
+            past_race_id = past_cd.race_id()
+
+            if not past_race_id in wrap_data:
+                continue
+
+            if not type( wrap_data[past_race_id]["wrap"] ) == dict \
+              or len( wrap_data[past_race_id]["wrap"] ) == 0 \
+              or past_cd.up_time() == 0:
+                continue
+            
+            if not past_race_id in corner_horce_body_data or len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
+                continue
+
+            ave_horce_body = 0
+            horce_body_count = 0
+            ave_up3 = -1
+            past_corner_horce_body = corner_horce_body_data[past_race_id]["corner_horce_body"]
+            key_past_horce_num = str( int( past_cd.horce_number() ) )
+            past_key_place = str( int( past_cd.place() ) )
+            past_key_kind = str( int( past_cd.race_kind() ) )
+            past_key_dist_kind = str( int( past_cd.dist_kind() ) )
+            past_key_dist = str( int( past_cd.dist() * 1000 ) )
+            past_passing = []
+            ave_before_pace = -1
+
+            try:
+                ave_before_pace = self.race_data.data["before_pace"][past_key_dist]
+            except:
+                continue
+
+            try:
+                past_passing = past_cd.passing_rank().split( "-" )
+            except:
+                continue
+                
+            try:
+                ave_up3 = self.race_data.data["up3_analyze"][past_key_place][past_key_kind][past_key_dist_kind][key_limb]["ave"]
+            except:
+                continue
+
+            for conrner_key in past_corner_horce_body.keys():
+                try:
+                    ave_horce_body += past_corner_horce_body[conrner_key][key_past_horce_num]
+                    horce_body_count += 1
+                except:
+                    continue
+
+            if horce_body_count == 0:
+                continue
+
+            ave_horce_body /= horce_body_count
+            diff_time = ave_horce_body * 0.17
+
+            before_pace, _ = lib.before_after_pace( wrap_data[past_race_id]["wrap"] )
+            pace_rate = ave_before_pace / ( before_pace + diff_time )
+            up3_rate = ave_up3 / past_cd.up_time()
+            stamina = up3_rate + pace_rate
+            ave_stamina += stamina
+            count += 1
+
+        if count == 0:
+            return -1000
+
+        ave_stamina /= count
+
+        return ave_stamina
+
+    def best_dist( self ):
+        score = 0
+        data = 0
+        count = 0
+        cd_dist = self.cd.dist() * 1000
+
+        for past_cd in self.past_cd_list():
+            if not past_cd.race_check():
+                continue
+
+            past_rank = past_cd.rank()
+            c = 1
+
+            if past_rank == 1:
+                c = 5
+            elif past_rank == 2:
+                c = 4
+            elif past_rank == 3:
+                c = 3
+            elif past_rank <= 5:
+                c = 2
+                
+            data += past_cd.dist() * 1000 * c
+            count += c
+
+        if count == 0:
+            return -1000
+
+        score = abs( data - cd_dist ) / count
+
+        return score

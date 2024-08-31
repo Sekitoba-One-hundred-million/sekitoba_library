@@ -161,15 +161,36 @@ class current_data():
 
     def race_id( self ):
         result = ""
+        day = ""
+        num = ""
         birthday = self.birthday()
         year = birthday.split( "/" )[0]
         race_place_num = str( int( self.place() ) )
-        
-        try:
-            day = "0" + self.race_data[1][0]
-            num = "0" + self.race_data[1][3]
-        except:
+        s = ""
+        str_list = []
+
+        for n in self.race_data[1]:
+            if n.isdecimal():
+                s += n
+            elif not len( s ) == 0:
+                str_list.append( s )
+                s = ""
+
+        if not len( s ) == 0:
+            str_list.append( s )
+            
+        if not len( str_list ) == 2:
             return result
+
+        if len( str_list[0] ) == 1:
+            day = "0" + str_list[0]
+        else:
+            day = str_list[0]
+
+        if len( str_list[1] ) == 1:
+            num = "0" + str_list[1]
+        else:
+            num = str_list[1]
 
         if len( race_place_num ) == 1:
             race_place_num = "0" + race_place_num
