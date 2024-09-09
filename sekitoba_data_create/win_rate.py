@@ -13,8 +13,9 @@ KIND = "kind"
 WAKU = "waku"
 
 class WinRate:
-    def __init__( self, race_data: ps.RaceData ):
+    def __init__( self, race_data: ps.RaceData, prod_data: ps.ProdData = None ):
         self.race_data: ps.RaceData = race_data
+        self.prod_data: ps.ProdData = prod_data
         self.base_key_list = sorted( [ "place", "dist", "kind", "baba" ] )
         self.h_key_list = sorted( [ "limb", "waku" ] )
         self.rate_list = [ "one", "two", "three" ]
@@ -66,7 +67,13 @@ class WinRate:
         return "0" * ( BN - len( bit ) ) + bit
 
     def data_get( self, limb, cd: lib.current_data ):
-        rate_data = self.race_data.data["win_rate"]
+        rate_data = {}
+
+        if not self.prod_data == None:
+            rate_data = self.prod_data.data["win_rate"]
+        else:
+            rate_data = self.race_data.data["win_rate"]
+
         result = {}
         base_key_data = {}
         base_key_data[PLACE] = str( self.race_data.data["place"] )

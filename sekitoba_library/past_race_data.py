@@ -517,7 +517,7 @@ class past_data():
                 speed_index = -100
                 up_speed_index = -100
                 pace_speed_index = -100
-                
+
                 try:
                     speed_index = ( self.race_data.data["standard_time"][place_num][dist][kind_num][key_baba] - \
                                    race_time ) * self.race_data.data["dist_index"][dist]

@@ -22,7 +22,8 @@ class ProdData:
                                   "dist_index": "text",
                                   "standard_time": "text",
                                   "up3_standard_time": "text",
-                                  "before_pace": "text" }
+                                  "before_pace": "text",
+                                  "win_rate": "text" }
         self.json_data = [ "flame_evaluation",
                           "up_kind_ave",
                           "up3_analyze",
@@ -35,7 +36,8 @@ class ProdData:
                           "dist_index",
                           "standard_time",
                           "up3_standard_time",
-                          "before_pace" ]
+                          "before_pace",
+                          "win_rate" ]
         self.data = {}
 
     def get_all_data( self ):

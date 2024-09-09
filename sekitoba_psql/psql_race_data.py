@@ -7,6 +7,7 @@ from sekitoba_psql.psql_control import PsqlControl
 class RaceData:
     def __init__( self ):
         self.pc = PsqlControl()
+        self.error = False
         self.table_name = "race_data"
         self.colums = { "race_id": "text" }
         self.additional_colums = { "kind": "int", \
@@ -59,9 +60,15 @@ class RaceData:
         self.data = {}
 
     def get_all_data( self, race_id ):
+        self.error = False
         self.data.clear()
         sql = "SELECT * from race_data where race_id = '{}';".format( race_id )
-        self.data = self.pc.select_data( sql )[0]
+
+        try:
+            self.data = self.pc.select_data( sql )[0]
+        except:
+            self.error = True
+            return
 
         for k in self.data.keys():
             if k in self.json_data:
