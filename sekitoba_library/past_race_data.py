@@ -52,11 +52,13 @@ class past_data():
 
         if len( self.past_data ) == 0:
             return result
-        
-        cd = crd.current_data( self.past_data[0] )
 
-        if cd.race_check():
-            result = cd
+        for i in range( 0, len( self.past_data ) ):
+            cd = crd.current_data( self.past_data[i] )
+
+            if cd.race_check():
+                result = cd
+                break
 
         return result     
 
