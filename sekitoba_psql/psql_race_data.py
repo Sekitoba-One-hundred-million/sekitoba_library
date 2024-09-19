@@ -57,22 +57,49 @@ class RaceData:
                           "flame_evaluation", \
                           "before_pace", \
                           "win_rate" ]
+        self.min_str = ""
         self.data = {}
+
+        for key in self.additional_colums.keys():
+            if key in self.json_data and not key == "wrap":
+                continue
+
+            self.min_str += key + ","
+
+        self.min_str = self.min_str[:-1]
 
     def get_all_data( self, race_id ):
         self.error = False
         self.data.clear()
+        sql_data = {}
         sql = "SELECT * from race_data where race_id = '{}';".format( race_id )
 
         try:
-            self.data = self.pc.select_data( sql )[0]
+            sql_data = self.pc.select_data( sql )[0]
         except:
             self.error = True
             return
 
-        for k in self.data.keys():
+        for k in sql_data.keys():
             if k in self.json_data:
-                self.data[k] = json.loads( self.data[k] )
+                self.data[k] = json.loads( sql_data[k] )
+            else:
+                self.data[k] = sql_data[k]
+
+    def get_min_data( self, race_id ):
+        sql = "SELECT {} from race_data where race_id = '{}';".format( self.min_str, race_id )
+        data_list = self.pc.select_data( sql )
+
+        if len( data_list ) == 0:
+            return
+
+        sql_data = data_list[0]
+
+        for k in sql_data.keys():
+            if k in self.json_data:
+                self.data[k] = json.loads( sql_data[k] )
+            else:
+                self.data[k] = sql_data[k]
 
     def get_select_data( self, data_name ):
         result = {}
@@ -137,5 +164,5 @@ class RaceData:
 
         if len( insert_data ) == 0:
             return
-                
+
         self.pc.insert_data( self.table_name, insert_data, self.colums )

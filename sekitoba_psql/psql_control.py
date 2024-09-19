@@ -7,9 +7,9 @@ class PsqlControl:
         self.conn = psycopg2.connect( self.create_db_url() )
 
     def create_db_url( self ):
-        host = "100.88.209.66"
+        host = "100.95.241.19"
         port = "5432"
-        dbname = "postgres"
+        dbname = "sekitoba"
         user = "sekitoba"
         password = self.get_password()
         return "host={} dbname={} port={} user={} password={}".format( host, dbname, port, user, password )
@@ -56,6 +56,9 @@ class PsqlControl:
 
         sql = self.remove_conma( sql )
         sql.append( ") VALUES " )
+
+        if len( data ) == 0:
+            return
 
         for d in data:
             sql.append( '(' )
@@ -120,6 +123,7 @@ class PsqlControl:
         cur = self.conn.cursor( cursor_factory=DictCursor )
         cur.execute( sql )
         row = cur.fetchall()
+        cur.close()
         return row
 
     def exist_data( self, table, colum, value ):
