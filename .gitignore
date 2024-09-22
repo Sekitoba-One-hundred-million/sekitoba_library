@@ -1,6 +1,6 @@
 /SekitobaLibrary.egg-info/
-/sekitoba_data_manage/__pycache__/
-/sekitoba_library/__pycache__/
-/sekitoba_psql/__pycache__/
+/SekitobaDataManage/__pycache__/
+/SekitobaLibrary/__pycache__/
+/SekitobaPsql/__pycache__/
 /build
 /dist
