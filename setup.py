@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
  
 setup(
     name='SekitobaLibrary',    #パッケージ名
-    version="1.1.10",
+    version="1.2.1",
     description="SekitobaLibrary PackageCode",
     long_description="",
     author='SekitobaLibrary',
@@ -11,5 +11,5 @@ setup(
     classifiers=[
         "Development Status :: 1 - Planning"
     ]
-    ,packages=[ 'sekitoba_library', 'sekitoba_data_manage', 'sekitoba_data_create', 'sekitoba_logger', 'sekitoba_psql']
+    ,packages=[ 'SekitobaLibrary', 'SekitobaDataManage', 'SekitobaDataCreate', 'SekitobaLogger', 'SekitobaPsql']
 )

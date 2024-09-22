@@ -2,7 +2,7 @@
 ## 説明
 赤兎馬の作成で使用するライブラリ  
 基本的に共通で使える文字列に対する数値の振り分けなどはここに記載する。  
-sekitoba_libraryとsekitoba_data_manageの二つの便利ツールが存在する。
+sekitoba_libraryとSekitobaDataManageの二つの便利ツールが存在する。
 
 ## インストール
 ```
@@ -40,7 +40,7 @@ http通信でスクレイピングする際にスレッド処理を行うクラ�
 ChromeDriverを用いたものはまだ存在しない。
 
 
-## sekitoba_data_manage
+## SekitobaDataManage
 ### s3_data_manage.py
 AWSのS3からデータのロードとアップロードを行う関数が記載されている。  
 アップロードは同じファイル名が存在する場合上書きされる。  
@@ -53,7 +53,7 @@ AWSのS3からデータのロードとアップロードを行う関数が記載
 セットし忘れたファイル名でgetを行った際も存在するファイルならばロードしてくれる。
 
 ```
-import sekitoba_data_manage as dm
+import SekitobaDataManage as dm
 dm.dl.file_set( file_name1 )
 dm.dl.file_set( file_name2 )
 dm.dl.file_set( file_name3 )
@@ -69,7 +69,7 @@ appendで使用するデータの説明を投入してwriteで記載を行い出
 データの順番も一緒に記載されるので学習データを作成する際は使用した方があとでわかりやすい。
 
 ```
-import sekitoba_data_manage as dm
+import SekitobaDataManage as dm
 
 t_list = []
 dm.dn.append( t_list, data1, "データの説明1" )

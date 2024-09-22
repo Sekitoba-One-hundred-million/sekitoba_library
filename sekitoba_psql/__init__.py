@@ -1,7 +1,0 @@
-from sekitoba_psql.psql_control import PsqlControl
-from sekitoba_psql.psql_race_data import RaceData
-from sekitoba_psql.race_horce_data import RaceHorceData
-from sekitoba_psql.horce_data import HorceData
-from sekitoba_psql.jockey_data import JockeyData
-from sekitoba_psql.trainer_data import TrainerData
-from sekitoba_psql.prod_data import ProdData
