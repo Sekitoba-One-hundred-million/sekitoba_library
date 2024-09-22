@@ -38,8 +38,7 @@ class RaceData:
                                   "first_up3_halon": "text", \
                                   "stride_ablity_analyze": "text", \
                                   "flame_evaluation": "text", \
-                                  "before_pace": "text", \
-                                  "win_rate": "text" }
+                                  "before_pace": "text" }
         self.json_data = [ "standard_time", \
                           "up3_standard_time", \
                           "up3_analyze", \
@@ -55,8 +54,7 @@ class RaceData:
                           "first_up3_halon", \
                           "stride_ablity_analyze", \
                           "flame_evaluation", \
-                          "before_pace", \
-                          "win_rate" ]
+                          "before_pace" ]
         self.min_str = ""
         self.data = {}
 
