@@ -2,21 +2,21 @@ import numpy as np
 
 import SekitobaLibrary.feature_value as fv
 
-class current_data():
+class CurrentData():
     def __init__( self, data ):
         self.race_data = data
 
     def place( self ):#場所
-        return fv.place_num( self.race_data[1] )
+        return fv.placeNum( self.race_data[1] )
 
-    def all_horce_num( self ):
-        return fv.data_check( self.race_data[5] )
+    def allHorceNum( self ):
+        return fv.dataCheck( self.race_data[5] )
 
-    def flame_number( self ):#枠番
-        return fv.data_check( self.race_data[6] )
+    def flameNumber( self ):#枠番
+        return fv.dataCheck( self.race_data[6] )
 
-    def horce_number( self ):#馬番
-        return fv.data_check( self.race_data[7] )
+    def horceNumber( self ):#馬番
+        return fv.dataCheck( self.race_data[7] )
 
     def weight( self ):
         split_w = self.race_data[20].split( "(" )
@@ -26,42 +26,42 @@ class current_data():
         except:
             return 0
                 
-    def id_weight( self ):#馬体重の増減
+    def idWeight( self ):#馬体重の増減
         return fv.weight( self.race_data[20] )
 
     def weather( self ):#天気
         return fv.weather( self.race_data[2] )
 
     def rank( self ):
-        return fv.data_check( self.race_data[10] )
+        return fv.dataCheck( self.race_data[10] )
     
     def popular( self ):
-        return fv.data_check( self.race_data[9] )
+        return fv.dataCheck( self.race_data[9] )
 
-    def race_num( self ):
-        return fv.data_check( self.race_data[3] )
+    def raceNum( self ):
+        return fv.dataCheck( self.race_data[3] )
 
     def diff( self ):
-        return fv.data_check( self.race_data[16] )
+        return fv.dataCheck( self.race_data[16] )
 
     def odds( self ):
-        return fv.data_check( self.race_data[8] )
+        return fv.dataCheck( self.race_data[8] )
 
-    def up_time( self ):
-        return fv.data_check( self.race_data[19] )
+    def upTime( self ):
+        return fv.dataCheck( self.race_data[19] )
 
     def money( self ):
-        return fv.data_check( self.race_data[21] )
+        return fv.dataCheck( self.race_data[21] )
 
-    def passing_rank( self ):
+    def passingRank( self ):
         return self.race_data[17]
 
-    def first_last_diff( self ):
+    def firstLastDiff( self ):
         first = -1
         last = -1
 
         try:
-            split_rank = self.passing_rank().split( "-" )
+            split_rank = self.passingRank().split( "-" )
             first = int( split_rank[0] )
             last = int( split_rank[-1] )
         except:
@@ -69,22 +69,22 @@ class current_data():
 
         return first - last
 
-    def first_result_diff( self ):
+    def firstResultDiff( self ):
         first = -1
 
         try:
-            split_rank = self.passing_rank().split( "-" )
+            split_rank = self.passingRank().split( "-" )
             first = int( split_rank[0] )
         except:
             return -1000
 
         return first - self.rank()
 
-    def last_result_diff( self ):
+    def lastResultDiff( self ):
         last = -1
 
         try:
-            split_rank = self.passing_rank().split( "-" )
+            split_rank = self.passingRank().split( "-" )
             last = int( split_rank[-1] )
         except:
             return -1000
@@ -126,40 +126,40 @@ class current_data():
             
         return d
 
-    def key_dist( self ):
+    def keyist( self ):
         return self.race_data[13]
         
-    def baba_status( self ):#馬場状態
+    def babaStatus( self ):#馬場状態
         return fv.baba( self.race_data[14] )
 
-    def burden_weight( self ):#斤量
-        return fv.data_check( self.race_data[12] )
+    def burdenWeight( self ):#斤量
+        return fv.dataCheck( self.race_data[12] )
 
-    def race_kind( self ):
+    def raceKind( self ):
         _, t = fv.dist( self.race_data[13] )
         return t
 
-    def dist_kind( self ):
+    def distKind( self ):
         d, _ = fv.dist( self.race_data[13] )
         return d
 
     def answer( self ):
         a = []
-        a.append( fv.data_check( self.race_data[10] ) )
+        a.append( fv.dataCheck( self.race_data[10] ) )
 
         try:
             a.append( float( self.race_data[8] ) )
         except:
             a.append( 0.0 )
 
-        a.append( fv.data_check( self.race_data[9] ) )
+        a.append( fv.dataCheck( self.race_data[9] ) )
         
         return a
 
-    def jockey_name_get( self ):
+    def jockeyNameGet( self ):
         return self.race_data[11].replace( " ", "" )
 
-    def race_id( self ):
+    def raceId( self ):
         result = ""
         day = ""
         num = ""
@@ -195,7 +195,7 @@ class current_data():
         if len( race_place_num ) == 1:
             race_place_num = "0" + race_place_num
 
-        race_num = str( int( self.race_num() ) )
+        race_num = str( int( self.raceNum() ) )
 
         if len( race_num ) == 1:
             race_num = "0" + race_num
@@ -204,7 +204,7 @@ class current_data():
 
         return result        
     
-    def jockey_data( self, jockey_data_stprage ):
+    def jockeyData( self, jockey_data_stprage ):
         jockey_name = self.race_data[11]
         y = self.race_data[0].split( "/" )
         year = ""
@@ -232,24 +232,24 @@ class current_data():
 
         return result
 
-    def race_time( self ):
+    def raceTime( self ):
         return fv.time( self.race_data[15] ) * 60
 
     def speed( self ):
-        race_time = self.race_time()
+        race_time = self.raceTime()
         dist = self.dist()
 
         return race_time / dist
 
-    def race_check( self ):
+    def raceCheck( self ):
         if not len( self.race_data ) == 22:
             return False
         elif self.popular() == 0:
             return False
         elif self.place() == 0:
             return False
-        elif not self.race_kind() == 1 \
-             and not self.race_kind() == 2:
+        elif not self.raceKind() == 1 \
+             and not self.raceKind() == 2:
             return False
         elif self.answer()[1] == 0 \
              or self.answer()[0] == 0:
@@ -257,7 +257,7 @@ class current_data():
 
         return True
         
-    def new_check( self ):
+    def newCheck( self ):
         word = "新馬"
         count = 0
         check = False

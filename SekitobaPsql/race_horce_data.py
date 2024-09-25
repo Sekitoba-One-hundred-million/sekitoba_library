@@ -99,7 +99,7 @@ class RaceHorceData:
         insert_data = []
 
         for k in race_data.keys():
-            race_id = lib.id_get( k )
+            race_id = lib.idGet( k )
             
             if self.pc.exist_data( self.table_name, "race_id", race_id ):
                 continue

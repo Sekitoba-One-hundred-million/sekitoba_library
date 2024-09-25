@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 
 driver_login_check = False
 
-def netkeiba_login():
+def netkeibaLogin():
     f = open( expanduser( "~" ) + "/.pwd/password.txt" )
     str_data = f.readlines()
     str_data = str_data[0].replace( "\n", "" ).split( " " )
@@ -47,21 +47,21 @@ def request( url, cookie = None ):
 
     return 0, False
 
-def driver_start():
+def driverStart():
     driver = webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
     return driver
 
 @timeout_decorator.timeout( 10 )
-def driver_get( driver, url ):
+def driverGet( driver, url ):
     driver.get( url )
     return driver
 
-def driver_request( driver, url ):
+def driverRequest( driver, url ):
     driver.set_page_load_timeout( 20 )
 
     for i in range( 0, 10 ):
         try:
-            driver = driver_get( driver, url )
+            driver = driverGet( driver, url )
             break
         except timeout_decorator.timeout_decorator.TimeoutError:
             return driver, False
@@ -78,7 +78,7 @@ def login( driver ):
 
     mail = str_data[0]
     password = str_data[1]
-    driver, _ = driver_request( driver, 'https://regist.netkeiba.com/account/?pid=login' )
+    driver, _ = driverRequest( driver, 'https://regist.netkeiba.com/account/?pid=login' )
     time.sleep( 1 )
     
     id_box = driver.find_element( By.NAME, "login_id" )

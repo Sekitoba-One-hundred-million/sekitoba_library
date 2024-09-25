@@ -3,7 +3,6 @@ import math
 from statistics import stdev
 
 import SekitobaLibrary.current_race_data as crd
-import SekitobaLibrary.past_race_data as prd
 
 base_abort = -1000
 split_key = "race_id="
@@ -15,7 +14,7 @@ simu_years = [ test_years[2], test_years[3] ]
 predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3" ]
 prod_check = False
 
-def test_year_check( year, state ):
+def testYearCheck( year, state ):
     if ( state == "optuna" and year in valid_years ) \
        or ( state == "test" and ( year in valid_years or year in score_years ) ) \
        or ( state == "prod" and year in simu_years ):
@@ -26,55 +25,52 @@ def test_year_check( year, state ):
 
     return "teacher"
 
-def id_get( url ):
+def idGet( url ):
     s_data = url.split( split_key )
     return s_data[len(s_data)-1]
 
-def race_data_key_get( race_id ):
-    return "https://race.netkeiba.com/race/shutuba.html?race_id=" + race_id
-
-def current_check( current_data ):
+def currentCheck( current_data ):
     if len( current_data ) == 22:
         return True
 
     return False
     
-def dic_append( dic, word, data ):
+def dicAppend( dic, word, data ):
     if not word in dic:
         dic[word] = data
 
-def text_replace( text: str ):
+def textReplace( text: str ):
     return text.replace( " ", "" ).replace( "\n", "" )
 
-def str_math_pull( text: str ):
+def strMathPull( text: str ):
     result = ""
-    
+
     for t in text:
         if str.isdecimal( t ):
             result += t
 
     return result
 
-def math_check( text: str ):
+def mathCheck( text: str ):
     try:
         return float( text )
     except:
         return 0
 
-def padding_str_math( text: str ):
+def paddingStrMath( text: str ):
     if len( text ) == 1:
         return "0" + text
 
     return text
 
-def recovery_score_check( data: dict ):
+def recoveryScoreCheck( data: dict ):
     max_score = 5
     result = {}
     year_list = list( data.keys() )
     k_list = list( data[year_list[0]].keys() )
     
     for k in k_list:
-        dic_append( result, k, 0 )
+        dicAppend( result, k, 0 )
         for year in year_list:
             score = 0
 
@@ -111,17 +107,6 @@ def softmax( data ):
 
     return result
 
-def softmax_test( data ):
-    result = []
-    sum_data = 0
-    value_max = max( data )
-    value_min = min( data )
-
-    for i in range( 0, len( data ) ):
-        result.append( ( data[i] - value_min ) / ( value_max - value_min ) )
-
-    return result
-
 def normalization( data ):
     result = []
 
@@ -146,7 +131,7 @@ def normalization( data ):
 
     return result
 
-def deviation_value( data, remove_data ):
+def deviationValue( data, remove_data ):
     result = [ 50 ] * len( data )
     average = 0
     stde = 0
@@ -198,7 +183,7 @@ def deviation_value( data, remove_data ):
 
     return result
 
-def regression_line( data ):
+def regressionLine( data ):
     a = 0
     #b = 0
     y_ave = 0
@@ -227,7 +212,7 @@ def regression_line( data ):
 
     return a, b
 
-def xy_regression_line( x_data, y_data ):
+def xyRegressionLine( x_data, y_data ):
     a = 0
     #b = 0
     y_ave = 0
@@ -255,13 +240,13 @@ def xy_regression_line( x_data, y_data ):
 
     return a, b
 
-def race_check( all_data, race_day ):
+def raceCheck( all_data, race_day ):
     current_data = []
     past_data = []
     current_time = int( race_day["year"] * 365 + race_day["month"] * 30 + race_day["day"] )
     check = False
 
-    def day_check( str_day ):
+    def dayCheck( str_day ):
         day_result = ""
         split_day = str_day.split( "/" )
 
@@ -282,7 +267,7 @@ def race_check( all_data, race_day ):
     for i in range( 0, len( all_data ) ):        
         str_data = all_data[i]
         str_day = str_data[0]
-        dc = day_check( str_day )
+        dc = dayCheck( str_day )
 
         if dc == "C":
             current_data = str_data
@@ -331,7 +316,7 @@ def stdev( data, abort = [ base_abort ] ):
     return math.sqrt( std_data / count )
 
 def minimum( data, abort = [ base_abort ] ):
-    min_data = max_check( data )
+    min_data = maxCheck( data )
 
     for d in data:
         if d in abort:
@@ -373,7 +358,7 @@ def standardization( data, abort = [ base_abort ] ):
 
     return result
 
-def deviation_value( data, abort = [ -1000 ] ):
+def deviationValue( data, abort = [ -1000 ] ):
     result = []
     abort_index = []
 
@@ -415,13 +400,13 @@ def deviation_value( data, abort = [ -1000 ] ):
 
     return result
 
-def next_race( all_data, ymd ) -> crd.current_data:
+def nextRace( all_data, ymd ) -> crd.CurrentData:
     next_cd = None
     
     for str_data in all_data:
-        cd = crd.current_data( str_data )
+        cd = crd.CurrentData( str_data )
 
-        if not cd.race_check():
+        if not cd.raceCheck():
             continue
 
         birthday = cd.birthday()
@@ -441,7 +426,7 @@ def next_race( all_data, ymd ) -> crd.current_data:
 
     return next_cd
 
-def place_check( place_num ):
+def placeCheck( place_num ):
     if int( place_num ) == 1:
         return "札幌"
     elif int( place_num ) == 2:
@@ -465,40 +450,6 @@ def place_check( place_num ):
 
     return "None"
 
-def horce_name_replace( horce_name ):
-    horce_name = horce_name.replace( "○外", "" )
-    horce_name = horce_name.replace( "○地", "" )
-    horce_name = horce_name.replace( "□地", "" )
-    horce_name = horce_name.replace( "□外", "" )
-    horce_name = horce_name.replace( "○父", "" )
-
-    return horce_name
-
-def key_siniar( data, key ):
-    result = ""
-    max_count = -1
-
-    for k in data.keys():
-        count = 0
-        
-        for i in range( 0, min( len( k ), len( key ) ) ):
-            if k[i] == key[i]:
-                count += 1
-
-        if max_count < count:
-            max_count = count
-            result = k
-
-    return result
-
-def key_zero( dic, data, key ):
-    try:
-        data.append( dic[key] )
-    except:
-        data.append( 0 )
-
-    return data
-
 def conv( data_list, ave = None ):
     if len( data_list ) == 0:
         return -1000
@@ -516,123 +467,19 @@ def conv( data_list, ave = None ):
 
     return result
 
-def speed_standardization( data ):
-    result = []
-    ave = 0
-    conv = 0
-    count = 0
-
-    for d in data:
-        if d < 0:
-            continue
-        
-        ave += d
-        count += 1
-
-    if count == 0:
-        return [0] * len( data )
-
-    ave /= count
-
-    for d in data:
-        if d < 0:
-            continue
-
-        conv += math.pow( d - ave, 2 )
-
-    conv /= count
-    conv = math.sqrt( conv )
-
-    if conv == 0:
-        return [0] * len( data )
-    
-    for d in data:
-        if d < 0:
-            result.append( 0 )
-        else:
-            result.append( ( d - ave ) / conv )
-
-    return result
-
-def max_check( data ):
+def maxCheck( data ):
     try:
         return max( data )
     except:
         return -1000
 
-def min_check( data ):
+def minCheck( data ):
     try:
         return min( data )
     except:
         return 1000
 
-def match_rank_score( target_pd: prd.past_data, \
-                     cd: crd.current_data, \
-                     place = None, \
-                     baba_status = None, \
-                     dist_kind = None ):
-    count = 0
-    score = 0
-
-    if not cd == None:
-        place = cd.place()
-        baba_status = cd.baba_status()
-        dist_kind = cd.dist_kind()
-            
-    for target_cd in target_pd.past_cd_list():
-        c = 0
-                
-        if target_cd.place() == place:
-            c += 1
-                
-        if target_cd.baba_status() == baba_status:
-            c += 1
-
-        if target_cd.dist_kind() == dist_kind:
-            c += 1
-
-        count += c
-        score += target_cd.rank() * c
-
-    if not count == 0:
-        score /= count
-                
-    return int( score )
-
-def foot_used_create( current_wrap ):
-    score = 0
-    
-    if len( current_wrap ) == 0:
-        return score
-    
-    key_list = list( current_wrap.keys() )
-    wrap_key_list = []
-
-    for wrap_key in key_list:
-        wrap_key_list.append( int( wrap_key ) )
-
-    s1 = len( wrap_key_list ) - 4
-    s2 = len( wrap_key_list )
-    wrap_key_list = sorted( wrap_key_list )
-    use_wrap_key_list = wrap_key_list[s1:s2]
-
-    if not len( use_wrap_key_list ) == 4:
-        return score
-
-    check_wrap_list = []
-    for wrap_key in use_wrap_key_list:
-        key = str( wrap_key )
-        check_wrap_list.append( current_wrap[key] )
-
-    score = min( check_wrap_list )
-    foot_score = 1 #long
-
-    if score < 11.6:
-        foot_score = 2 #change
-
-    return foot_score
-
-def one_hundred_pace( wrap_data ):
+def oneHundredPace( wrap_data ):
     wrap_list = []
         
     if len( wrap_data ) == 0:
@@ -670,14 +517,14 @@ def one_hundred_pace( wrap_data ):
 
     return wrap_list
 
-def pace_regression( wrap_data ):
+def paceRegression( wrap_data ):
     N = len( wrap_data )
-    a, b = regression_line( wrap_data )
-    berfore_a, _ = regression_line( wrap_data[0:int(N/2)] )
-    after_a, _ = regression_line( wrap_data[int(N/2):N] )
+    a, b = regressionLine( wrap_data )
+    berfore_a, _ = regressionLine( wrap_data[0:int(N/2)] )
+    after_a, _ = regressionLine( wrap_data[int(N/2):N] )
     return a, berfore_a, after_a
 
-def pace_data( current_wrap ):
+def paceData( current_wrap ):
     wrap_key_list = list( current_wrap.keys() )
     n = len( wrap_key_list )
 
@@ -705,7 +552,7 @@ def pace_data( current_wrap ):
 
     return before_time - after_time
 
-def before_after_pace( current_wrap ):
+def beforeAfterPace( current_wrap ):
     wrap_key_list = list( current_wrap.keys() )
     n = len( wrap_key_list )
 
@@ -733,7 +580,7 @@ def before_after_pace( current_wrap ):
 
     return before_time, after_time
 
-def kind_score_get( data, key_list, key_data, base_key ):
+def kindScoreGet( data, key_list, key_data, base_key ):
     score = 0
     count = 0
     

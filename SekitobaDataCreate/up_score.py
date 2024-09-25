@@ -9,9 +9,9 @@ class UpScore:
         self.b = regression["b"]
 
     def score_get( self, pd ):
-        up_list = pd.up_list()
+        up_list = pd.upList()
         pace_list = pd.pace_list()
-        day_list = pd.past_day_list()
+        day_list = pd.pastDayList()
         score = 0
         count = 0
         

@@ -10,91 +10,91 @@ race_ave_true_skill_data = ps.RaceData().get_select_data( "race_ave_true_skill" 
 corner_horce_body_data = ps.RaceData().get_select_data( "corner_horce_body" )
 wrap_data = ps.RaceData().get_select_data( "wrap" )
 
-class past_data():
+class PastData():
     def __init__( self, past_data,\
                  current_data,\
                  race_data: ps.RaceData ):
         self.past_data = past_data
-        self.cd = crd.current_data( current_data )
+        self.cd = crd.CurrentData( current_data )
         self.race_data: ps.RaceData = race_data        
         self.base_loaf_weight = 55
 
-    def set_up3_analyze_data( self, up3_analyze ):
+    def setUp3AnalyzeData( self, up3_analyze ):
         self.race_data.data["up3_analyze"] = up3_analyze
         
-    def diff_get( self ):
+    def diffGet( self ):
         try:
-            return fv.data_check( self.past_data[0][16] )
+            return fv.dataCheck( self.past_data[0][16] )
         except:
             return 0
 
     def rank( self ):
         try:
-            return fv.data_check( self.past_data[0][10] )
+            return fv.dataCheck( self.past_data[0][10] )
         except:
             return 0
 
-    def past_cd_list( self ) -> list[ crd.current_data ]:
+    def pastCdList( self ) -> list[ crd.CurrentData ]:
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             result.append( past_cd )
 
         return result        
 
-    def before_cd( self ) -> crd.current_data:
+    def beforeCd( self ) -> crd.CurrentData:
         result = None
 
         if len( self.past_data ) == 0:
             return result
 
         for i in range( 0, len( self.past_data ) ):
-            cd = crd.current_data( self.past_data[i] )
+            cd = crd.CurrentData( self.past_data[i] )
 
-            if cd.race_check():
+            if cd.raceCheck():
                 result = cd
                 break
 
         return result     
 
-    def rank_list( self ):
+    def rankList( self ):
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             result.append( past_cd.rank() )
 
         return result
 
-    def all_horce_num_list( self ):
+    def allHorceNumList( self ):
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
-            result.append( past_cd.all_horce_num() )
+            result.append( past_cd.allHorceNum() )
 
         return result
         
-    def past_day_list( self ):
+    def pastDayList( self ):
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             result.append( past_cd.birthday() )
@@ -102,25 +102,25 @@ class past_data():
         return result
     
     #過去3レースの平均順位(3レース以下の場合あり)
-    def three_average( self ):
+    def threeAverage( self ):
         rank = 0.0
         count = min( len( self.past_data ), 3 )
 
         for i in range( 0, count ):
-            past_cd = crd.current_data( self.past_data[i] )
-            rank += fv.data_check( past_cd.rank() )
+            past_cd = crd.CurrentData( self.past_data[i] )
+            rank += fv.dataCheck( past_cd.rank() )
 
         if not count == 0:
             rank /= count
             
         return rank
 
-    def three_difference( self ):
+    def threeDifference( self ):
         diff = 0.0
         count = min( len( self.past_data ), 3 )
 
         for i in range( 0, count ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             diff = past_cd.rank() * past_cd.diff()
             
         if not count == 0:
@@ -129,17 +129,17 @@ class past_data():
         return diff
             
     #過去同じ距離の種類での平均順位(1つもなかったら0)
-    def dist_rank_average( self, d_kind = None ):
+    def distRankAverage( self, d_kind = None ):
         rank = 0.0
         count = 0.0
 
         if d_kind == None:
-            d_kind = self.cd.dist_kind()
+            d_kind = self.cd.distKind()
 
         if not d_kind == 0:
             for i in range( 0, len( self.past_data ) ):
-                past_cd = crd.current_data( self.past_data[i] )
-                d = past_cd.dist_kind()
+                past_cd = crd.CurrentData( self.past_data[i] )
+                d = past_cd.distKind()
 
                 if d_kind == d:
                     rank += past_cd.rank()
@@ -150,17 +150,17 @@ class past_data():
 
         return rank
 
-    def racekind_rank_average( self, r_kind = None  ):
+    def raceKindRankAverage( self, r_kind = None  ):
         rank = 0.0
         count = 0.0
 
         if r_kind == None:
-            r_kind = self.cd.race_kind()
+            r_kind = self.cd.raceKind()
 
         if not r_kind == 0:
             for i in range( 0, len( self.past_data ) ):
-                past_cd = crd.current_data( self.past_data[i] )
-                r = past_cd.race_kind()
+                past_cd = crd.CurrentData( self.past_data[i] )
+                r = past_cd.raceKind()
 
                 if r_kind == r:
                     rank += past_cd.rank()
@@ -172,17 +172,17 @@ class past_data():
         return rank
 
     #過去同じ馬場状態での平均順位(1つもなかったら0)
-    def baba_rank_average( self, baba = None ):
+    def babaRankAverage( self, baba = None ):
         rank = 0.0
         count = 0.0
 
         if baba == None:
-            baba = self.cd.baba_status()
+            baba = self.cd.babaStatus()
 
         if not baba == 0:
             for i in range( 0, len( self.past_data ) ):
-                past_cd = crd.current_data( self.past_data[i] )
-                b = past_cd.baba_status()
+                past_cd = crd.CurrentData( self.past_data[i] )
+                b = past_cd.babaStatus()
 
                 if baba == b:
                     rank += past_cd.rank()
@@ -194,16 +194,16 @@ class past_data():
         return rank
 
     #過去同じ騎手での平均順位(1つもなかったら0)
-    def jockey_rank_average( self, jockey = None ):
+    def JockeyRankAverage( self, jockey = None ):
         rank = 0.0
         count = 0.0
 
         if jockey == None:
-            jockey = self.cd.jockey_name_get()
+            jockey = self.cd.jockeyNameGet()
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
-            j = past_cd.jockey_name_get()
+            past_cd = crd.CurrentData( self.past_data[i] )
+            j = past_cd.jockeyNameGet()
             
             if jockey == j:
                 rank += past_cd.rank()
@@ -215,18 +215,18 @@ class past_data():
         return rank
 
     #過去同じ天気での平均順位(1つもなかったら0)
-    def weather_rank_average( self ):
+    def weatherRankAverage( self ):
         rank = 0.0
         count = 0.0
         weather = self.cd.weather()
 
         if not weather == 0:
             for i in range( 0, len( self.past_data ) ):
-                past_cd = crd.current_data( self.past_data[i] )
+                past_cd = crd.CurrentData( self.past_data[i] )
                 w = past_cd.weather()
 
                 if weather == w:
-                    rank += fv.data_check( self.past_data[i][10] )
+                    rank += fv.dataCheck( self.past_data[i][10] )
                     count += 1
 
             if not count == 0:
@@ -235,13 +235,13 @@ class past_data():
         return rank
 
     #過去同じ競馬場での平均順位(1つもなかったら0)
-    def place_rank_average( self ):
+    def placeRankAverage( self ):
         rank = 0.0
         count = 0.0
         place = self.cd.place()
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
             if past_cd.place() == place:
                 rank += past_cd.rank()
@@ -252,25 +252,25 @@ class past_data():
 
         return rank
 
-    def match_rank( self ):
-        baba = self.cd.baba_status()
-        dist_kind = fv.dist_check( self.cd.dist() * 1000 )
+    def matchRank( self ):
+        baba = self.cd.babaStatus()
+        dist_kind = fv.distCheck( self.cd.dist() * 1000 )
         place = self.cd.place()
         rank = 0
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             c = 0
 
-            if baba == past_cd.baba_status():
+            if baba == past_cd.babaStatus():
                 c += 1
 
-            if dist_kind == fv.dist_check( past_cd.dist() * 1000 ):
+            if dist_kind == fv.distCheck( past_cd.dist() * 1000 ):
                 c += 1
 
             if place == past_cd.place():
@@ -284,31 +284,31 @@ class past_data():
 
         return rank
 
-    def match_up3( self ):
-        baba = self.cd.baba_status()
-        dist_kind = fv.dist_check( self.cd.dist() * 1000 )
+    def matchUp3( self ):
+        baba = self.cd.babaStatus()
+        dist_kind = fv.distCheck( self.cd.dist() * 1000 )
         place = self.cd.place()
         up3 = 0
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             c = 0
 
-            if baba == past_cd.baba_status():
+            if baba == past_cd.babaStatus():
                 c += 1
 
-            if dist_kind == fv.dist_check( past_cd.dist() * 1000 ):
+            if dist_kind == fv.distCheck( past_cd.dist() * 1000 ):
                 c += 1
 
             if place == past_cd.place():
                 c += 1
 
-            up3 += past_cd.up_time() * c
+            up3 += past_cd.upTime() * c
             count += c
 
         if not count == 0:
@@ -316,52 +316,52 @@ class past_data():
 
         return up3
 
-    def max_up3( self ):
+    def maxUp3( self ):
         up3 = -1
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
-            up3 = max( past_cd.up_time(), up3 )
+            up3 = max( past_cd.upTime(), up3 )
 
         return up3
 
-    def min_up3( self ):
+    def minUp3( self ):
         up3 = 1000
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
-            up3 = min( past_cd.up_time(), up3 )
+            up3 = min( past_cd.upTime(), up3 )
 
         return up3
 
-    def dist_kind_count( self, dist_kind = None ):
+    def distKindCount( self, dist_kind = None ):
         count = 0
         
         if dist_kind == None:
-            dist_kind = fv.dist_check( self.cd.dist() * 1000 )
+            dist_kind = fv.distCheck( self.cd.dist() * 1000 )
         
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if dist_kind == fv.dist_check( past_cd.dist() * 1000 ):
+            if dist_kind == fv.distCheck( past_cd.dist() * 1000 ):
                 count += 1
 
         return count
 
-    def three_rate( self ):
+    def threeRate( self ):
         count = 0.0
         rank = 0.0
         
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
             if not past_cd.rank() == 0:
                 count += 1
@@ -374,12 +374,12 @@ class past_data():
 
         return rank
 
-    def two_rate( self ):
+    def twoRate( self ):
         count = 0.0
         rank = 0.0
         
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
             if not past_cd.rank() == 0:
                 count += 1
@@ -392,12 +392,12 @@ class past_data():
 
         return rank
 
-    def one_rate( self ):
+    def oneRate( self ):
         count = 0.0
         rank = 0.0
         
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
             if not past_cd.rank() == 0:
                 count += 1
@@ -410,10 +410,10 @@ class past_data():
 
         return rank
 
-    def get_money( self ):
+    def getMoney( self ):
         money_data = 0
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
             try:
                 money_data += past_cd.money()
@@ -422,41 +422,41 @@ class past_data():
 
         return money_data
 
-    def race_id_get( self ):
+    def raceIdGet( self ):
         result = []
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
-            result.append( past_cd.race_id() )
+            result.append( past_cd.raceId() )
 
         return result
 
-    def up_list( self ):
+    def upList( self ):
         result = []
         
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
-            up_time = past_cd.up_time()            
+            up_time = past_cd.upTime()            
             result.append( up_time )
 
         return result            
 
-    def max_time_point( self, race_time_analyze_data ):
+    def maxTimePoint( self, race_time_analyze_data ):
         max_time_point = -1000
 
         for i in range( 0, min( len( self.past_data ), 5 ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
-            if past_cd.race_check():
+            if past_cd.raceCheck():
                 key_place_num = str( past_cd.place() )
-                race_time = past_cd.race_time()
+                race_time = past_cd.raceTime()
                 key_dist = str( int( past_cd.dist() * 1000 ) )
 
                 if key_place_num in race_time_analyze_data and \
@@ -468,18 +468,18 @@ class past_data():
 
         return max_time_point
 
-    def max_up3_time_point( self, key_limb ):
+    def maxUp3TimePoint( self, key_limb ):
         max_time_point = -1000
-        race_id = self.cd.race_id()
+        race_id = self.cd.raceId()
 
         for i in range( 0, min( len( self.past_data ), 5 ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
-            if past_cd.race_check():
+            if past_cd.raceCheck():
                 key_place_num = str( int( past_cd.place() ) )
-                key_kind = str( int( past_cd.race_kind() ) )
-                key_dist_kind = str( int( past_cd.dist_kind() ) )
-                up_time = past_cd.up_time()
+                key_kind = str( int( past_cd.raceKind() ) )
+                key_dist_kind = str( int( past_cd.distKind() ) )
+                up_time = past_cd.upTime()
 
                 if key_place_num in self.race_data.data["up3_analyze"] and \
                   key_kind in self.race_data.data["up3_analyze"][key_place_num] and \
@@ -500,22 +500,22 @@ class past_data():
         return max_time_point
 
     #過去のスペード指数をlistで返す
-    def speed_index( self, baba_index_data ):
+    def speedIndex( self, baba_index_data ):
         speed_index_data = []
         up_speed_index_data = []
         pace_speed_index_data = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             
-            if past_cd.race_check():
-                kind_num = str( past_cd.race_kind() )
+            if past_cd.raceCheck():
+                kind_num = str( past_cd.raceKind() )
                 place_num = str( past_cd.place() )
-                race_time = past_cd.race_time()
-                up_time = past_cd.up_time()
+                race_time = past_cd.raceTime()
+                up_time = past_cd.upTime()
                 dist = str( int( past_cd.dist() * 1000 ) )
-                loaf_weight = past_cd.burden_weight()
-                key_baba = str( int( past_cd.baba_status() ) )
+                loaf_weight = past_cd.burdenWeight()
+                key_baba = str( int( past_cd.babaStatus() ) )
                 speed_index = -100
                 up_speed_index = -100
                 pace_speed_index = -100
@@ -550,9 +550,9 @@ class past_data():
                     up_speed_index += baba_index_data[past_cd.birthday()] / ( self.race_data.data["dist_index"][dist] + 1 )
                     pace_speed_index += baba_index_data[past_cd.birthday()] / ( self.race_data.data["dist_index"][dist] + 1 )
                 except:
-                    speed_index += fv.baba_index( key_baba )
-                    up_speed_index += fv.baba_index( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
-                    pace_speed_index += fv.baba_index( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
+                    speed_index += fv.babaIndex( key_baba )
+                    up_speed_index += fv.babaIndex( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
+                    pace_speed_index += fv.babaIndex( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
 
                 speed_index_data.append( speed_index )
                 up_speed_index_data.append( up_speed_index )
@@ -560,12 +560,12 @@ class past_data():
 
         return speed_index_data, up_speed_index_data, pace_speed_index_data
     
-    def best_weight( self, current_weight = None ):
+    def bestWeight( self, current_weight = None ):
         all_w = 0
         count = 0
         
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
             weight = past_cd.weight()
 
             if weight == 0:
@@ -600,7 +600,7 @@ class past_data():
 
     def race_interval( self, ymd = None ):
         if not len( self.past_data ) == 0:
-            past_cd = crd.current_data( self.past_data[0] )
+            past_cd = crd.CurrentData( self.past_data[0] )
             p_ymd = past_cd.ymd()
             interval = 0
 
@@ -624,14 +624,14 @@ class past_data():
         up_change = 50
 
         if not len( self.past_data ) == 0:
-            past_cd = crd.current_data( self.past_data[0] )
-            race_time = past_cd.race_time()
+            past_cd = crd.CurrentData( self.past_data[0] )
+            race_time = past_cd.raceTime()
             dist = past_cd.dist()
-            race_kind = past_cd.race_kind()
+            race_kind = past_cd.raceKind()
             key_place_num = str( int( past_cd.place() ) )
             key_race_kind = str( int ( race_kind ) )
             key_dist = str( int( dist * 1000 ) )
-            up_time = past_cd.up_time()
+            up_time = past_cd.upTime()
 
             if up_time == 0:
                 return up_change
@@ -650,12 +650,12 @@ class past_data():
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
-            result.append( past_cd.passing_rank() )
+            result.append( past_cd.passingRank() )
 
         return result
 
@@ -664,12 +664,12 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
-            passing_rank = past_cd.passing_rank().split( "-" )
+            passing_rank = past_cd.passingRank().split( "-" )
             ok = True
 
             for r in range( 0, len( passing_rank ) ):
@@ -682,7 +682,7 @@ class past_data():
             if len( passing_rank ) < 2 or not ok:
                 continue
             
-            a, _ = lib.regression_line( passing_rank )
+            a, _ = lib.regressionLine( passing_rank )
             result += a
             count += 1
 
@@ -697,13 +697,13 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             try:
-                passing_rank = past_cd.passing_rank()
+                passing_rank = past_cd.passingRank()
                 first_rank = float( passing_rank.split( "-" )[0] )
             except:
                 continue
@@ -721,13 +721,13 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             try:
-                passing_rank = past_cd.passing_rank()
+                passing_rank = past_cd.passingRank()
                 last_rank = float( passing_rank.split( "-" )[-1] )
             except:
                 continue
@@ -745,10 +745,10 @@ class past_data():
         count = 0
         
         for i in range( 0, min( len( self.past_data ), 5 ) ):
-            past_cd = crd.current_data( self.past_data[0] )
+            past_cd = crd.CurrentData( self.past_data[0] )
             
-            if past_cd.race_check():
-                race_time = past_cd.race_time()
+            if past_cd.raceCheck():
+                race_time = past_cd.raceTime()
                 dist = past_cd.dist()
 
                 if not race_time == 0 \
@@ -766,15 +766,15 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             rank = past_cd.rank()
             
             try:
-                passing_rank = past_cd.passing_rank()
+                passing_rank = past_cd.passingRank()
                 first_rank = float( passing_rank.split( "-" )[0] )
             except:
                 continue
@@ -793,15 +793,15 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
             
             rank = past_cd.rank()
             
             try:
-                passing_rank = past_cd.passing_rank()
+                passing_rank = past_cd.passingRank()
                 second_rank = float( passing_rank.split( "-" )[1] )
             except:
                 continue
@@ -820,9 +820,9 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
             pace1, pace2 = past_cd.pace()
@@ -842,9 +842,9 @@ class past_data():
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
             result.append( past_cd.dist() )
@@ -855,12 +855,12 @@ class past_data():
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
-            result.append( past_cd.race_time() )
+            result.append( past_cd.raceTime() )
 
         return result
 
@@ -868,9 +868,9 @@ class past_data():
         result = []
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
             result.append( past_cd.pace() )
@@ -882,21 +882,21 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
             pace1, pace2 = past_cd.pace()
             diff_pace = pace1 - pace2
-            str_passing = past_cd.passing_rank()
+            str_passing = past_cd.passingRank()
 
             try:
                 first_passing_rank = float( str_passing.split( "-" )[0] )
             except:
                 continue
 
-            all_horce_num = past_cd.all_horce_num()
+            all_horce_num = past_cd.allHorceNum()
 
             if all_horce_num == 0:
                 continue
@@ -917,15 +917,15 @@ class past_data():
         
         for i in range( 0, len( self.past_data ) ):
             if len( self.past_data[i] ) == 22:                
-                past_cd = crd.current_data( self.past_data[i] )
+                past_cd = crd.CurrentData( self.past_data[i] )
                 dist = past_cd.dist()
-                race_kind = past_cd.race_kind()
+                race_kind = past_cd.raceKind()
 
-                if past_cd.race_check() \
+                if past_cd.raceCheck() \
                   and not dist == 0 \
                   and not race_kind == 0:
                     pace1, pace2 = past_cd.pace()
-                    up_time = past_cd.up_time()
+                    up_time = past_cd.upTime()
                     key_race_kind = str( int ( race_kind ) )
                     key_dist = str( int( dist * 1000 ) )
                     try:
@@ -943,8 +943,8 @@ class past_data():
         result["rank"] = []
 
         for i in range( len( self.past_data ) ):
-            if lib.current_check( self.past_data[i] ):
-                past_cd = crd.current_data( self.past_data[i] )
+            if lib.currentCheck( self.past_data[i] ):
+                past_cd = crd.CurrentData( self.past_data[i] )
                 ymd = past_cd.ymd()
 
                 if 2008 < int( ymd[0] ):
@@ -953,7 +953,7 @@ class past_data():
                     
                     try:
                         weather_key = ymd[0] + "/" + str( int( ymd[1] ) ) + "/" + str( int( ymd[2] ) )
-                        rank = float( past_cd.rank() / past_cd.all_horce_num() )
+                        rank = float( past_cd.rank() / past_cd.allHorceNum() )
                         temp = weather_data[weather_key]["temperature"]
                     except:
                         continue
@@ -967,9 +967,9 @@ class past_data():
         result = -1000
         
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
             if result == -1000:
@@ -987,12 +987,12 @@ class past_data():
         count = 0
 
         for i in range( 0, len( self.past_data ) ):
-            past_cd = crd.current_data( self.past_data[i] )
+            past_cd = crd.CurrentData( self.past_data[i] )
 
-            if not past_cd.race_check():
+            if not past_cd.raceCheck():
                 continue
 
-            passing_rank = past_cd.passing_rank()
+            passing_rank = past_cd.passingRank()
             split_passing_rank = passing_rank.split( "-" )
 
             if len( split_passing_rank ) < 2:
@@ -1015,11 +1015,11 @@ class past_data():
         count = 0
         result = 0
         
-        for past_cd in self.past_cd_list():
-            if not past_cd.race_check():
+        for past_cd in self.pastCdList():
+            if not past_cd.raceCheck():
                 continue
 
-            diff_rank = past_cd.first_result_diff()
+            diff_rank = past_cd.firstResultDiff()
 
             if diff_rank == -1000:
                 continue
@@ -1036,11 +1036,11 @@ class past_data():
         count = 0
         result = 0
         
-        for past_cd in self.past_cd_list():
-            if not past_cd.race_check():
+        for past_cd in self.pastCdList():
+            if not past_cd.raceCheck():
                 continue
 
-            diff_rank = past_cd.last_result_diff()
+            diff_rank = past_cd.lastResultDiff()
 
             if diff_rank == -1000:
                 continue
@@ -1056,28 +1056,28 @@ class past_data():
     def pace_up_rate( self ):
         pace_up_rate_list = []
         
-        for past_cd in self.past_cd_list():
-            if not past_cd.race_check():
+        for past_cd in self.pastCdList():
+            if not past_cd.raceCheck():
                 continue
 
-            past_race_id = past_cd.race_id()
+            past_race_id = past_cd.raceId()
 
             if not past_race_id in wrap_data or len( wrap_data[past_race_id]["wrap"] ) == 0:
                 continue
 
-            one_hudred_wrap = lib.one_hundred_pace( wrap_data[past_race_id]["wrap"] )
+            one_hudred_wrap = lib.oneHundredPace( wrap_data[past_race_id]["wrap"] )
             last_up3 = sum( one_hudred_wrap[int(len(one_hudred_wrap)-6):len(one_hudred_wrap)] )
             
             if last_up3 <= 0:
                 continue
 
-            pace_up_rate_list.append( past_cd.up_time() / last_up3 )
+            pace_up_rate_list.append( past_cd.upTime() / last_up3 )
 
         result = {}
         result["ave"] = lib.average( pace_up_rate_list )
         result["conv"] = lib.conv( pace_up_rate_list )
-        result["max"] = lib.max_check( pace_up_rate_list )
-        result["min"] = lib.min_check( pace_up_rate_list )
+        result["max"] = lib.maxCheck( pace_up_rate_list )
+        result["min"] = lib.minCheck( pace_up_rate_list )
 
         return result
 
@@ -1085,7 +1085,7 @@ class past_data():
         PLACE_DIST = "place_dist"
         BABA = "baba"
         MONEY = "money"
-        race_id = self.cd.race_id()
+        race_id = self.cd.raceId()
 
         if not MONEY in up_kind_ave_data or \
           not race_money_rank in up_kind_ave_data[MONEY]:
@@ -1095,11 +1095,11 @@ class past_data():
         result = 0
         count = 0
         
-        for past_cd in self.past_cd_list():
-            if not past_cd.race_check():
+        for past_cd in self.pastCdList():
+            if not past_cd.raceCheck():
                 continue
                 
-            baba = str( int( past_cd.baba_status() ) )
+            baba = str( int( past_cd.babaStatus() ) )
             dist = str( int( past_cd.dist() * 1000 ) )
             place = str( int( past_cd.place() ) )
 
@@ -1109,7 +1109,7 @@ class past_data():
             if not place in up_kind_ave_data[PLACE_DIST] or not dist in up_kind_ave_data[PLACE_DIST][place]:
                 continue
 
-            up_time = past_cd.up_time()
+            up_time = past_cd.upTime()
 
             if up_time == 0:
                 continue
@@ -1134,8 +1134,8 @@ class past_data():
         c = 0
         score = 0
         
-        for past_cd in self.past_cd_list():
-            past_race_id = past_cd.race_id()
+        for past_cd in self.pastCdList():
+            past_race_id = past_cd.raceId()
 
             if not past_race_id in race_ave_true_skill_data:
                 continue
@@ -1148,7 +1148,7 @@ class past_data():
             if past_rank == 0:
                 continue
 
-            key_past_money_class = str( int( fv.money_class_get( race_money_data[past_race_id]["money"] ) ) )
+            key_past_money_class = str( int( fv.moneyClassGet( race_money_data[past_race_id]["money"] ) ) )
             past_race_true_skill = race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
             score_rate = past_race_true_skill / money_class_true_skill_data[key_past_money_class]
             rank_score = ( 1 / past_rank )
@@ -1167,8 +1167,8 @@ class past_data():
         c = 0
         score = 0
         
-        for past_cd in self.past_cd_list():
-            past_race_id = past_cd.race_id()
+        for past_cd in self.pastCdList():
+            past_race_id = past_cd.raceId()
 
             if not past_race_id in race_ave_true_skill_data:
                 continue
@@ -1176,12 +1176,12 @@ class past_data():
             if not past_race_id in race_money_data:
                 continue
             
-            past_up3 = past_cd.up_time()
+            past_up3 = past_cd.upTime()
             
             if past_up3 == 0:
                 continue
 
-            key_past_money_class = str( int( fv.money_class_get( race_money_data[past_race_id]["money"] ) ) )
+            key_past_money_class = str( int( fv.moneyClassGet( race_money_data[past_race_id]["money"] ) ) )
             past_race_true_skill = race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
             score_rate = past_race_true_skill / money_class_true_skill_data[key_past_money_class]
             up3_score = ( 1 / past_up3 ) * score_rate
@@ -1199,7 +1199,7 @@ class past_data():
         ave_odds = 0
         count = 0
         
-        for past_cd in self.past_cd_list():
+        for past_cd in self.pastCdList():
             ave_odds += past_cd.odds()
             count += 1
 
@@ -1212,7 +1212,7 @@ class past_data():
         ave_odds = 0
         count = 0
         
-        for past_cd in self.past_cd_list():
+        for past_cd in self.pastCdList():
             ave_odds += past_cd.odds()
             count += 1
 
@@ -1228,8 +1228,8 @@ class past_data():
         ave_diff = 0
         count = 0
         
-        for past_cd in self.past_cd_list():
-            ave_diff += past_cd.first_last_diff()
+        for past_cd in self.pastCdList():
+            ave_diff += past_cd.firstLastDiff()
             count += 1
 
         if not count == 0:
@@ -1240,9 +1240,9 @@ class past_data():
     def past_first_horce_body_list( self ):
         result = []
 
-        for past_cd in  self.past_cd_list():
-            past_race_id = past_cd.race_id()
-            past_key_horce_num = str( int( past_cd.horce_number() ) )
+        for past_cd in  self.pastCdList():
+            past_race_id = past_cd.raceId()
+            past_key_horce_num = str( int( past_cd.horceNumber() ) )
 
             if past_race_id in corner_horce_body_data and \
               not len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
@@ -1256,9 +1256,9 @@ class past_data():
     def past_last_horce_body_list( self ):
         result = []
 
-        for past_cd in  self.past_cd_list():
-            past_race_id = past_cd.race_id()
-            past_key_horce_num = str( int( past_cd.horce_number() ) )
+        for past_cd in  self.pastCdList():
+            past_race_id = past_cd.raceId()
+            past_key_horce_num = str( int( past_cd.horceNumber() ) )
 
             if past_race_id in corner_horce_body_data and \
               not len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
@@ -1273,15 +1273,15 @@ class past_data():
         count = 0
         ave_stamina = 0
 
-        for past_cd in self.past_cd_list():
-            past_race_id = past_cd.race_id()
+        for past_cd in self.pastCdList():
+            past_race_id = past_cd.raceId()
 
             if not past_race_id in wrap_data:
                 continue
 
             if not type( wrap_data[past_race_id]["wrap"] ) == dict \
               or len( wrap_data[past_race_id]["wrap"] ) == 0 \
-              or past_cd.up_time() == 0:
+              or past_cd.upTime() == 0:
                 continue
             
             if not past_race_id in corner_horce_body_data or len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
@@ -1291,10 +1291,10 @@ class past_data():
             horce_body_count = 0
             ave_up3 = -1
             past_corner_horce_body = corner_horce_body_data[past_race_id]["corner_horce_body"]
-            key_past_horce_num = str( int( past_cd.horce_number() ) )
+            key_past_horce_num = str( int( past_cd.horceNumber() ) )
             past_key_place = str( int( past_cd.place() ) )
-            past_key_kind = str( int( past_cd.race_kind() ) )
-            past_key_dist_kind = str( int( past_cd.dist_kind() ) )
+            past_key_kind = str( int( past_cd.raceKind() ) )
+            past_key_dist_kind = str( int( past_cd.distKind() ) )
             past_key_dist = str( int( past_cd.dist() * 1000 ) )
             past_passing = []
             ave_before_pace = -1
@@ -1305,7 +1305,7 @@ class past_data():
                 continue
 
             try:
-                past_passing = past_cd.passing_rank().split( "-" )
+                past_passing = past_cd.passingRank().split( "-" )
             except:
                 continue
                 
@@ -1327,9 +1327,9 @@ class past_data():
             ave_horce_body /= horce_body_count
             diff_time = ave_horce_body * 0.17
 
-            before_pace, _ = lib.before_after_pace( wrap_data[past_race_id]["wrap"] )
+            before_pace, _ = lib.beforeAfterPace( wrap_data[past_race_id]["wrap"] )
             pace_rate = ave_before_pace / ( before_pace + diff_time )
-            up3_rate = ave_up3 / past_cd.up_time()
+            up3_rate = ave_up3 / past_cd.upTime()
             stamina = up3_rate + pace_rate
             ave_stamina += stamina
             count += 1
@@ -1347,8 +1347,8 @@ class past_data():
         count = 0
         cd_dist = self.cd.dist() * 1000
 
-        for past_cd in self.past_cd_list():
-            if not past_cd.race_check():
+        for past_cd in self.pastCdList():
+            if not past_cd.raceCheck():
                 continue
 
             past_rank = past_cd.rank()

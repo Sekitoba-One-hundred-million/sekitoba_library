@@ -7,8 +7,8 @@ class PastHorceBody:
     def __init__( self ):
         self.corner_horce_body = dm.dl.data_get( "corner_horce_body.pickle" )
 
-    def ave_first( self, pd: lib.past_data, key_horce_num: str  ):
-        race_id_list = pd.race_id_get()
+    def ave_first( self, pd: lib.PastData, key_horce_num: str  ):
+        race_id_list = pd.raceIdGet()
         count = 0
         result = 0
         
@@ -27,8 +27,8 @@ class PastHorceBody:
 
         return result
 
-    def before_first( self, pd: lib.past_data, key_horce_num: str  ):
-        race_id_list = pd.race_id_get()
+    def before_first( self, pd: lib.PastData, key_horce_num: str  ):
+        race_id_list = pd.raceIdGet()
         
         if len( race_id_list ) == 0:
             return -1
@@ -41,8 +41,8 @@ class PastHorceBody:
         except:
             return -1
 
-    def ave_last( self, pd: lib.past_data, key_horce_num: str ):
-        race_id_list = pd.race_id_get()
+    def ave_last( self, pd: lib.PastData, key_horce_num: str ):
+        race_id_list = pd.raceIdGet()
         count = 0
         result = 0
         
@@ -61,8 +61,8 @@ class PastHorceBody:
 
         return result
 
-    def before_last( self, pd: lib.past_data, key_horce_num: str ):
-        race_id_list = pd.race_id_get()
+    def before_last( self, pd: lib.PastData, key_horce_num: str ):
+        race_id_list = pd.raceIdGet()
         
         if len( race_id_list ) == 0:
             return -1
@@ -75,9 +75,9 @@ class PastHorceBody:
         except:
             return -1    
 
-    def best_first( self, pd: lib.past_data, key_horce_num: str ):
-        race_id_list = pd.race_id_get()
-        rank_list = pd.rank_list()
+    def best_first( self, pd: lib.PastData, key_horce_num: str ):
+        race_id_list = pd.raceIdGet()
+        rank_list = pd.rankList()
 
         if len( race_id_list ) == 0 or \
           len( rank_list ) == 0 or \
@@ -108,9 +108,9 @@ class PastHorceBody:
 
         return result
 
-    def best_last( self, pd: lib.past_data, key_horce_num: str ):
-        race_id_list = pd.race_id_get()
-        rank_list = pd.rank_list()
+    def best_last( self, pd: lib.PastData, key_horce_num: str ):
+        race_id_list = pd.raceIdGet()
+        rank_list = pd.rankList()
 
         if len( race_id_list ) == 0 or \
           len( rank_list ) == 0 or \

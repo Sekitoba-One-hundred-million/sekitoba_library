@@ -7,7 +7,7 @@ dm.dl.file_set( "next_race_data.pickle" )
 class RaceHighLevel:
     def __init__( self ):
         self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
-        self.next_racd_data: dict[ str, dict[ str, lib.current_data ] ] = dm.dl.data_get( "next_race_data.pickle" )
+        self.next_racd_data: dict[ str, dict[ str, lib.CurrentData ] ] = dm.dl.data_get( "next_race_data.pickle" )
 
     def day_check( self, ymd, past_ymd ):
         if past_ymd["year"] < ymd["year"]:
@@ -41,16 +41,16 @@ class RaceHighLevel:
 
         return count
         
-    def data_get( self, cd: lib.current_data, pd: lib.past_data, ymd: dict ):
+    def data_get( self, cd: lib.CurrentData, pd: lib.PastData, ymd: dict ):
         result = 1000
-        race_id = cd.race_id()
-        past_id_list = pd.race_id_get()
-        past_day_list = pd.past_day_list()
-        past_rank_list = pd.rank_list()
+        race_id = cd.raceId()
+        past_id_list = pd.raceIdGet()
+        past_day_list = pd.pastDayList()
+        past_rank_list = pd.rankList()
         current_race_rank = 1#self.race_rank_data[race_id]
 
         if race_id in self.race_money_data:
-            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
+            current_race_rank = lib.moneyClassGet( self.race_money_data[race_id] )
 
         for i in range( 0, min( len( past_id_list ), 3 ) ):
             past_id = past_id_list[i]
@@ -59,7 +59,7 @@ class RaceHighLevel:
             
             try:
                 next_cd_data = self.next_racd_data[past_id]
-                past_race_rank = lib.money_class_get( self.race_money_data[past_id] )
+                past_race_rank = lib.moneyClassGet( self.race_money_data[past_id] )
             except:
                 continue
 
@@ -76,7 +76,7 @@ class RaceHighLevel:
                 if not self.day_check( ymd, past_ymd ):
                     continue
 
-                if not next_cd.race_check():
+                if not next_cd.raceCheck():
                     continue
 
                 if next_cd.rank() == 1:

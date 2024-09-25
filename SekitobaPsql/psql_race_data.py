@@ -155,10 +155,10 @@ class RaceData:
         insert_data = []
 
         for k in race_data.keys():
-            race_id = lib.id_get( k )
+            race_id = lib.idGet( k )
             
             if not self.pc.exist_data( self.table_name, "race_id", race_id ):
-                insert_data.append( { "race_id": lib.id_get( k ) } )
+                insert_data.append( { "race_id": lib.idGet( k ) } )
 
         if len( insert_data ) == 0:
             return

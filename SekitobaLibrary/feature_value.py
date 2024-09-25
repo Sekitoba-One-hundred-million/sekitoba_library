@@ -1,4 +1,4 @@
-def dist_check( di ):
+def distCheck( di ):
     if di < 1400:#短距離
         return 1
     elif di < 1800:#マイル
@@ -22,19 +22,7 @@ def weather( we ):
     else:
         return 0
 
-def str_weather( we ):
-    if we == 1:
-        return "晴"
-    elif we == 2:
-        return "曇"
-    elif we == 3:
-        return "雨"
-    elif we == 4:
-        return "小雨"
-    
-    return None
-
-def baba_index( baba ):
+def babaIndex( baba ):
     if len( baba ) == 0:
         return 0
     elif baba == "良":
@@ -48,7 +36,7 @@ def baba_index( baba ):
 
     return 0
 
-def sex_num( str_sex ):
+def sexNum( str_sex ):
     if str_sex == "牡":
         return 1
     elif str_sex == "牝":
@@ -56,7 +44,7 @@ def sex_num( str_sex ):
 
     return 0
 
-def money_class_get( money ):
+def moneyClassGet( money ):
     money_class = 0
 
     if money <= 501:
@@ -70,7 +58,7 @@ def money_class_get( money ):
 
     return money_class    
 
-def k_dist( kd ):
+def kDist( kd ):
     str_d = ""
     d = 0.0
 
@@ -132,7 +120,7 @@ def time( t ):
     m = round( m, 4 )
     return m
 
-def place_num( place ):
+def placeNum( place ):
     pl = ""
     
     for i in range( 0, len( place ) ):
@@ -162,7 +150,7 @@ def place_num( place ):
     else:
         return 0
 
-def stright_slope( place_num ):
+def strightSlope( place_num ):
     if place_num == 1 or place_num == 2 or place_num == 3 or \
       place_num == 4 or place_num == 8 or place_num == 10:
         return 1 # 平坦
@@ -200,48 +188,13 @@ def weight( w ):
 
     return 0
 
-def m_dist( d, change_math ): 
-    if d == "":
-        return 0
-    
-    d_type = d[0]
-
-    di = ""
-
-    for i in range( 0, len( d ) ):
-        if str.isdecimal( d[i] ):
-            di += d[i]
-
-    if change_math:
-        return float( di )
-    else:
-        return di
-
-def data_check( d ):
+def dataCheck( d ):
     try:
         return float( d )
     except:
         return 0
 
-def limb_math( limb ):
-    if limb == "逃げa":
-        return 1
-    elif limb == "逃げb":
-        return 2
-    elif limb == "先行a":
-        return 3
-    elif limb == "先行b":
-        return 4
-    elif limb == "差しa":
-        return 5
-    elif limb == "差しb":
-        return 6
-    elif limb == "追い":
-        return 7
-    else:
-        return 8
-
-def netkeiba_pace( str_pace ):
+def netkeibaPace( str_pace ):
     if str_pace == "S":
         return 1
     elif str_pace == "M":

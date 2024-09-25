@@ -88,23 +88,23 @@ class LastWrap:
             past_data = []
 
             if horce_id in self.horce_data.data:
-                current_data, past_data = lib.race_check( self.horce_data.data[horce_id]["past_data"], ymd )
+                current_data, past_data = lib.raceCheck( self.horce_data.data[horce_id]["past_data"], ymd )
                 
-            cd = lib.current_data( current_data )
-            pd = lib.past_data( past_data, current_data, self.race_data )
+            cd = lib.CurrentData( current_data )
+            pd = lib.PastData( past_data, current_data, self.race_data )
             self.horce_wrap_score[horce_id] = {}
 
             for key in self.key_list:
                 self.horce_wrap_score[horce_id][key] = -1000
 
-            if not cd.race_check():
+            if not cd.raceCheck():
                 continue
 
             past_horce_last_wrap = []
 
-            for past_cd in pd.past_cd_list():
-                past_race_id = past_cd.race_id()
-                #race_time = min( race_time, past_cd.race_time() )
+            for past_cd in pd.pastCdList():
+                past_race_id = past_cd.raceId()
+                #race_time = min( race_time, past_cd.raceTime() )
 
                 if not past_race_id in self.wrap_data:
                     continue
@@ -115,24 +115,24 @@ class LastWrap:
                 horce_wrap = []
 
                 for i in range( 0, len( last_three_wrap ) ):
-                    horce_wrap.append( last_three_wrap[i] * ( past_cd.up_time() / race_up3 ) )
+                    horce_wrap.append( last_three_wrap[i] * ( past_cd.upTime() / race_up3 ) )
 
                 if len( horce_wrap ) == 0:
                     continue
                 
                 past_horce_last_wrap.append( sum( horce_wrap[len(horce_wrap)-2:len(horce_wrap)] ) )
 
-            self.horce_wrap_score[horce_id][MIN_LAST_WRAP] = lib.min_check( past_horce_last_wrap )
-            self.horce_wrap_score[horce_id][MAX_LAST_WRAP] = lib.max_check( past_horce_last_wrap )
+            self.horce_wrap_score[horce_id][MIN_LAST_WRAP] = lib.minCheck( past_horce_last_wrap )
+            self.horce_wrap_score[horce_id][MAX_LAST_WRAP] = lib.maxCheck( past_horce_last_wrap )
             self.horce_wrap_score[horce_id][AVE_LAST_WRAP] = lib.average( past_horce_last_wrap )
             self.horce_wrap_score[horce_id][STD_LAST_WRAP] = lib.stdev( past_horce_last_wrap )
 
         #for horce_id in self.race_horce_data.horce_id_list:
-        #    current_data, past_data = lib.race_check( self.horce_data.data[horce_id]["past_data"], ymd )
-        #    cd = lib.current_data( current_data )
+        #    current_data, past_data = lib.raceCheck( self.horce_data.data[horce_id]["past_data"], ymd )
+        #    cd = lib.CurrentData( current_data )
 
-        #    if not cd.race_check():
+        #    if not cd.raceCheck():
         #        continue
             
-        #    key_horce_num = str( int( cd.horce_number() ) )
-        #    self.horce_four_corner_to_goal_time[horce_id] = four_corner_to_goal_time + ( cd.race_time() - race_time )
+        #    key_horce_num = str( int( cd.horceNumber() ) )
+        #    self.horce_four_corner_to_goal_time[horce_id] = four_corner_to_goal_time + ( cd.raceTime() - race_time )

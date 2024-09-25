@@ -8,7 +8,7 @@ class TrainerAnalyze:
         self.race_horce_data: ps.RaceHorceData  = race_horce_data
         self.trainer_data: ps.TrainerData = trainer_data
 
-    def dist_check( self, di ):
+    def distCheck( self, di ):
         if di < 1400:#短距離
             return 1
         elif di < 1800:#マイル
@@ -22,7 +22,7 @@ class TrainerAnalyze:
 
     def rank( self, race_id, horce_id ):
         trainer_id = self.race_horce_data.data[horce_id]["trainer_id"]
-        dist = self.dist_check( self.race_data.data["dist"] )
+        dist = self.distCheck( self.race_data.data["dist"] )
         kind = self.race_data.data["kind"]
         baba = self.race_data.data["baba"]
         key_dict = { "baba": str( baba ), "dist": str( dist ), "kind": str( kind ) }

@@ -28,8 +28,8 @@ class split_data_name():
         f.close()
 
     def append( self, teacher, key, data, name ):
-        lib.dic_append( self.name_list, key, {} )
-        lib.dic_append( teacher, key, [] )
+        lib.dicAppend( self.name_list, key, {} )
+        lib.dicAppend( teacher, key, [] )
         self.name_list[key][str(len(teacher))] = name
         teacher[key].append( data )
 """

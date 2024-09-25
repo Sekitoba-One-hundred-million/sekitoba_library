@@ -8,10 +8,10 @@ class SlowStart:
     def __init__( self ):
         self.slow_start_data = dm.dl.data_get( file_name )
 
-    def main( self, horce_id: str, pd: lib.past_data ):
+    def main( self, horce_id: str, pd: lib.PastData ):
         result = 0
         count = 0
-        past_day_list = pd.past_day_list()
+        past_day_list = pd.pastDayList()
 
         for day in past_day_list:
             try:

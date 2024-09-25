@@ -21,16 +21,16 @@ class RaceType:
     def set_wrap_data( self, wrap_data ):
         self.wrap_data = wrap_data
 
-    def stright_slope( self, cd: lib.current_data, pd: lib.past_data ):
-        race_id = cd.race_id()
+    def strightSlope( self, cd: lib.CurrentData, pd: lib.PastData ):
+        race_id = cd.raceId()
         current_race_rank = 0
-        current_slope = lib.stright_slope( cd.place() )
+        current_slope = lib.strightSlope( cd.place() )
         
         if race_id in self.race_money_data:
-            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
+            current_race_rank = lib.moneyClassGet( self.race_money_data[race_id] )
 
-        past_cd_list = pd.past_cd_list()
-        before_cd = pd.before_cd()
+        past_cd_list = pd.pastCdList()
+        before_cd = pd.beforeCd()
         
         score = 0
         same_slope = 100
@@ -40,45 +40,45 @@ class RaceType:
             return 0
 
         for past_cd in past_cd_list:
-            past_race_id = past_cd.race_id()
+            past_race_id = past_cd.raceId()
             
             if past_race_id in self.race_money_data:
-                past_race_rank = lib.money_class_get( self.race_money_data[past_race_id] )
+                past_race_rank = lib.moneyClassGet( self.race_money_data[past_race_id] )
             else:
                 continue
 
             if past_race_rank < current_race_rank:
                 continue
 
-            if lib.stright_slope( past_cd.place() ) == current_slope:
+            if lib.strightSlope( past_cd.place() ) == current_slope:
                 same_slope = min( same_slope, past_cd.rank() )
             else:
                 diff_slope = min( diff_slope, past_cd.rank() )
             
-        if not lib.stright_slope( before_cd.place() ) == current_slope and same_slope < diff_slope:
+        if not lib.strightSlope( before_cd.place() ) == current_slope and same_slope < diff_slope:
             score = before_cd.rank()
 
         score = int( ( score - 1 ) / 3 )
 
         return score
 
-    def best_foot_used( self, cd: lib.current_data, pd: lib.past_data):
-        race_id = cd.race_id()
+    def best_foot_used( self, cd: lib.CurrentData, pd: lib.PastData):
+        race_id = cd.raceId()
         current_race_rank = 1
 
         if race_id in self.race_money_data:
-            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
+            current_race_rank = lib.moneyClassGet( self.race_money_data[race_id] )
 
         good_foot_used = 0
-        past_cd_list = pd.past_cd_list()
+        past_cd_list = pd.pastCdList()
         foot_score = { "1": { "count": 0, "rank": 0 }, "2": { "count": 0, "rank": 0 } }
         
         for past_cd in past_cd_list:
-            past_race_id = past_cd.race_id()
+            past_race_id = past_cd.raceId()
             past_race_rank = -1
             
             if past_race_id in self.race_money_data:
-                past_race_rank = lib.money_class_get( self.race_money_data[past_race_id] )
+                past_race_rank = lib.moneyClassGet( self.race_money_data[past_race_id] )
             else:
                 continue
 
@@ -108,22 +108,22 @@ class RaceType:
 
         return good_foot_used
 
-    def foot_used_score_get( self, cd: lib.current_data, pd: lib.past_data, prod_race_rank = None ):
-        race_id = cd.race_id()
+    def foot_used_score_get( self, cd: lib.CurrentData, pd: lib.PastData, prod_race_rank = None ):
+        race_id = cd.raceId()
         current_race_rank = 1
 
         if race_id in self.race_money_data:
-            current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
+            current_race_rank = lib.moneyClassGet( self.race_money_data[race_id] )
 
         score = 100            
-        past_cd_list = pd.past_cd_list()
+        past_cd_list = pd.pastCdList()
         foot_score = { "1": 100, "2": 100 }
         
         for past_cd in past_cd_list:
-            past_race_id = past_cd.race_id()
+            past_race_id = past_cd.raceId()
 
             if past_race_id in self.race_money_data:
-                past_race_rank = lib.money_class_get( self.race_money_data[past_race_id] )
+                past_race_rank = lib.moneyClassGet( self.race_money_data[past_race_id] )
             else:
                 continue
 
@@ -166,14 +166,14 @@ class RaceType:
 
     def best_deployment( self, pd: lib.past_race_data ):
         best_dep = "-1"
-        past_cd_list = pd.past_cd_list()
+        past_cd_list = pd.pastCdList()
         check_deployment = { "1": 100, "2": 100, "3": 100, "4": 100, "5": 100, "6": 100 }
 
         for past_cd in past_cd_list:
             if past_cd == None:
                 continue
                 
-            past_race_id = past_cd.race_id()
+            past_race_id = past_cd.raceId()
 
             try:
                 past_wrap_data = self.wrap_data[past_race_id]
@@ -199,13 +199,13 @@ class RaceType:
 
     def deploypent( self, pd: lib.past_race_data ):
         score = 0
-        before_cd = pd.before_cd()
+        before_cd = pd.beforeCd()
 
         if before_cd == None:
             return score
             
-        past_cd_list = pd.past_cd_list()
-        before_race_id = before_cd.race_id()
+        past_cd_list = pd.pastCdList()
+        before_race_id = before_cd.raceId()
 
         try:
             before_wrap = self.wrap_data[before_race_id]
@@ -219,7 +219,7 @@ class RaceType:
             if past_cd == None:
                 continue
                 
-            past_race_id = past_cd.race_id()
+            past_race_id = past_cd.raceId()
 
             if past_race_id == before_race_id:
                 continue

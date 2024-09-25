@@ -129,7 +129,7 @@ class TrainIndexGet:
         if train_data == None:
             return 100, 100
         
-        a, b = lib.regression_line( train_data["t_time"] )
+        a, b = lib.regressionLine( train_data["t_time"] )
 
         return a, b
 
@@ -139,7 +139,7 @@ class TrainIndexGet:
         if train_data == None:
             return 100, 100
 
-        a, b = lib.regression_line( train_data["wrap"] )
+        a, b = lib.regressionLine( train_data["wrap"] )
 
         return a, b
 
