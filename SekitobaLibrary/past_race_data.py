@@ -453,7 +453,7 @@ class PastData():
 
         for i in range( 0, min( len( self.past_data ), 5 ) ):
             past_cd = crd.CurrentData( self.past_data[i] )
-            
+
             if past_cd.raceCheck():
                 key_place_num = str( past_cd.place() )
                 race_time = past_cd.raceTime()

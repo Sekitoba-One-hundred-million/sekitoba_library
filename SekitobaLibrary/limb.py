@@ -1,4 +1,5 @@
 from SekitobaLibrary.past_race_data import PastData
+from SekitobaLibrary import lib
 
 limb_postion = {}
 limb_postion["10"] = [ "A", "B", "B", "C", "C", "D", "E", "E", "E", "E" ]
@@ -11,7 +12,7 @@ limb_postion["16"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "D", "D", "E", "E
 limb_postion["17"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "D", "D", "D", "E", "E", "E", "E", "E", "E" ]
 limb_postion["18"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "C", "D", "D", "D", "E", "E", "E", "E", "E", "E" ]
 
-limb_kind = { "逃げa": 1, "逃げb": 2, "先行a": 3, "先行b": 4, "差しa": 5, "差しb": 6, "追い": 7, "後方": 8, "None": -1 }
+limb_kind = { "逃げa": 1, "逃げb": 2, "先行a": 3, "先行b": 4, "差しa": 5, "差しb": 6, "追い": 7, "後方": 8, "None": lib.escapeValue }
 
 def limbPassing( passing_data: list , all_horce_num: int ):
     result = ""

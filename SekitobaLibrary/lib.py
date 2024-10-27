@@ -4,7 +4,7 @@ from statistics import stdev
 
 import SekitobaLibrary.current_race_data as crd
 
-base_abort = -1000
+escapeValue = -1000
 split_key = "race_id="
 home_dir = os.getcwd()
 test_years = [ "2021", "2022", "2023", "2024" ]
@@ -276,13 +276,13 @@ def raceCheck( all_data, race_day ):
     
     return current_data, past_data
 
-def minus( data1, data2, abort = [ base_abort ] ):
+def minus( data1, data2, abort = [ escapeValue ] ):
     if data1 in abort or data2 in abort:
         return -1000
 
     return data1 - data2
 
-def average( data, abort = [ base_abort ] ):
+def average( data, abort = [ escapeValue ] ):
     ave = 0
     count = 0
 
@@ -298,7 +298,7 @@ def average( data, abort = [ base_abort ] ):
 
     return ave / count
 
-def stdev( data, abort = [ base_abort ] ):
+def stdev( data, abort = [ escapeValue ] ):
     std_data = 0
     count = 0
     ave_data = average( data )
@@ -315,7 +315,7 @@ def stdev( data, abort = [ base_abort ] ):
 
     return math.sqrt( std_data / count )
 
-def minimum( data, abort = [ base_abort ] ):
+def minimum( data, abort = [ escapeValue ] ):
     min_data = maxCheck( data )
 
     for d in data:
@@ -326,7 +326,7 @@ def minimum( data, abort = [ base_abort ] ):
 
     return min_data
 
-def standardization( data, abort = [ base_abort ] ):
+def standardization( data, abort = [ escapeValue ] ):
     result = []
     abort_index = []
 
@@ -580,24 +580,52 @@ def beforeAfterPace( current_wrap ):
 
     return before_time, after_time
 
-def kindScoreGet( data, key_list, key_data, base_key ):
-    score = 0
-    count = 0
+def paceTeacherAnalyze( current_race_data ):
+    result = {}
     
-    for i in range( 0, len( key_list ) ):
-        k1 = key_list[i]
-        
-        for r in range( i + 1, len( key_list ) ):
-            k2 = key_list[r]
-            key_name = k1 + "_" + k2
+    for data_key in current_race_data.keys():
+        if not type( current_race_data[data_key] ) is list or \
+          len( current_race_data[data_key] ) == 0:
+            continue
 
+        current_race_data[data_key] = [v for v in current_race_data[data_key] if not v == escapeValue ]
+        sort_data = sorted( current_race_data[data_key] )
+        reverse_sort_data = sorted( current_race_data[data_key], reverse = True )
+
+        result["ave_"+data_key] = average( current_race_data[data_key] )
+        result["max_"+data_key] = maxCheck( current_race_data[data_key] )
+        result["min_"+data_key] = minimum( current_race_data[data_key] )
+        result["std_"+data_key] = lib.stdev( current_race_data[data_key] )
+
+        for i in range( 0, 3 ):
             try:
-                score += data[key_name][key_data[k1]][key_data[k2]][base_key]
-                count += 1
+                result[data_key+"_{}".format(i+1)] = sort_data[i]
             except:
-                continue
+                result[data_key+"_{}".format(i+1)] = escapeValue
+                
+        for i in range( 0, 3 ):
+            try:
+                result[data_key+"_reverse_{}".format(i+1)] = reverse_sort_data[i]
+            except:
+                result[data_key+"_reverse_{}".format(i+1)] = escapeValue
 
-    if not count == 0:
-        score /= count
-        
-    return score
+    return result
+
+def HorceTeacherAnalyze( current_race_data, t_instance, count ):
+    result = {}
+    str_index = "_index"
+
+    for data_key in current_race_data.keys():
+        if len( current_race_data[data_key] ) == 0 or \
+          data_key in t_instance:
+            continue
+
+        if str_index in data_key:
+            name = data_key.replace( str_index, "" )
+
+            if name in current_race_data:
+                result[data_key] = current_race_data[data_key].index( current_race_data[name][count] )
+            else:
+                result[data_key] = current_race_data[data_key][count]
+
+    return result

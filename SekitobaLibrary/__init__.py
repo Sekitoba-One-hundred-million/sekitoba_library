@@ -13,4 +13,3 @@ from SekitobaLibrary.update import update_id_list_create, link_prod_dev_data
 
 log = Logger()
 name = Name()
-

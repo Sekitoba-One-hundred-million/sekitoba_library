@@ -36,6 +36,7 @@ class StrideAblity:
         dict_data[MIN] = min( dict_data[MIN], add_data )
 
     def ablity_create( self, cd: lib.CurrentData, pd: lib.PastData ):
+        result = {}
         analyze_data = {}
         analyze_data[LEADING] = { AVE: -1000, MAX: -1000, MIN: -1000 }
         analyze_data[LEADING_RATE] = { AVE: -1000, MAX: -1000, MIN: -1000 }
@@ -44,11 +45,15 @@ class StrideAblity:
         analyze_data[SUSTAIN] = { AVE: -1000, MAX: -1000, MIN: -1000 }
         analyze_data[EXPLOSIVE] = { AVE: -1000, MAX: -1000, MIN: -1000 }
 
+        for data_key in analyze_data.keys():
+            for math_key in analyze_data[data_key].keys():
+                result[data_key+"_"+math_key] = lib.escapeValue
+
         race_id = cd.raceId()
         horce_num = str( int( cd.horceNumber() ) )
 
         if not self.data_check( horce_num ):
-            return analyze_data
+            return result
 
         count = 0
         match_count = 0
@@ -91,12 +96,6 @@ class StrideAblity:
             instance_data[EXPLOSIVE] = first_up3
 
             for data_key in instance_data.keys():
-                #if self.race_data.data["stride_ablity_analyze"][race_kind][dist_kind][baba][data_key]["conv"] == 0:
-                #    continue
-
-                #instance_data[data_key] = \
-                #  ( ( ( instance_data[data_key] - self.race_data.data["stride_ablity_analyze"][race_kind][dist_kind][baba][data_key]["ave"] ) * 10 ) \
-                #   / self.race_data.data["stride_ablity_analyze"][race_kind][dist_kind][baba][data_key]["conv"] ) + 50
                 self.data_add( analyze_data[data_key], instance_data[data_key] )
             
             count += 1
@@ -105,4 +104,8 @@ class StrideAblity:
             for data_key in analyze_data.keys():
                 analyze_data[data_key][AVE] /= count
 
-        return analyze_data
+        for data_key in analyze_data.keys():
+            for math_key in analyze_data[data_key].keys():
+                result[data_key+"_"+math_key] = analyze_data[data_key][math_key]
+
+        return result
