@@ -595,7 +595,7 @@ def paceTeacherAnalyze( current_race_data ):
         result["ave_"+data_key] = average( current_race_data[data_key] )
         result["max_"+data_key] = maxCheck( current_race_data[data_key] )
         result["min_"+data_key] = minimum( current_race_data[data_key] )
-        result["std_"+data_key] = lib.stdev( current_race_data[data_key] )
+        result["std_"+data_key] = stdev( current_race_data[data_key] )
 
         for i in range( 0, 3 ):
             try:
@@ -620,12 +620,14 @@ def HorceTeacherAnalyze( current_race_data, t_instance, count ):
           data_key in t_instance:
             continue
 
+        name = data_key
+
         if str_index in data_key:
             name = data_key.replace( str_index, "" )
 
             if name in current_race_data:
                 result[data_key] = current_race_data[data_key].index( current_race_data[name][count] )
-            else:
-                result[data_key] = current_race_data[data_key][count]
+        else:
+            result[data_key] = current_race_data[data_key][count]
 
     return result
