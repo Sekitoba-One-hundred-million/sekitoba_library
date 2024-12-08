@@ -150,6 +150,9 @@ class RaceData:
             
         self.pc.update_data( sql )
 
+    def delete_data( self, race_id ):
+        self.pc.delete_data( self.table_name, "race_id", race_id )
+
     def insert_data( self, race_data ):
         import SekitobaLibrary as lib
         insert_data = []

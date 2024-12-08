@@ -29,7 +29,8 @@ def netkeibaLogin():
     data["y"] = 7
 
     url = "https://regist.netkeiba.com/account/"
-    r = requests.post( url, data = data )
+    headers = { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" }
+    r = requests.post( url, headers = headers, data = data )
 
     if len( r.history ) == 0:
         print( "パスワードまたはメールアドレスが違います" )
@@ -38,9 +39,12 @@ def netkeibaLogin():
     return r.history[0].cookies        
 
 def request( url, cookie = None ):
+    headers = { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" }
+    
     for i in range( 0, 15 ):
         try:
-            r = requests.get( url, cookies = cookie, timeout = 3 )
+            r = requests.get( url, headers = headers, cookies = cookie, timeout = 3 )
+            time.sleep( 2 )
             return r, True
         except:
             time.sleep( 3 )
@@ -51,7 +55,7 @@ def driverStart():
     driver = webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
     return driver
 
-@timeout_decorator.timeout( 10 )
+@timeout_decorator.timeout( 15 )
 def driverGet( driver, url ):
     driver.get( url )
     return driver

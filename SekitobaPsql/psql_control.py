@@ -136,3 +136,11 @@ class PsqlControl:
             return False
         
         return True
+
+    def delete_data( self, table, colum, value ):
+        sql = "DELETE FROM {} WHERE {} = '{}';".format( table, colum, value )
+
+        with self.conn.cursor() as cur:
+            cur.execute( sql )
+
+        self.conn.commit()
