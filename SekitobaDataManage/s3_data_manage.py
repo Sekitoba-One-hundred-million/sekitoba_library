@@ -21,48 +21,27 @@ def key_get():
 
     return result
 
-key_data = key_get()
-s3 = boto3.resource('s3',
-                  aws_access_key_id = key_data["accsess_key"],
-                  aws_secret_access_key = key_data["secret_key"],
-                  region_name='ap-northeast-1'
-)
+#key_data = key_get()
+#s3 = boto3.resource('s3',
+#                  aws_access_key_id = key_data["accsess_key"],
+#                  aws_secret_access_key = key_data["secret_key"],
+#                  region_name='ap-northeast-1'
+#)
 
-client_s3 = boto3.client('s3',
-                  aws_access_key_id = key_data["accsess_key"],
-                  aws_secret_access_key = key_data["secret_key"],
-                  region_name='ap-northeast-1'
-)
+#client_s3 = boto3.client('s3',
+#                  aws_access_key_id = key_data["accsess_key"],
+#                  aws_secret_access_key = key_data["secret_key"],
+#                  region_name='ap-northeast-1'
+#)
 
 def file_check( file_name ):
     return os.path.isfile( file_name )
 
 def dist_index_get():
-    bucket = s3.Bucket( bucket_name )
-    obj = bucket.Object( "other_data/dist_index.txt" ).get()
-    byte_data = obj['Body'].read()
-    all_data = str( byte_data.decode() ).split( "\n" )
-    dist_data = {}
-
-    for i in range( 0, len( all_data ) - 1 ):
-        data = all_data[i].split( " " )
-        dist_data[data[0]] = float( data[1] )
-
-    return dist_data
+    return pickle_load( "dist_index.pickle" )
 
 def course_data_get():
-    bucket = s3.Bucket( bucket_name )
-    obj = bucket.Object( "other_data/straight_dist.txt" ).get()
-    byte_data = obj['Body'].read()
-    all_data = str( byte_data.decode() ).split( "\n" )
-    
-    result = {}
-
-    for i in range( 0, len( all_data ) - 1 ):
-        data = all_data[i].replace( "\n", "" ).split( " " )
-        result[data[0]] = [ float( data[1] ), float( data[2] ) ]
-
-    return result
+    return pickle_load( "race_cource_info.pickle" )
 
 def local_pickle_save( dir_name, file_name, data ):
     back_up_list = []
@@ -99,11 +78,6 @@ def local_pickle_load( file_name ):
             continue
 
     return None
-    
-def pickle_delete( file_name ):
-    file_path = "pickle_data/" + file_name
-    bucket = s3.Bucket( bucket_name )
-    bucket.Object( file_path ).delete()
 
 # load rank
 # 1 local 
@@ -111,8 +85,9 @@ def pickle_delete( file_name ):
 # 3 AWS S3
 
 def pickle_load( file_name, prod = False ):
+    data = None
+
     if prod:
-        data = None
         if file_check( prod_dir_name + "/" + file_name ):
             data = local_pickle_load( prod_dir_name + "/" + file_name )
 
@@ -136,21 +111,7 @@ def pickle_load( file_name, prod = False ):
         if not data == None:
             print( file_name + " download finish Gilgamesh" )
             return data
-        
-    bucket = s3.Bucket( bucket_name )
-
-    try:
-        obj = bucket.Object( "pickle_data/" + file_name ).get()
-    except:
-        print( file_name + " not found" )
-        return None
-
-    byte_data = obj['Body'].read()
-    print( file_name )
-    data = pickle.loads( byte_data )
-    #local_pickle_save( dir_name + "/", file_name, data )
-    print( file_name + " download finish" )
-    
+            
     return data
     
 def pickle_upload( file_name, data, prod = False ):
@@ -160,34 +121,10 @@ def pickle_upload( file_name, data, prod = False ):
         local_pickle_save( dir_name + "/", file_name, data )
 
 def model_load( file_name, model ):
+    model = None
+
     if file_check( dir_name + "/" + file_name ):
         model.load_state_dict( torch.load( file_name ) )
         return model
     
-    bucket = s3.Bucket( bucket_name )
-
-    try:
-        obj = bucket.Object( "model_data/" + file_name ).get()
-    except:
-        print( file_name + " not found" )
-        return None
-
-    byte_data = obj['Body'].read()
-    f = open( file_name, "wb" )
-    f.write( byte_data )
-    f.close()
-    
-    model.load_state_dict( torch.load( file_name ) )
-    os.remove( file_name )
-    print( file_name + " model download finish" )
     return model
-
-def model_upload( file_name, model ):
-    torch.save( model.to('cpu').state_dict(), file_name )
-    bucket = s3.Bucket( bucket_name )    
-    bucket.upload_file( file_name, "model_data/" + file_name )
-    os.remove( file_name )
-    
-def other_upload( file_name ):
-    bucket = s3.Bucket( 'sekitoba' )
-    bucket.upload_file( file_name, "other_data/" + file_name )
