@@ -1,6 +1,7 @@
 import time
 import requests
 import os
+import subprocess
 import timeout_decorator
 from os.path import expanduser
 from requests.exceptions import Timeout
@@ -8,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 
 driver_login_check = False
+proxy = ""
 
 def netkeibaLogin():
     f = open( expanduser( "~" ) + "/.pwd/password.txt" )
@@ -38,12 +40,33 @@ def netkeibaLogin():
     
     return r.history[0].cookies        
 
-def request( url, cookie = None ):
-    headers = { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36" }
+def proxyStart():
+    shellPath = "./module/proxy-manage.sh"
+
+    if not os.path.isfile( shellPath ):
+        exit( 1 )
+    
+    shellResult = subprocess.run("./module/proxy-manage.sh", shell = True, capture_output = True, encoding = "utf-8" )
+    return shellResult.stdout.replace( "\n", "" )
+
+def request( url, proxyUse = True, cookie = None ):
+    if len( proxy ) == 0 and proxyUse:
+        proxy = proxyStart()
+
+    host = "race.netkeiba.com"
+    url = url.replace( host, proxy )
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+        "Host": "race.netkeiba.com"}
     
     for i in range( 0, 15 ):
         try:
             r = requests.get( url, headers = headers, cookies = cookie, timeout = 3 )
+
+            if r.status_code == 400:
+                proxy = proxyStart()
+                continue
+            
             time.sleep( 2 )
             return r, True
         except:
