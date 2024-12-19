@@ -1,15 +1,20 @@
 import time
 import requests
 import os
+import urllib
 import subprocess
+import warnings
 import timeout_decorator
 from os.path import expanduser
 from requests.exceptions import Timeout
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 
+warnings.simplefilter( 'ignore' )
+
 driver_login_check = False
-proxy = ""
+DOMAIN_NAME = ""
+domainFilePath = "/Volumes/Gilgamesh/proxy/domain"
 
 def netkeibaLogin():
     f = open( expanduser( "~" ) + "/.pwd/password.txt" )
@@ -39,37 +44,56 @@ def netkeibaLogin():
         return None
     
     return r.history[0].cookies        
-
-def proxyStart():
-    shellPath = "./module/proxy-manage.sh"
-
-    if not os.path.isfile( shellPath ):
-        exit( 1 )
     
-    shellResult = subprocess.run("./module/proxy-manage.sh", shell = True, capture_output = True, encoding = "utf-8" )
-    return shellResult.stdout.replace( "\n", "" )
+def waitProxy( remove = False ):
+    if remove:
+        if os.path.isfile( domainFilePath ):
+            print( "remove: {}".format( domainFilePath ) )
+            os.remove( domainFilePath )
 
-def request( url, proxyUse = True, cookie = None ):
-    if len( proxy ) == 0 and proxyUse:
-        proxy = proxyStart()
+    while 1:
+        if not os.path.isfile( domainFilePath ):
+            time.sleep( 1 )
+        else:
+            break
 
-    host = "race.netkeiba.com"
-    url = url.replace( host, proxy )
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-        "Host": "race.netkeiba.com"}
+    f = open( domainFilePath )
+    strData = f.readlines()
+    domainName = strData[0].replace( "\n", "" )
+    return domainName
+        
+def request( setUrl, proxyUse = True, cookie = None ):
+    global DOMAIN_NAME
+    url = setUrl
+
+    if not os.path.isfile( domainFilePath ):
+        DOMAIN_NAME = waitProxy()
+
+    host = urllib.parse.urlparse( setUrl ).netloc
+
+    if len( DOMAIN_NAME ) == 0 and proxyUse:
+        DOMAIN_NAME = waitProxy()
+
+    headers = { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+                "Host": host }
     
     for i in range( 0, 15 ):
-        try:
-            r = requests.get( url, headers = headers, cookies = cookie, timeout = 3 )
+        if proxyUse:
+            url = setUrl.replace( host, DOMAIN_NAME )
 
-            if r.status_code == 400:
-                proxy = proxyStart()
-                continue
+        try:
+            r = requests.get( url, headers = headers, cookies = cookie, timeout = 3, verify = False )
             
-            time.sleep( 2 )
+            if not r.status_code == 200:
+                print( "status:{} {}".format( r.status_code, url ) )
+            
+            if r.status_code == 400:
+                DOMAIN_NAME = waitProxy( remove = True )
+                continue
+
             return r, True
         except:
+            DOMAIN_NAME = waitProxy()
             time.sleep( 3 )
 
     return 0, False

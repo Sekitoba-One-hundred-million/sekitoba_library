@@ -35,7 +35,7 @@ class thread_scraping():
         return self.jisaku_func(*args)
 
     def jisaku_func( self, func, url, key, num ):
-        #print( num )
+        print( num )
         result = func( url )
         
         return ( key, result )
