@@ -7,12 +7,13 @@ import SekitobaLibrary.current_race_data as crd
 escapeValue = -1000
 split_key = "race_id="
 home_dir = os.getcwd()
-test_years = [ "2021", "2022", "2023", "2024" ]
+test_years = [ "2022", "2023", "2024", "2025" ]
 valid_years = [ test_years[0] ]
 score_years = [ test_years[1] ]
 simu_years = [ test_years[2], test_years[3] ]
 predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3" ]
 prod_check = False
+PREDICT_SERVER_URL = "http://100.102.168.34:2244"
 
 def testYearCheck( year, state ):
     if ( state == "optuna" and year in valid_years ) \
@@ -580,7 +581,7 @@ def beforeAfterPace( current_wrap ):
 
     return before_time, after_time
 
-def paceTeacherAnalyze( current_race_data ):
+def paceTeacherAnalyze( current_race_data, t_instance = {} ):
     result = {}
     
     for data_key in current_race_data.keys():
@@ -588,14 +589,24 @@ def paceTeacherAnalyze( current_race_data ):
           len( current_race_data[data_key] ) == 0:
             continue
 
-        current_race_data[data_key] = [v for v in current_race_data[data_key] if not v == escapeValue ]
-        sort_data = sorted( current_race_data[data_key] )
-        reverse_sort_data = sorted( current_race_data[data_key], reverse = True )
+        if data_key in t_instance:
+            continue
+        
+        instanceData = [v for v in current_race_data[data_key] if not v == escapeValue ]
+        sort_data = sorted( instanceData )
+        reverse_sort_data = sorted( instanceData, reverse = True )
 
-        result["ave_"+data_key] = average( current_race_data[data_key] )
-        result["max_"+data_key] = maxCheck( current_race_data[data_key] )
-        result["min_"+data_key] = minimum( current_race_data[data_key] )
-        result["std_"+data_key] = stdev( current_race_data[data_key] )
+        if not "ave_"+data_key in t_instance:
+            result["ave_"+data_key] = average( instanceData )
+
+        if not "max_"+data_key in t_instance:
+            result["max_"+data_key] = maxCheck( instanceData )
+
+        if not "min_"+data_key in t_instance:
+            result["min_"+data_key] = minimum( instanceData )
+
+        if not "std_"+data_key in t_instance:
+            result["std_"+data_key] = stdev( instanceData )
 
         for i in range( 0, 3 ):
             try:
@@ -611,11 +622,14 @@ def paceTeacherAnalyze( current_race_data ):
 
     return result
 
-def HorceTeacherAnalyze( current_race_data, t_instance, count ):
+def horceTeacherAnalyze( current_race_data, t_instance, count ):
     result = {}
     str_index = "_index"
 
     for data_key in current_race_data.keys():
+        if not type( current_race_data[data_key] ) == list:
+            continue
+
         if len( current_race_data[data_key] ) == 0 or \
           data_key in t_instance:
             continue

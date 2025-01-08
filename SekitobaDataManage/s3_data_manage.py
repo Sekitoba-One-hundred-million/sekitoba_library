@@ -75,6 +75,7 @@ def local_pickle_load( file_name ):
             f.close()
             return result
         except Exception as e:
+            print( e )
             continue
 
     return None

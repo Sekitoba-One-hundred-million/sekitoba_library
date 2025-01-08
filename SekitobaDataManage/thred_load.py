@@ -12,8 +12,8 @@ class data_load():
         self.prod = False
 
     def file_set( self, file_name ):
-        if file_name not in self.data.keys():
-            self.file_list[file_name] = None
+        if file_name not in self.data:
+            self.file_list[file_name] = False
 
     def data_get( self, file_name ):
         self.file_set( file_name )

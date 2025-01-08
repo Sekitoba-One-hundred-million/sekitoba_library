@@ -13,6 +13,7 @@ from selenium.webdriver.common.by import By
 warnings.simplefilter( 'ignore' )
 
 driver_login_check = False
+proxyUse = True
 DOMAIN_NAME = ""
 domainFilePath = "/Volumes/Gilgamesh/proxy/domain"
 
@@ -62,11 +63,11 @@ def waitProxy( remove = False ):
     domainName = strData[0].replace( "\n", "" )
     return domainName
         
-def request( setUrl, proxyUse = True, cookie = None ):
+def request( setUrl, cookie = None ):
     global DOMAIN_NAME
     url = setUrl
 
-    if not os.path.isfile( domainFilePath ):
+    if not os.path.isfile( domainFilePath ) and proxyUse:
         DOMAIN_NAME = waitProxy()
 
     host = urllib.parse.urlparse( setUrl ).netloc
@@ -76,24 +77,26 @@ def request( setUrl, proxyUse = True, cookie = None ):
 
     headers = { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
                 "Host": host }
-    
+
     for i in range( 0, 15 ):
         if proxyUse:
             url = setUrl.replace( host, DOMAIN_NAME )
 
         try:
             r = requests.get( url, headers = headers, cookies = cookie, timeout = 3, verify = False )
-            
+
             if not r.status_code == 200:
                 print( "status:{} {}".format( r.status_code, url ) )
             
-            if r.status_code == 400:
+            if r.status_code == 400 and proxyUse:
                 DOMAIN_NAME = waitProxy( remove = True )
                 continue
 
             return r, True
         except:
-            DOMAIN_NAME = waitProxy()
+            if proxyUse:
+                DOMAIN_NAME = waitProxy()
+            
             time.sleep( 3 )
 
     return 0, False
