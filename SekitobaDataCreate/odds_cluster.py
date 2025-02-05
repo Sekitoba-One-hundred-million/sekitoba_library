@@ -28,7 +28,7 @@ class OddsCluster:
                 self.cluster[horce["horce_id"]] = min( oddsRank, 4 )
 
                 if not len( oddsList ) == 1:
-                    a, _ = lib.regressionLine( oddsList[-3:] )
+                    a, _ = lib.regression_line( oddsList[-3:] )
                     regressionList.append( a )
                     continue
 
@@ -36,7 +36,7 @@ class OddsCluster:
                 self.cluster[horce["horce_id"]] = min( oddsRank, 4 )
                 continue
 
-            a, _ = lib.regressionLine( oddsList[-3:] )
+            a, _ = lib.regression_line( oddsList[-3:] )
             regressionList.append( a )
 
             if len( regressionList ) == 1:

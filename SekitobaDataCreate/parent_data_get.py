@@ -19,22 +19,22 @@ def main( horce_data, parent_id, baba_index ):
     parent_pd = lib.PastData( parent_data, [] )
     
     try:
-        speed, up_speed, pace_speed = parent_pd.speedIndex( baba_index[parent_id] )
+        speed, up_speed, pace_speed = parent_pd.speed_index( baba_index[parent_id] )
     except:
         speed = []
         up_speed = []
         pace_speed = []
         
     result["rank"] = parent_pd.rank()
-    result["two_rate"] = parent_pd.twoRate()
-    result["three_rate"] = parent_pd.threeRate()
+    result["two_rate"] = parent_pd.two_rate()
+    result["three_rate"] = parent_pd.three_rate()
     result["average_speed"] = parent_pd.average_speed()
-    result["speed_index"] = lib.maxCheck( speed )
-    result["up_speed_index"] = lib.maxCheck( up_speed )
-    result["pace_speed_index"] = lib.maxCheck( pace_speed )
+    result["speed_index"] = lib.max_check( speed )
+    result["up_speed_index"] = lib.max_check( up_speed )
+    result["pace_speed_index"] = lib.max_check( pace_speed )
 
     try:
-        result["limb"] = lib.limbSearch( parent_pd )
+        result["limb"] = lib.limb_search( parent_pd )
     except:
         return result
 

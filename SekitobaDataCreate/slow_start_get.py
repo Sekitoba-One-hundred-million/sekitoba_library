@@ -11,7 +11,7 @@ class SlowStart:
     def main( self, horce_id: str, pd: lib.PastData ):
         result = 0
         count = 0
-        past_day_list = pd.pastDayList()
+        past_day_list = pd.past_day_list()
 
         for day in past_day_list:
             try:

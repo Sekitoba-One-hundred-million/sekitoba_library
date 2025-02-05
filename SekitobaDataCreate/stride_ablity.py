@@ -49,8 +49,8 @@ class StrideAblity:
             for math_key in analyze_data[data_key].keys():
                 result[data_key+"_"+math_key] = lib.escapeValue
 
-        race_id = cd.raceId()
-        horce_num = str( int( cd.horceNumber() ) )
+        race_id = cd.race_id()
+        horce_num = str( int( cd.horce_number() ) )
 
         if not self.data_check( horce_num ):
             return result
@@ -61,8 +61,8 @@ class StrideAblity:
         for data_key in analyze_data.keys():
             self.data_init( analyze_data[data_key] )
 
-        for past_cd in pd.pastCdList():
-            past_race_id = past_cd.raceId()
+        for past_cd in pd.past_cd_list():
+            past_race_id = past_cd.race_id()
 
             if not past_race_id in self.race_data.data["first_up3_halon"][horce_num]:
                 continue
@@ -71,13 +71,13 @@ class StrideAblity:
                 continue
 
             try:
-                first_three_wrap = sum( lib.oneHundredPace( self.wrap_data[past_race_id] )[0:6] )
+                first_three_wrap = sum( lib.one_hundred_pace( self.wrap_data[past_race_id] )[0:6] )
             except:
                 continue
                 
-            race_kind = str( int( past_cd.raceKind() ) )
-            dist_kind = str( int( past_cd.distKind() ) )
-            baba = str( int( past_cd.babaStatus() ) )
+            race_kind = str( int( past_cd.race_kind() ) )
+            dist_kind = str( int( past_cd.dist_kind() ) )
+            baba = str( int( past_cd.baba_status() ) )
             
             if not race_kind in self.race_data.data["stride_ablity_analyze"] or \
               not dist_kind in self.race_data.data["stride_ablity_analyze"][race_kind] or \
@@ -86,8 +86,8 @@ class StrideAblity:
 
             instance_data = {}
             first_up3 = self.race_data.data["first_up3_halon"][horce_num][past_race_id]
-            race_time = past_cd.raceTime()
-            final_up3 = past_cd.upTime()
+            race_time = past_cd.race_time()
+            final_up3 = past_cd.up_time()
             instance_data[LEADING] = first_up3
             instance_data[LEADING_RATE] = first_up3 / first_three_wrap
             instance_data[PURSUING] = race_time - final_up3

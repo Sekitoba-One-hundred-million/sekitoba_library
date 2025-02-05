@@ -77,11 +77,11 @@ class WinRate:
         result = {}
         base_key_data = {}
         base_key_data[PLACE] = str( self.race_data.data["place"] )
-        base_key_data[DIST] = str( int( lib.distCheck( self.race_data.data["dist"] ) ) )
+        base_key_data[DIST] = str( int( lib.dist_check( self.race_data.data["dist"] ) ) )
         base_key_data[KIND] = str( self.race_data.data["kind"] )
         base_key_data[BABA] = str( self.race_data.data["baba"] )
         base_key_data[LIMB] = str( limb )
-        base_key_data[WAKU] = str( int( cd.flameNumber() / 4 ) )
+        base_key_data[WAKU] = str( int( cd.flame_number() / 4 ) )
 
         for use_key_name in self.use_key_list:
             split_name_list = use_key_name.split( "_" )

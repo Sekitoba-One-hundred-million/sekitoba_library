@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
-class thread_scraping():
+class ThreadScraping():
     def __init__( self, url_list, key_list ):
         self.url_list = url_list
         self.key_list = key_list

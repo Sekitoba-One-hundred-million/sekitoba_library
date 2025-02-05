@@ -1,4 +1,4 @@
-def distCheck( di ):
+def dist_check( di ):
     if di < 1400:#短距離
         return 1
     elif di < 1800:#マイル
@@ -22,7 +22,7 @@ def weather( we ):
     else:
         return 0
 
-def babaIndex( baba ):
+def baba_index( baba ):
     if len( baba ) == 0:
         return 0
     elif baba == "良":
@@ -36,7 +36,7 @@ def babaIndex( baba ):
 
     return 0
 
-def sexNum( str_sex ):
+def sex_num( str_sex ):
     if str_sex == "牡":
         return 1
     elif str_sex == "牝":
@@ -44,7 +44,7 @@ def sexNum( str_sex ):
 
     return 0
 
-def moneyClassGet( money ):
+def money_class_get( money ):
     money_class = 0
 
     if money <= 501:
@@ -58,7 +58,7 @@ def moneyClassGet( money ):
 
     return money_class    
 
-def kDist( kd ):
+def k_dist( kd ):
     str_d = ""
     d = 0.0
 
@@ -120,7 +120,7 @@ def time( t ):
     m = round( m, 4 )
     return m
 
-def placeNum( place ):
+def place_num( place ):
     pl = ""
     
     for i in range( 0, len( place ) ):
@@ -150,7 +150,7 @@ def placeNum( place ):
     else:
         return 0
 
-def strightSlope( place_num ):
+def stright_slope( place_num ):
     if place_num == 1 or place_num == 2 or place_num == 3 or \
       place_num == 4 or place_num == 8 or place_num == 10:
         return 1 # 平坦
@@ -188,13 +188,13 @@ def weight( w ):
 
     return 0
 
-def dataCheck( d ):
+def data_check( d ):
     try:
         return float( d )
     except:
         return 0
 
-def netkeibaPace( str_pace ):
+def netkeiba_pace( str_pace ):
     if str_pace == "S":
         return 1
     elif str_pace == "M":

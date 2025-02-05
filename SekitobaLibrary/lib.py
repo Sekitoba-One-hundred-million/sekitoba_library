@@ -15,7 +15,7 @@ predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "
 prod_check = False
 PREDICT_SERVER_URL = "http://100.102.168.34:2244"
 
-def testYearCheck( year, state ):
+def test_year_check( year, state ):
     if ( state == "optuna" and year in valid_years ) \
        or ( state == "test" and ( year in valid_years or year in score_years ) ) \
        or ( state == "prod" and year in simu_years ):
@@ -26,52 +26,37 @@ def testYearCheck( year, state ):
 
     return "teacher"
 
-def idGet( url ):
+def id_get( url ):
     s_data = url.split( split_key )
     return s_data[len(s_data)-1]
 
-def currentCheck( current_data ):
+def current_check( current_data ):
     if len( current_data ) == 22:
         return True
 
     return False
     
-def dicAppend( dic, word, data ):
+def dic_append( dic, word, data ):
     if not word in dic:
         dic[word] = data
 
-def textReplace( text: str ):
+def text_replace( text: str ):
     return text.replace( " ", "" ).replace( "\n", "" )
 
-def strMathPull( text: str ):
-    result = ""
-
-    for t in text:
-        if str.isdecimal( t ):
-            result += t
-
-    return result
-
-def mathCheck( text: str ):
+def math_check( text: str ):
     try:
         return float( text )
     except:
         return 0
 
-def paddingStrMath( text: str ):
-    if len( text ) == 1:
-        return "0" + text
-
-    return text
-
-def recoveryScoreCheck( data: dict ):
+def recovery_score_check( data: dict ):
     max_score = 5
     result = {}
     year_list = list( data.keys() )
     k_list = list( data[year_list[0]].keys() )
     
     for k in k_list:
-        dicAppend( result, k, 0 )
+        dic_append( result, k, 0 )
         for year in year_list:
             score = 0
 
@@ -132,59 +117,7 @@ def normalization( data ):
 
     return result
 
-def deviationValue( data, remove_data ):
-    result = [ 50 ] * len( data )
-    average = 0
-    stde = 0
-    count = 0
-    
-    for i in range( 0, len( data ) ):
-        ok =  True
-        
-        for r in range( 0, len( remove_data ) ):
-            if data[i] == remove_data[r]:
-                ok = False
-                break
-
-        if ok:
-            average += data[i]
-            count += 1
-
-    if count == 0:
-        return result
-            
-    average /= count
-    
-    for i in range( 0, len( data ) ):
-        ok =  True
-        
-        for r in range( 0, len( remove_data ) ):
-            if data[i] == remove_data[r]:
-                ok = False
-                break
-
-        if ok:
-            stde += math.pow( average - data[i], 2 )
-
-    stde = math.sqrt( stde / count )
-
-    if stde == 0:
-        return result
-
-    for i in range( 0, len( data ) ):
-        ok =  True
-        
-        for r in range( 0, len( remove_data ) ):
-            if data[i] == remove_data[r]:
-                ok = False
-                break
-
-        if ok:
-            result[i] = ( data[i] - average ) / stde * 10 + 50
-
-    return result
-
-def regressionLine( data ):
+def regression_line( data ):
     a = 0
     #b = 0
     y_ave = 0
@@ -213,7 +146,7 @@ def regressionLine( data ):
 
     return a, b
 
-def xyRegressionLine( x_data, y_data ):
+def xy_regression_line( x_data, y_data ):
     a = 0
     #b = 0
     y_ave = 0
@@ -241,13 +174,13 @@ def xyRegressionLine( x_data, y_data ):
 
     return a, b
 
-def raceCheck( all_data, race_day ):
+def race_check( all_data, race_day ):
     current_data = []
     past_data = []
     current_time = int( race_day["year"] * 365 + race_day["month"] * 30 + race_day["day"] )
     check = False
 
-    def dayCheck( str_day ):
+    def day_check( str_day ):
         day_result = ""
         split_day = str_day.split( "/" )
 
@@ -268,7 +201,7 @@ def raceCheck( all_data, race_day ):
     for i in range( 0, len( all_data ) ):        
         str_data = all_data[i]
         str_day = str_data[0]
-        dc = dayCheck( str_day )
+        dc = day_check( str_day )
 
         if dc == "C":
             current_data = str_data
@@ -317,7 +250,7 @@ def stdev( data, abort = [ escapeValue ] ):
     return math.sqrt( std_data / count )
 
 def minimum( data, abort = [ escapeValue ] ):
-    min_data = maxCheck( data )
+    min_data = max_check( data )
 
     for d in data:
         if d in abort:
@@ -359,7 +292,7 @@ def standardization( data, abort = [ escapeValue ] ):
 
     return result
 
-def deviationValue( data, abort = [ -1000 ] ):
+def deviation_value( data, abort = [ -1000 ] ):
     result = []
     abort_index = []
 
@@ -401,13 +334,13 @@ def deviationValue( data, abort = [ -1000 ] ):
 
     return result
 
-def nextRace( all_data, ymd ) -> crd.CurrentData:
+def next_race( all_data, ymd ) -> crd.CurrentData:
     next_cd = None
     
     for str_data in all_data:
         cd = crd.CurrentData( str_data )
 
-        if not cd.raceCheck():
+        if not cd.race_check():
             continue
 
         birthday = cd.birthday()
@@ -427,7 +360,7 @@ def nextRace( all_data, ymd ) -> crd.CurrentData:
 
     return next_cd
 
-def placeCheck( place_num ):
+def place_check( place_num ):
     if int( place_num ) == 1:
         return "札幌"
     elif int( place_num ) == 2:
@@ -468,7 +401,7 @@ def conv( data_list, ave = None ):
 
     return result
 
-def maxCheck( data ):
+def max_check( data ):
     try:
         return max( data )
     except:
@@ -480,7 +413,7 @@ def minCheck( data ):
     except:
         return 1000
 
-def oneHundredPace( wrap_data ):
+def one_hundred_pace( wrap_data ):
     wrap_list = []
         
     if len( wrap_data ) == 0:
@@ -518,14 +451,14 @@ def oneHundredPace( wrap_data ):
 
     return wrap_list
 
-def paceRegression( wrap_data ):
+def pace_regression( wrap_data ):
     N = len( wrap_data )
-    a, b = regressionLine( wrap_data )
-    berfore_a, _ = regressionLine( wrap_data[0:int(N/2)] )
-    after_a, _ = regressionLine( wrap_data[int(N/2):N] )
+    a, b = regression_line( wrap_data )
+    berfore_a, _ = regression_line( wrap_data[0:int(N/2)] )
+    after_a, _ = regression_line( wrap_data[int(N/2):N] )
     return a, berfore_a, after_a
 
-def paceData( current_wrap ):
+def pace_data( current_wrap ):
     wrap_key_list = list( current_wrap.keys() )
     n = len( wrap_key_list )
 
@@ -553,7 +486,7 @@ def paceData( current_wrap ):
 
     return before_time - after_time
 
-def beforeAfterPace( current_wrap ):
+def before_after_pace( current_wrap ):
     wrap_key_list = list( current_wrap.keys() )
     n = len( wrap_key_list )
 
@@ -581,7 +514,7 @@ def beforeAfterPace( current_wrap ):
 
     return before_time, after_time
 
-def paceTeacherAnalyze( current_race_data, t_instance = {} ):
+def pace_teacher_analyze( current_race_data, t_instance = {} ):
     result = {}
     
     for data_key in current_race_data.keys():
@@ -600,7 +533,7 @@ def paceTeacherAnalyze( current_race_data, t_instance = {} ):
             result["ave_"+data_key] = average( instanceData )
 
         if not "max_"+data_key in t_instance:
-            result["max_"+data_key] = maxCheck( instanceData )
+            result["max_"+data_key] = max_check( instanceData )
 
         if not "min_"+data_key in t_instance:
             result["min_"+data_key] = minimum( instanceData )
@@ -622,7 +555,7 @@ def paceTeacherAnalyze( current_race_data, t_instance = {} ):
 
     return result
 
-def horceTeacherAnalyze( current_race_data, t_instance, count ):
+def horce_teacher_analyze( current_race_data, t_instance, count ):
     result = {}
     str_index = "_index"
 

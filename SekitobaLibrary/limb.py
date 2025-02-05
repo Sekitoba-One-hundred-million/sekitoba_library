@@ -14,7 +14,7 @@ limb_postion["18"] = [ "A", "B", "B", "B", "B", "C", "C", "C", "C", "D", "D", "D
 
 limb_kind = { "逃げa": 1, "逃げb": 2, "先行a": 3, "先行b": 4, "差しa": 5, "差しb": 6, "追い": 7, "後方": 8, "None": lib.escapeValue }
 
-def limbPassing( passing_data: list , all_horce_num: int ):
+def limb_passing( passing_data: list , all_horce_num: int ):
     result = ""
     
     try:
@@ -51,12 +51,12 @@ def limbPassing( passing_data: list , all_horce_num: int ):
 
     return result
 
-def limbSearch( pd: PastData ):
+def limb_search( pd: PastData ):
     count = 0
     use_passing_data = []  
-    past_day = pd.pastDayList()
-    past_rank = pd.rankList()
-    all_horce_num_list = pd.allHorceNumList()
+    past_day = pd.past_day_list()
+    past_rank = pd.rank_list()
+    all_horce_num_list = pd.all_horce_numList()
 
     result = {}
     result["逃げ"] = []
@@ -75,7 +75,7 @@ def limbSearch( pd: PastData ):
             continue
 
         all_horce_num = all_horce_num_list[i]
-        limb = limbPassing( passing_data, all_horce_num )
+        limb = limb_passing( passing_data, all_horce_num )
 
         if not len( limb ) == 0:
             result[limb].append( i )

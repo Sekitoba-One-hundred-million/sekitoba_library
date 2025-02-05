@@ -15,7 +15,7 @@ class BeforeData:
         if before_cd == None:
             return 0
         
-        before_race_id = before_cd.raceId()
+        before_race_id = before_cd.race_id()
         race_key = "https://race.netkeiba.com/race/shutuba.html?race_id=" + before_race_id
 
         try:
@@ -30,17 +30,17 @@ class BeforeData:
         before_up3_list = []
 
         for horce_id in horce_id_dict.keys():
-            current_data, past_data = lib.raceCheck( self.horce_data[horce_id],
+            current_data, past_data = lib.race_check( self.horce_data[horce_id],
                                                      year, day, num, race_place_num )
             cd = lib.CurrentData( current_data )
 
-            if not cd.raceCheck():
+            if not cd.race_check():
                 continue
 
-            before_up3_list.append( cd.upTime() )
+            before_up3_list.append( cd.up_time() )
 
         score = 0
-        before_my_up3 = before_cd.upTime()
+        before_my_up3 = before_cd.up_time()
 
         if not len( before_up3_list ) == 0:
             if not before_my_up3 in before_up3_list:

@@ -11,7 +11,7 @@ def recovery_analyze( data: dict ):
     
     for year in data.keys():
         for k in data[year].keys():
-            lib.dicAppend( result, k, { "count": 0, "ave": 0, "conv": 0, "median": 0, "list": [] } )
+            lib.dic_append( result, k, { "count": 0, "ave": 0, "conv": 0, "median": 0, "list": [] } )
             
             try:
                 result[k]["list"].append( data[year][k]["recovery"] )
@@ -36,7 +36,7 @@ def rank_analyze( data: dict ):
     
     for year in data.keys():
         for k in data[year].keys():
-            lib.dicAppend( result, k, { "count": 0, "ave": 0, "conv": 0, "median": 0, "list": [] } )
+            lib.dic_append( result, k, { "count": 0, "ave": 0, "conv": 0, "median": 0, "list": [] } )
             
             try:
                 result[k]["list"].append( data[year][k]["rank"] )
@@ -198,8 +198,8 @@ def recovery_data_split( data_storage: list ):
             key = str( int( max_count ) )
             
         year = data_storage[i]["year"]
-        lib.dicAppend( result, year, {} )
-        lib.dicAppend( result[year], key, { "recovery": 0, "count": 0 } )
+        lib.dic_append( result, year, {} )
+        lib.dic_append( result[year], key, { "recovery": 0, "count": 0 } )
         result[year][key]["recovery"] += data_storage[i]["odds"]
         result[year][key]["count"] += 1
         
@@ -277,7 +277,7 @@ def plus_recovery_select( data, show = True ):
 
     for year in year_list:
         for score_key in data[year].keys():
-            lib.dicAppend( key_data, score_key, 0 )
+            lib.dic_append( key_data, score_key, 0 )
             key_data[score_key] += data[year][score_key][COUNT]
 
     score_key_list = []
@@ -315,7 +315,7 @@ def plus_recovery_select( data, show = True ):
         conv = 0
 
         for year in year_list:
-            lib.dicAppend( ave, year, 0 )
+            lib.dic_append( ave, year, 0 )
             for score_key in use_score_key_list:
 
                 if not score_key in data[year]:

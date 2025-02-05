@@ -4,16 +4,16 @@ class GetHorceData:
     def __init__( self, cd: lib.CurrentData, pd: lib.PastData ):
         self.cd: lib.CurrentData = cd
         self.pd: lib.PastData = pd
-        self.before_cd = pd.beforeCd()
-        self.race_id = self.cd.raceId()
-        self.limb_math = int( lib.limbSearch( pd ) )
-        self.horce_num = int( cd.horceNumber() )
+        self.before_cd = pd.before_cd()
+        self.race_id = self.cd.race_id()
+        self.limb_math = int( lib.limb_search( pd ) )
+        self.horce_num = int( cd.horce_number() )
         self.key_day = str( int( self.race_id[9] ) )
-        self.key_flame_number = str( int( self.cd.flameNumber() / 2 ) )
+        self.key_flame_number = str( int( self.cd.flame_number() / 2 ) )
         self.key_place = str( int( self.cd.place() ) )
-        self.key_kind = str( int( self.cd.raceKind() ) )
+        self.key_kind = str( int( self.cd.race_kind() ) )
         self.key_dist = str( int( cd.dist() * 1000 ) )
-        self.key_baba = str( int( cd.babaStatus() ) )
+        self.key_baba = str( int( cd.baba_status() ) )
         self.key_limb = str( self.limb_math )
         self.key_horce_num = str( self.horce_num )
         self.key_waku = ""
@@ -22,7 +22,7 @@ class GetHorceData:
         self.key_before_year = str( int( self.before_year ) )
         self.waku_three_key_list = [ "place", "dist", "limb", "baba", "kind" ]
 
-        if cd.horceNumber() < cd.allHorceNum() / 2:
+        if cd.horce_number() < cd.all_horce_num() / 2:
             self.key_waku = "1"
         else:
             self.key_waku = "2"
@@ -32,12 +32,12 @@ class GetHorceData:
         first_passing_rank = lib.escapeValue
 
         try:
-            last_passing_rank = int( self.cd.passingRank().split( "-" )[-1] )
+            last_passing_rank = int( self.cd.passing_rank().split( "-" )[-1] )
         except:
             pass
 
         try:
-            first_passing_rank = int( self.cd.passingRank().split( "-" )[0] )
+            first_passing_rank = int( self.cd.passing_rank().split( "-" )[0] )
         except:
             pass
         
@@ -53,13 +53,13 @@ class GetHorceData:
         if self.before_cd is None:
             return lib.escapeValue
 
-        return self.before_cd.firstLastDiff()
+        return self.before_cd.first_last_diff()
 
     def getBeforeIdWeight( self ):
         if self.before_cd is None:
             return lib.escapeValue
 
-        return self.before_cd.idWeight()
+        return self.before_cd.id_weight()
 
     def getBeforePopular( self ):
         if self.before_cd is None:
@@ -89,14 +89,14 @@ class GetHorceData:
         if self.before_cd is None:
             return lib.escapeValue
 
-        return self.cd.burdenWeight() - self.before_cd.burdenWeight()
+        return self.cd.burden_weight() - self.before_cd.burden_weight()
 
     def getUp3StandardValue( self ):
         if self.before_cd is None:
             return lib.escapeValue
 
         p1, p2 = self.before_cd.pace()
-        up3 = self.before_cd.upTime()
+        up3 = self.before_cd.up_time()
         return max( min( ( up3 - p2 ) * 5, 15 ), -10 )
 
     def getWeightScore( self ):
@@ -109,7 +109,7 @@ class GetHorceData:
         if self.before_cd is None:
             return before_first_passing_rank, before_last_passing_rank
 
-        before_passing_list = self.before_cd.passingRank().split( "-" )
+        before_passing_list = self.before_cd.passing_rank().split( "-" )
         
         try:
             before_first_passing_rank = int( before_passing_list[0] )

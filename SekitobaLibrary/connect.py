@@ -12,12 +12,11 @@ from selenium.webdriver.common.by import By
 
 warnings.simplefilter( 'ignore' )
 
-driver_login_check = False
 proxyUse = True
 DOMAIN_NAME = ""
 domainFilePath = "/Volumes/Gilgamesh/proxy/domain"
 
-def netkeibaLogin():
+def netkeiba_login():
     f = open( expanduser( "~" ) + "/.pwd/password.txt" )
     str_data = f.readlines()
     str_data = str_data[0].replace( "\n", "" ).split( " " )
@@ -46,7 +45,7 @@ def netkeibaLogin():
     
     return r.history[0].cookies        
     
-def waitProxy( remove = False ):
+def wait_proxy( remove = False ):
     if remove:
         if os.path.isfile( domainFilePath ):
             print( "remove: {}".format( domainFilePath ) )
@@ -68,12 +67,12 @@ def request( setUrl, cookie = None ):
     url = setUrl
 
     if not os.path.isfile( domainFilePath ) and proxyUse:
-        DOMAIN_NAME = waitProxy()
+        DOMAIN_NAME = wait_proxy()
 
     host = urllib.parse.urlparse( setUrl ).netloc
 
     if len( DOMAIN_NAME ) == 0 and proxyUse:
-        DOMAIN_NAME = waitProxy()
+        DOMAIN_NAME = wait_proxy()
 
     headers = { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
                 "Host": host }
@@ -89,19 +88,19 @@ def request( setUrl, cookie = None ):
                 print( "status:{} {}".format( r.status_code, url ) )
             
             if r.status_code == 400 and proxyUse:
-                DOMAIN_NAME = waitProxy( remove = True )
+                DOMAIN_NAME = wait_proxy( remove = True )
                 continue
 
             return r, True
         except:
             if proxyUse:
-                DOMAIN_NAME = waitProxy()
+                DOMAIN_NAME = wait_proxy()
             
             time.sleep( 3 )
 
     return 0, False
 
-def driverStart():
+def driver_start():
     driver = webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
     return driver
 
@@ -110,7 +109,7 @@ def driverGet( driver, url ):
     driver.get( url )
     return driver
 
-def driverRequest( driver, url ):
+def driver_request( driver, url ):
     driver.set_page_load_timeout( 20 )
 
     for i in range( 0, 10 ):
@@ -132,7 +131,7 @@ def login( driver ):
 
     mail = str_data[0]
     password = str_data[1]
-    driver, _ = driverRequest( driver, 'https://regist.netkeiba.com/account/?pid=login' )
+    driver, _ = driver_request( driver, 'https://regist.netkeiba.com/account/?pid=login' )
     time.sleep( 1 )
     
     id_box = driver.find_element( By.NAME, "login_id" )
@@ -144,6 +143,4 @@ def login( driver ):
     driver.find_element( By.XPATH, '/html/body/div[1]/div/div/form/div/div[1]/input' ).click()
     time.sleep( 3 )
 
-    driver_login_check = True
     return driver
-
