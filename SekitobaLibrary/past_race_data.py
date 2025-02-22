@@ -9,6 +9,7 @@ race_money_data = ps.RaceData().get_select_data( "money" )
 race_ave_true_skill_data = ps.RaceData().get_select_data( "race_ave_true_skill" )
 corner_horce_body_data = ps.RaceData().get_select_data( "corner_horce_body" )
 wrap_data = ps.RaceData().get_select_data( "wrap" )
+run_circle_dist_data = ps.RaceData().get_select_data( "run_circle_dist" )
 
 class PastData():
     def __init__( self, past_data,\
@@ -1372,3 +1373,24 @@ class PastData():
         score = abs( data - cd_dist ) / count
 
         return score
+
+    def run_circle_speed( self ):
+        past_ave_speed = 0
+        past_speed_count = 0
+            
+        for past_cd in self.past_cd_list():
+            past_race_id = past_cd.race_id()
+            past_key_horce_num = str( int( past_cd.horce_number() ) )
+
+            if past_race_id in run_circle_dist_data  \
+               and past_key_horce_num in run_circle_dist_data[past_race_id]["run_circle_dist"]:
+                past_speed_count += 1
+                past_ave_speed += \
+                    run_circle_dist_data[past_race_id]["run_circle_dist"][past_key_horce_num] / past_cd.race_time()
+
+        if not past_speed_count == 0:
+            past_ave_speed /= past_speed_count
+        else:
+            past_ave_speed = lib.escapeValue
+            
+        return past_ave_speed

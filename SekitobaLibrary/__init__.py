@@ -3,7 +3,7 @@ from SekitobaLibrary.feature_value import *
 from SekitobaLibrary.lib import *
 from SekitobaLibrary.past_race_data import *
 from SekitobaLibrary.connect import *
-from SekitobaLibrary.ThreadScraping import *
+from SekitobaLibrary.thread_scraping import *
 from SekitobaLibrary.limb import limb_search
 from SekitobaLibrary.recovery_lib import *
 from SekitobaLibrary.pace_create import pace_create

@@ -11,50 +11,52 @@ class RaceData:
         self.table_name = "race_data"
         self.colums = { "race_id": "text" }
         self.additional_colums = { "kind": "int", \
-                                  "baba": "int", \
-                                  "dist": "int", \
-                                  "baba": "int", \
-                                  "place": "int", \
-                                  "out_side": "boolean", \
-                                  "direction": "int", \
-                                  "year": "int", \
-                                  "month": "int", \
-                                  "day": "int", \
-                                  "money": "int", \
-                                  "standard_time": "text", \
-                                  "up3_standard_time": "text", \
-                                  "up3_analyze": "text", \
-                                  "dist_index": "text", \
-                                  "wrap": "text", \
-                                  "predict_netkeiba_pace": "text", \
-                                  "up_pace_regressin": "text", \
-                                  "up_kind_ave": "text", \
-                                  "money_class_true_skill": "text", \
-                                  "race_ave_true_skill": "float(32)", \
-                                  "race_time_analyze": "text", \
-                                  "waku_three_rate": "text", \
-                                  "corner_horce_body": "text", \
-                                  "predict_netkeiba_deployment": "text", \
-                                  "first_up3_halon": "text", \
-                                  "stride_ablity_analyze": "text", \
-                                  "flame_evaluation": "text", \
-                                  "before_pace": "text" }
+                                   "baba": "int", \
+                                   "dist": "int", \
+                                   "baba": "int", \
+                                   "place": "int", \
+                                   "out_side": "boolean", \
+                                   "direction": "int", \
+                                   "year": "int", \
+                                   "month": "int", \
+                                   "day": "int", \
+                                   "money": "int", \
+                                   "standard_time": "text", \
+                                   "up3_standard_time": "text", \
+                                   "up3_analyze": "text", \
+                                   "dist_index": "text", \
+                                   "wrap": "text", \
+                                   "predict_netkeiba_pace": "text", \
+                                   "up_pace_regressin": "text", \
+                                   "up_kind_ave": "text", \
+                                   "money_class_true_skill": "text", \
+                                   "race_ave_true_skill": "float(32)", \
+                                   "race_time_analyze": "text", \
+                                   "waku_three_rate": "text", \
+                                   "corner_horce_body": "text", \
+                                   "predict_netkeiba_deployment": "text", \
+                                   "first_up3_halon": "text", \
+                                   "stride_ablity_analyze": "text", \
+                                   "flame_evaluation": "text", \
+                                   "before_pace": "text", \
+                                   "run_circle_dist": "text" }
         self.json_data = [ "standard_time", \
-                          "up3_standard_time", \
-                          "up3_analyze", \
-                          "dist_index", \
-                          "wrap", \
-                          "up_pace_regressin", \
-                          "up_kind_ave", \
-                          "money_class_true_skill", \
-                          "race_time_analyze", \
-                          "waku_three_rate", \
-                          "corner_horce_body", \
-                          "predict_netkeiba_deployment", \
-                          "first_up3_halon", \
-                          "stride_ablity_analyze", \
-                          "flame_evaluation", \
-                          "before_pace" ]
+                           "up3_standard_time", \
+                           "up3_analyze", \
+                           "dist_index", \
+                           "wrap", \
+                           "up_pace_regressin", \
+                           "up_kind_ave", \
+                           "money_class_true_skill", \
+                           "race_time_analyze", \
+                           "waku_three_rate", \
+                           "corner_horce_body", \
+                           "predict_netkeiba_deployment", \
+                           "first_up3_halon", \
+                           "stride_ablity_analyze", \
+                           "flame_evaluation", \
+                           "before_pace", \
+                           "run_circle_dist" ]
         self.min_str = ""
         self.data = {}
 
