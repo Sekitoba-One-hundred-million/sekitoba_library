@@ -10,6 +10,7 @@ home_dir = os.getcwd()
 test_years = [ "2022", "2023", "2024", "2025" ]
 valid_years = [ test_years[0] ]
 score_years = [ test_years[1] ]
+recovery_test_years = [ test_years[0], test_years[1] ]
 simu_years = [ test_years[2], test_years[3] ]
 predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3" ]
 prod_check = False
@@ -80,16 +81,22 @@ def recovery_score_check( data: dict ):
 
     return result                
 
-def softmax( data ):
+def softmax( data, escape_list = [] ):
     result = []
     sum_data = 0
     value_max = max( data )
 
     for i in range( 0, len( data ) ):
+        if data[i] in escape_list:
+            continue
+        
         sum_data += math.exp( data[i] - value_max )
 
     for i in range( 0, len( data ) ):
-        result.append( math.exp( data[i] - value_max ) / sum_data )
+        if data[i] in escape_list:
+            result.append( data[i] )
+        else:
+            result.append( math.exp( data[i] - value_max ) / sum_data )
 
     return result
 
