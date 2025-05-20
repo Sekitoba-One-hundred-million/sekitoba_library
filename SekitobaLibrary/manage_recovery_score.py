@@ -8,13 +8,18 @@ TEACHER = "teacher"
 YEAR = "year"
 
 class ManageRecoveryScore:
-    def __init__( self, learn_data, cd = {} ):
-        self.data_name_list = []
+    def __init__( self, learn_data, data_name_list = [], data_type = {}, cd = {} ):
+        self.data_name_list = copy.deepcopy( data_name_list )
         self.cluster_data = copy.deepcopy( cd )
-        self.data_type = copy.deepcopy( learn_data["type"] )
+        self.data_type = copy.deepcopy( data_type )
         self.sort_data = {}
         self.genelation = 0
-        self.read_score_name()
+
+        if len( self.data_type ) == 0:
+            self.data_type = copy.deepcopy( learn_data["type"] )
+
+        if len( self.data_name_list ) == 0:
+            self.read_score_name()
 
         if not len( self.cluster_data ) == 0:
             return
