@@ -8,6 +8,7 @@ import timeout_decorator
 from os.path import expanduser
 from requests.exceptions import Timeout
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
 warnings.simplefilter( 'ignore' )
@@ -101,7 +102,8 @@ def request( setUrl, cookie = None ):
     return 0, False
 
 def driver_start():
-    driver = webdriver.Chrome( os.environ['HOME'] + "/chrome/chromedriver" )
+    service = Service( executable_path = os.environ['HOME'] + "/chrome/chromedriver" )
+    driver = webdriver.Chrome( service = service )
     return driver
 
 @timeout_decorator.timeout( 15 )

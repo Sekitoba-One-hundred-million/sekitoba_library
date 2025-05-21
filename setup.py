@@ -7,7 +7,7 @@ setup(
     long_description="",
     author='SekitobaLibrary',
     license='MIT',
-    install_requires=["requests", "pandas", "lightgbm", "numpy", "matplotlib", "tqdm", "statistics", "boto3", "torch", "mpi4py", "trueskill", "bs4", "jpholiday"],
+    install_requires=["requests", "pandas", "lightgbm", "numpy", "matplotlib", "tqdm", "statistics", "boto3", "torch", "trueskill", "bs4", "jpholiday"],
     classifiers=[
         "Development Status :: 1 - Planning"
     ]

@@ -585,3 +585,9 @@ def horce_teacher_analyze( current_race_data, t_instance, count ):
             result[data_key] = current_race_data[data_key][count]
 
     return result
+
+def padding_str_math( str_math ):
+    if len( str_math ) > 1:
+        return str_math
+
+    return "0" + str_math
