@@ -5,20 +5,33 @@ import SekitobaLibrary.current_race_data as crd
 import SekitobaDataManage as dm
 import SekitobaPsql.psql_race_data as ps
 
-race_money_data = ps.RaceData().get_select_data( "money" )
-race_ave_true_skill_data = ps.RaceData().get_select_data( "race_ave_true_skill" )
-corner_horce_body_data = ps.RaceData().get_select_data( "corner_horce_body" )
-wrap_data = ps.RaceData().get_select_data( "wrap" )
-run_circle_dist_data = ps.RaceData().get_select_data( "run_circle_dist" )
+past_lib_race_money_data = {}
+past_lib_race_ave_true_skill_data = {}
+past_lib_corner_horce_body_data = {}
+past_lib_wrap_data = {}
+past_lib_run_circle_dist_data = {}
 
 class PastData():
     def __init__( self, past_data,\
-                 current_data,\
-                 race_data: ps.RaceData ):
+                  current_data,\
+                  race_data: ps.RaceData ):
         self.past_data = past_data
         self.cd = crd.CurrentData( current_data )
         self.race_data: ps.RaceData = race_data        
         self.base_loaf_weight = 55
+
+        global past_lib_race_money_data
+        global past_lib_race_ave_true_skill_data
+        global past_lib_corner_horce_body_data
+        global past_lib_wrap_data
+        global past_lib_run_circle_dist_data
+
+        if len( past_lib_race_money_data ) == 0:
+            past_lib_race_money_data = ps.RaceData().get_select_data( "money" )
+            past_lib_race_ave_true_skill_data = ps.RaceData().get_select_data( "race_ave_true_skill" )
+            past_lib_corner_horce_body_data = ps.RaceData().get_select_data( "corner_horce_body" )
+            past_lib_wrap_data = ps.RaceData().get_select_data( "wrap" )
+            past_lib_run_circle_dist_data = ps.RaceData().get_select_data( "run_circle_dist" )
 
     def set_up3_analyze_data( self, up3_analyze ):
         self.race_data.data["up3_analyze"] = up3_analyze
@@ -1063,10 +1076,10 @@ class PastData():
 
             past_race_id = past_cd.race_id()
 
-            if not past_race_id in wrap_data or len( wrap_data[past_race_id]["wrap"] ) == 0:
+            if not past_race_id in past_lib_wrap_data or len( past_lib_wrap_data[past_race_id]["wrap"] ) == 0:
                 continue
 
-            one_hudred_wrap = lib.one_hundred_pace( wrap_data[past_race_id]["wrap"] )
+            one_hudred_wrap = lib.one_hundred_pace( past_lib_wrap_data[past_race_id]["wrap"] )
             last_up3 = sum( one_hudred_wrap[int(len(one_hudred_wrap)-6):len(one_hudred_wrap)] )
             
             if last_up3 <= 0:
@@ -1138,10 +1151,10 @@ class PastData():
         for past_cd in self.past_cd_list():
             past_race_id = past_cd.race_id()
 
-            if not past_race_id in race_ave_true_skill_data:
+            if not past_race_id in past_lib_race_ave_true_skill_data:
                 continue
             
-            if not past_race_id in race_money_data:
+            if not past_race_id in past_lib_race_money_data:
                 continue
             
             past_rank = past_cd.rank()
@@ -1149,8 +1162,8 @@ class PastData():
             if past_rank == 0:
                 continue
 
-            key_past_money_class = str( int( fv.money_class_get( race_money_data[past_race_id]["money"] ) ) )
-            past_race_true_skill = race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
+            key_past_money_class = str( int( fv.money_class_get( past_lib_race_money_data[past_race_id]["money"] ) ) )
+            past_race_true_skill = past_lib_race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
             score_rate = past_race_true_skill / money_class_true_skill_data[key_past_money_class]
             rank_score = ( 1 / past_rank )
             rank_score *= score_rate
@@ -1171,10 +1184,10 @@ class PastData():
         for past_cd in self.past_cd_list():
             past_race_id = past_cd.race_id()
 
-            if not past_race_id in race_ave_true_skill_data:
+            if not past_race_id in past_lib_race_ave_true_skill_data:
                 continue
             
-            if not past_race_id in race_money_data:
+            if not past_race_id in past_lib_race_money_data:
                 continue
             
             past_up3 = past_cd.up_time()
@@ -1182,8 +1195,8 @@ class PastData():
             if past_up3 == 0:
                 continue
 
-            key_past_money_class = str( int( fv.money_class_get( race_money_data[past_race_id]["money"] ) ) )
-            past_race_true_skill = race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
+            key_past_money_class = str( int( fv.money_class_get( past_lib_race_money_data[past_race_id]["money"] ) ) )
+            past_race_true_skill = past_lib_race_ave_true_skill_data[past_race_id]["race_ave_true_skill"]
             score_rate = past_race_true_skill / money_class_true_skill_data[key_past_money_class]
             up3_score = ( 1 / past_up3 ) * score_rate
             score += up3_score
@@ -1245,12 +1258,12 @@ class PastData():
             past_race_id = past_cd.race_id()
             past_key_horce_num = str( int( past_cd.horce_number() ) )
 
-            if past_race_id in corner_horce_body_data and \
-              not len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
-                past_min_corner_key = min( corner_horce_body_data[past_race_id]["corner_horce_body"] )
+            if past_race_id in past_lib_corner_horce_body_data and \
+              not len( past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
+                past_min_corner_key = min( past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"] )
 
-                if past_key_horce_num in corner_horce_body_data[past_race_id]["corner_horce_body"][past_min_corner_key]:
-                    result.append( corner_horce_body_data[past_race_id]["corner_horce_body"][past_min_corner_key][past_key_horce_num] )
+                if past_key_horce_num in past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"][past_min_corner_key]:
+                    result.append( past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"][past_min_corner_key][past_key_horce_num] )
 
         return result
 
@@ -1261,12 +1274,12 @@ class PastData():
             past_race_id = past_cd.race_id()
             past_key_horce_num = str( int( past_cd.horce_number() ) )
 
-            if past_race_id in corner_horce_body_data and \
-              not len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
-                past_max_corner_key = max( corner_horce_body_data[past_race_id]["corner_horce_body"] )
+            if past_race_id in past_lib_corner_horce_body_data and \
+              not len( past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
+                past_max_corner_key = max( past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"] )
 
-                if past_key_horce_num in corner_horce_body_data[past_race_id]["corner_horce_body"][past_max_corner_key]:
-                    result.append( corner_horce_body_data[past_race_id]["corner_horce_body"][past_max_corner_key][past_key_horce_num] )
+                if past_key_horce_num in past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"][past_max_corner_key]:
+                    result.append( past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"][past_max_corner_key][past_key_horce_num] )
 
         return result
 
@@ -1277,21 +1290,21 @@ class PastData():
         for past_cd in self.past_cd_list():
             past_race_id = past_cd.race_id()
 
-            if not past_race_id in wrap_data:
+            if not past_race_id in past_lib_wrap_data:
                 continue
 
-            if not type( wrap_data[past_race_id]["wrap"] ) == dict \
-              or len( wrap_data[past_race_id]["wrap"] ) == 0 \
+            if not type( past_lib_wrap_data[past_race_id]["wrap"] ) == dict \
+              or len( past_lib_wrap_data[past_race_id]["wrap"] ) == 0 \
               or past_cd.up_time() == 0:
                 continue
             
-            if not past_race_id in corner_horce_body_data or len( corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
+            if not past_race_id in past_lib_corner_horce_body_data or len( past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"] ) == 0:
                 continue
 
             ave_horce_body = 0
             horce_body_count = 0
             ave_up3 = -1
-            past_corner_horce_body = corner_horce_body_data[past_race_id]["corner_horce_body"]
+            past_corner_horce_body = past_lib_corner_horce_body_data[past_race_id]["corner_horce_body"]
             key_past_horce_num = str( int( past_cd.horce_number() ) )
             past_key_place = str( int( past_cd.place() ) )
             past_key_kind = str( int( past_cd.race_kind() ) )
@@ -1328,7 +1341,7 @@ class PastData():
             ave_horce_body /= horce_body_count
             diff_time = ave_horce_body * 0.17
 
-            before_pace, _ = lib.before_after_pace( wrap_data[past_race_id]["wrap"] )
+            before_pace, _ = lib.before_after_pace( past_lib_wrap_data[past_race_id]["wrap"] )
             pace_rate = ave_before_pace / ( before_pace + diff_time )
             up3_rate = ave_up3 / past_cd.up_time()
             stamina = up3_rate + pace_rate
@@ -1382,11 +1395,11 @@ class PastData():
             past_race_id = past_cd.race_id()
             past_key_horce_num = str( int( past_cd.horce_number() ) )
 
-            if past_race_id in run_circle_dist_data  \
-               and past_key_horce_num in run_circle_dist_data[past_race_id]["run_circle_dist"]:
+            if past_race_id in past_lib_run_circle_dist_data  \
+               and past_key_horce_num in past_lib_run_circle_dist_data[past_race_id]["run_circle_dist"]:
                 past_speed_count += 1
                 past_ave_speed += \
-                    run_circle_dist_data[past_race_id]["run_circle_dist"][past_key_horce_num] / past_cd.race_time()
+                    past_lib_run_circle_dist_data[past_race_id]["run_circle_dist"][past_key_horce_num] / past_cd.race_time()
 
         if not past_speed_count == 0:
             past_ave_speed /= past_speed_count

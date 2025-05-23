@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
  
 setup(
     name='SekitobaLibrary',    #パッケージ名
-    version="1.3.11",
+    version="1.3.14",
     description="SekitobaLibrary PackageCode",
     long_description="",
     author='SekitobaLibrary',

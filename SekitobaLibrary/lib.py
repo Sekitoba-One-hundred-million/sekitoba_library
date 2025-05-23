@@ -591,3 +591,12 @@ def padding_str_math( str_math ):
         return str_math
 
     return "0" + str_math
+
+def str_math_pull( text: str ):
+    result = ""
+
+    for t in text:
+        if str.isdecimal( t ):
+            result += t
+
+    return result
