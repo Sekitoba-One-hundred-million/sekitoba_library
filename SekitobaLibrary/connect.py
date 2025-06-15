@@ -118,8 +118,8 @@ def driver_request( driver, url ):
         try:
             driver = driverGet( driver, url )
             break
-        except timeout_decorator.timeout_decorator.TimeoutError:
-            return driver, False
+        #except timeout_decorator.timeout_decorator.TimeoutError:
+            #return driver, False
         except:
             time.sleep( 2 )
 
