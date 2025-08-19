@@ -223,12 +223,12 @@ class GetHorceData:
           past_ave_last_horce_body, \
           past_std_last_horce_body
 
-    def getPredictPace( self, predict_pace ):
+    def getPredictPace( self, predict_pace, odds_index ):
         result = {}
         
         for pace_key in lib.predict_pace_key_list:
             if pace_key in predict_pace:
-                result["predict_"+pace_key] = predict_pace[pace_key]
+                result["predict_"+pace_key] = predict_pace[pace_key][odds_index]
             else:
                 result["predict_"+pace_key] = lib.escapeValue
 

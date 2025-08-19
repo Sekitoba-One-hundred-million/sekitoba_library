@@ -15,10 +15,16 @@ class PastData():
     def __init__( self, past_data,\
                   current_data,\
                   race_data: ps.RaceData ):
-        self.past_data = past_data
+        self.past_data = []#past_data
         self.cd = crd.CurrentData( current_data )
         self.race_data: ps.RaceData = race_data        
         self.base_loaf_weight = 55
+
+        for i in range( 0, len( past_data ) ):
+            if not crd.CurrentData( past_data[i] ).race_check():
+                continue
+
+            self.past_data.append( past_data[i] )
 
         global past_lib_race_money_data
         global past_lib_race_ave_true_skill_data
@@ -426,13 +432,14 @@ class PastData():
 
     def get_money( self ):
         money_data = 0
+
         for i in range( 0, len( self.past_data ) ):
             past_cd = crd.CurrentData( self.past_data[i] )
             
             try:
                 money_data += past_cd.money()
             except:
-                money_data += 0
+                continue
 
         return money_data
 

@@ -5,6 +5,14 @@ import SekitobaLibrary.feature_value as fv
 class CurrentData():
     def __init__( self, data ):
         self.race_data = data
+        self.dev_odds = 0
+        self.dev_popular = 0
+
+    def setting_odds( self, odds ):
+        self.dev_odds = odds
+
+    def setting_popular( self, popular ):
+        self.dev_popular = popular
 
     def place( self ):#場所
         return fv.place_num( self.race_data[1] )
@@ -36,7 +44,10 @@ class CurrentData():
         return fv.data_check( self.race_data[10] )
     
     def popular( self ):
-        return fv.data_check( self.race_data[9] )
+        if self.dev_popular == 0:
+            return fv.data_check( self.race_data[9] )
+
+        return self.dev_popular
 
     def race_num( self ):
         return fv.data_check( self.race_data[3] )
@@ -45,7 +56,10 @@ class CurrentData():
         return fv.data_check( self.race_data[16] )
 
     def odds( self ):
-        return fv.data_check( self.race_data[8] )
+        if self.dev_odds == 0:
+            return fv.data_check( self.race_data[8] )
+
+        return self.dev_odds
 
     def up_time( self ):
         return fv.data_check( self.race_data[19] )

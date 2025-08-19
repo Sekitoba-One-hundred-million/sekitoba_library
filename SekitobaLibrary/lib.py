@@ -1,10 +1,12 @@
 import os
 import math
+import random
 from statistics import stdev
 
 import SekitobaLibrary.current_race_data as crd
 
 escapeValue = -1000
+max_odds_index = 3
 split_key = "race_id="
 home_dir = os.getcwd()
 test_years = [ "2022", "2023", "2024", "2025" ]
@@ -15,6 +17,32 @@ simu_years = [ test_years[2], test_years[3] ]
 predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3" ]
 prod_check = False
 PREDICT_SERVER_URL = "http://100.102.168.34:2244"
+
+def change_odds_data( data_list ):
+    result = {}
+
+    for i in range( 0, len( data_list ) ):
+        odds = data_list[i]["odds"]
+
+        if odds == escapeValue:
+            continue
+        
+        data_list[i]["odds"] = round( max( odds * random.uniform( 0.9, 1.1 ), 1.1 ), 1 )
+
+    popular = 1
+    data_list = sorted( data_list, key = lambda x:x["odds"] )
+
+    for i in range( 0, len( data_list ) ):
+        horce_id = data_list[i]["horce_id"]
+        odds = data_list[i]["odds"]
+
+        if odds == escapeValue:
+            result[horce_id] = { "odds": odds, "popular": escapeValue }
+        else:
+            result[horce_id] = { "odds": odds, "popular": popular }
+            popular += 1
+
+    return result
 
 def test_year_check( year, state ):
     if ( state == "optuna" and year in valid_years ) \

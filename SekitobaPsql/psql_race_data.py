@@ -41,7 +41,8 @@ class RaceData:
                                    "before_pace": "text", \
                                    "run_circle_dist": "text",
                                    "blood_type": "text",
-                                   "blood_type_score": "text" }
+                                   "blood_type_score": "text",
+                                   "dev_odds_popular": "text" }
         self.json_data = [ "standard_time", \
                            "up3_standard_time", \
                            "up3_analyze", \
@@ -60,7 +61,8 @@ class RaceData:
                            "before_pace", \
                            "run_circle_dist", \
                            "blood_type", \
-                           "blood_type_score" ]
+                           "blood_type_score", \
+                           "dev_odds_popular" ]
         self.min_str = ""
         self.data = {}
 
