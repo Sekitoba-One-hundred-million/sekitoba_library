@@ -88,4 +88,7 @@ class RaceHighLevel:
 
             result = min( result, past_rank )
 
+        if result == 1000:
+            result = lib.escapeValue
+            
         return result

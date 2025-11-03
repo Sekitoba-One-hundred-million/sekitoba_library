@@ -8,6 +8,7 @@ import timeout_decorator
 from os.path import expanduser
 from requests.exceptions import Timeout
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 
@@ -102,8 +103,12 @@ def request( setUrl, cookie = None ):
     return 0, False
 
 def driver_start():
+    global DOMAIN_NAME
+    options = Options()    
+    #options.add_argument('--headless')    
+    options.set_capability("acceptInsecureCerts", True)
     service = Service( executable_path = os.environ['HOME'] + "/chrome/chromedriver" )
-    driver = webdriver.Chrome( service = service )
+    driver = webdriver.Chrome( options = options )
     return driver
 
 @timeout_decorator.timeout( 15 )
@@ -126,7 +131,7 @@ def driver_request( driver, url ):
     return driver, True
 
 def login( driver ):
-    f = open( expanduser( "~" ) + "/.pwd/password.txt" )
+    f = open( "/Volumes/Gilgamesh/.import/netkeiba_pass" )
     str_data = f.readlines()
     str_data = str_data[0].replace( "\n", "" ).split( " " )
     f.close()

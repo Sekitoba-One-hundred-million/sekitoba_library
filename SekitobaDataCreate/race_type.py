@@ -115,7 +115,6 @@ class RaceType:
         if race_id in self.race_money_data:
             current_race_rank = lib.money_class_get( self.race_money_data[race_id] )
 
-        score = 100            
         past_cd_list = pd.past_cd_list()
         foot_score = { "1": 100, "2": 100 }
         
@@ -141,6 +140,8 @@ class RaceType:
             key_foot_used = str( foot_used )
             foot_score[key_foot_used] = min( foot_score[key_foot_used], past_cd.rank() )
 
+        score = 100
+        
         if foot_score["1"] == 100:
             score = foot_score["2"]
         elif foot_score["2"] == 100:
@@ -162,6 +163,9 @@ class RaceType:
                 if not past_foot_used == good_foot_used:
                     score = min( past_cd_list[i].rank(), score )
 
+        if score == 100:
+            score = lib.escapeValue
+            
         return score
 
     def best_deployment( self, pd: lib.past_race_data ):
