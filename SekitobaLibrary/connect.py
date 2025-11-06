@@ -102,12 +102,39 @@ def request( setUrl, cookie = None ):
 
     return 0, False
 
-def driver_start():
+def driver_start( headress = True ):
     global DOMAIN_NAME
-    options = Options()    
-    #options.add_argument('--headless')    
+    options = Options()
+    
+    if ( not os.path.isfile( domainFilePath ) and proxyUse ) or ( len( DOMAIN_NAME ) == 0 and proxyUse ):
+        DOMAIN_NAME = wait_proxy()
+        options.add_argument("--proxy-server={}".format( DOMAIN_NAME ) )
+
+    if headress:
+        options.add_argument('--headless')
+        
     options.set_capability("acceptInsecureCerts", True)
-    service = Service( executable_path = os.environ['HOME'] + "/chrome/chromedriver" )
+    #service = Service( executable_path = os.environ['HOME'] + "/chrome/chromedriver" )
+    driver = webdriver.Chrome( options = options )
+    return driver
+
+def driver_restart( driver, headress = True ):
+    global DOMAIN_NAME
+    driver.quit()
+    
+    if proxyUse:
+        DOMAIN_NAME = wait_proxy( remove = True )
+        
+    options = Options()
+    
+    if not os.path.isfile( domainFilePath ) and proxyUse:
+        DOMAIN_NAME = wait_proxy()
+        options.add_argument("--proxy-server={}".format( DOMAIN_NAME ) )
+
+    if headress:
+        options.add_argument('--headless')
+        
+    options.set_capability("acceptInsecureCerts", True)
     driver = webdriver.Chrome( options = options )
     return driver
 
