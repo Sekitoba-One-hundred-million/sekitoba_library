@@ -13,7 +13,6 @@ class RaceData:
         self.additional_colums = { "kind": "int", \
                                    "baba": "int", \
                                    "dist": "int", \
-                                   "baba": "int", \
                                    "place": "int", \
                                    "out_side": "boolean", \
                                    "direction": "int", \

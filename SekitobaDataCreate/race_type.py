@@ -37,7 +37,7 @@ class RaceType:
         diff_slope = 100
 
         if before_cd == None:
-            return 0
+            return lib.escapeValue
 
         for past_cd in past_cd_list:
             past_race_id = past_cd.race_id()
@@ -130,7 +130,7 @@ class RaceType:
                 foot_used = self.foot_used_data[past_race_id]
             except:
                 continue
-            
+
             if past_race_rank < current_race_rank:
                 continue
 

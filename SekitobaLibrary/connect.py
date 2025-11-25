@@ -50,7 +50,6 @@ def netkeiba_login():
 def wait_proxy( remove = False ):
     if remove:
         if os.path.isfile( domainFilePath ):
-            print( "remove: {}".format( domainFilePath ) )
             os.remove( domainFilePath )
 
     while 1:
@@ -63,7 +62,7 @@ def wait_proxy( remove = False ):
     strData = f.readlines()
     domainName = strData[0].replace( "\n", "" )
     return domainName
-        
+
 def request( setUrl, cookie = None ):
     global DOMAIN_NAME
     url = setUrl
@@ -105,11 +104,16 @@ def request( setUrl, cookie = None ):
 def driver_start( headress = True ):
     global DOMAIN_NAME
     options = Options()
-    
-    if ( not os.path.isfile( domainFilePath ) and proxyUse ) or ( len( DOMAIN_NAME ) == 0 and proxyUse ):
-        DOMAIN_NAME = wait_proxy()
-        options.add_argument("--proxy-server={}".format( DOMAIN_NAME ) )
 
+    if proxyUse:
+        if not os.path.isfile( domainFilePath ):
+            DOMAIN_NAME = wait_proxy()
+        
+        if len( DOMAIN_NAME ) == 0:
+            DOMAIN_NAME = wait_proxy()
+
+        options.add_argument("--proxy-server={}".format( DOMAIN_NAME ) )
+        
     if headress:
         options.add_argument('--headless')
         
@@ -121,14 +125,10 @@ def driver_start( headress = True ):
 def driver_restart( driver, headress = True ):
     global DOMAIN_NAME
     driver.quit()
-    
-    if proxyUse:
-        DOMAIN_NAME = wait_proxy( remove = True )
-        
     options = Options()
     
-    if not os.path.isfile( domainFilePath ) and proxyUse:
-        DOMAIN_NAME = wait_proxy()
+    if proxyUse:
+        DOMAIN_NAME = wait_proxy( remove = True )    
         options.add_argument("--proxy-server={}".format( DOMAIN_NAME ) )
 
     if headress:
