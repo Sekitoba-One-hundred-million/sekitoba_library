@@ -3,20 +3,32 @@ import math
 import random
 from statistics import stdev
 
+from SekitobaLibrary.constants import *
 import SekitobaLibrary.current_race_data as crd
 
-escapeValue = -1000
-max_odds_index = 3
-split_key = "race_id="
-home_dir = os.getcwd()
-test_years = [ "2022", "2023", "2024", "2025" ]
-valid_years = [ test_years[0] ]
-score_years = [ test_years[1] ]
-recovery_test_years = [ test_years[0], test_years[1] ]
-simu_years = [ test_years[2], test_years[3] ]
-predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3" ]
-prod_check = False
-PREDICT_SERVER_URL = "http://100.102.168.34:2244"
+def create_category_index( category_list ):
+    f = open( "common/rank_score_data.txt" )
+    category_index_list = []
+    str_data_list = f.readlines()
+
+    for i, str_data in enumerate( str_data_list ):
+        str_data = str_data.replace( "\n", "" )
+
+        if str_data in category_list:
+            category_index_list.append( i )
+
+    return category_index_list
+
+def create_year_list( data ):
+    year_list = []
+
+    for i in range( 0, len( data["year"] ) ):
+        if data["year"][i] in year_list:
+            continue
+        
+        year_list.append( data["year"][i] )
+
+    return sorted( year_list )
 
 def change_odds_data( data_list ):
     result = {}
@@ -26,7 +38,7 @@ def change_odds_data( data_list ):
 
         if odds == escapeValue:
             continue
-        
+
         data_list[i]["odds"] = round( max( odds * random.uniform( 0.9, 1.1 ), 1.1 ), 1 )
 
     popular = 1
@@ -43,6 +55,25 @@ def change_odds_data( data_list ):
             popular += 1
 
     return result
+
+def change_win_rate( horce_data_list ):
+    score_list = []
+    
+    for horce_data in horce_data_list:
+        score_list.append( horce_data["rank_score"] )
+        
+    min_score = min( score_list )
+    all_score = 0
+
+    for i in range( 0, len( score_list ) ):
+        score_list[i] = max( score_list[i] - min_score * 1.1, 0 )
+        score_list[i] *= ( 2 - ( i / 10 ) )
+        score_list[i] = math.pow( score_list[i], 2 )
+        all_score += score_list[i]
+
+    for i in range( 0, len( score_list ) ):
+        score_list[i] = ( score_list[i] / all_score )
+        horce_data_list[i]["rate"] = score_list[i]
 
 def test_year_check( year, state ):
     if ( state == "optuna" and year in valid_years ) \

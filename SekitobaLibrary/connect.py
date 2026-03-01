@@ -116,6 +116,9 @@ def driver_start( headress = True ):
         
     if headress:
         options.add_argument('--headless')
+        options.add_argument('--window-size=1920,1080')
+        options.add_argument('--disable-gpu')
+        options.add_argument('--no-sandbox')
         
     options.set_capability("acceptInsecureCerts", True)
     #service = Service( executable_path = os.environ['HOME'] + "/chrome/chromedriver" )

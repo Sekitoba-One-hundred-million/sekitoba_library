@@ -1,4 +1,5 @@
 import SekitobaDataManage as dm
+import SekitobaLibrary as lib
 from SekitobaPsql.horce_data import HorceData
 
 class TimeIndexGet:
@@ -34,5 +35,9 @@ class TimeIndexGet:
             result["average"] /= count
 
         return result
-        
-        
+
+    def get_current( self, horce_id, day ):
+        try:
+            return self.horce_data.data[horce_id]["time_index"][day]
+        except:
+            return lib.escapeValue

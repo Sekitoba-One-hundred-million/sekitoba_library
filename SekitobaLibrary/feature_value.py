@@ -1,3 +1,5 @@
+from SekitobaLibrary.constants import *
+
 def dist_check( di ):
     if di < 1400:#短距離
         return 1
@@ -20,12 +22,10 @@ def weather( we ):
     elif we == "小雨":
         return 4
     else:
-        return 0
+        return escapeValue
 
 def baba_index( baba ):
-    if len( baba ) == 0:
-        return 0
-    elif baba == "良":
+    if baba == "良":
         return -10
     elif baba == "稍":
         return -5
@@ -34,7 +34,7 @@ def baba_index( baba ):
     elif baba == "不":
         return 10
 
-    return 0
+    return escapeValue
 
 def sex_num( str_sex ):
     if str_sex == "牡":
@@ -87,7 +87,7 @@ def dist( d ):
 
     di = float( di )
 
-    t = 0#芝は1
+    t = escapeValue#芝は1
 
     if d_type == "ダ":#ダートかどうかの判断
         t = 2#ダートなら2
@@ -147,8 +147,8 @@ def place_num( place ):
         return 9
     elif pl == "小倉":
         return 10
-    else:
-        return 0
+    
+    return escapeValue
 
 def stright_slope( place_num ):
     if place_num == 1 or place_num == 2 or place_num == 3 or \
@@ -170,8 +170,8 @@ def baba( b ):
         return 3
     elif b == "不":
         return 4
-    else:
-        return 0
+    
+    return escapeValue
 
 def weight( w ):
     w = w.replace( ")", "" )
@@ -202,4 +202,4 @@ def netkeiba_pace( str_pace ):
     elif str_pace == "H":
         return 3
     
-    return -1
+    return escapeValue

@@ -520,6 +520,32 @@ class PastData():
 
         return max_time_point
 
+    def pull_dist_data( self, dist_data, key_dist ):
+        if not str.isdecimal( key_dist ):
+            return lib.escapeValue
+
+        if key_dist in dist_data:
+            return dist_data[key_dist]
+
+        int_dist = int( key_dist )
+        key_dist = str( int( int( int_dist / 100 ) * 100 ) )
+
+        if key_dist in dist_data:
+            return dist_data[key_dist]
+
+        int_dist = int( key_dist )
+        plus_key_dist = str( int( int_dist + 100 ) )
+
+        if plus_key_dist in dist_data:
+            return dist_data[plus_key_dist]
+
+        minus_key_dist = str( int( int_dist - 100 ) )
+
+        if minus_key_dist in dist_data:
+            return dist_data[minus_key_dist]
+
+        return lib.escapeValue
+
     #過去のスペード指数をlistで返す
     def speed_index( self, baba_index_data ):
         speed_index_data = []
@@ -537,47 +563,55 @@ class PastData():
                 dist = str( int( past_cd.dist() * 1000 ) )
                 loaf_weight = past_cd.burden_weight()
                 key_baba = str( int( past_cd.baba_status() ) )
-                speed_index = -100
-                up_speed_index = -100
-                pace_speed_index = -100
+                speed_index = lib.escapeValue
+                up_speed_index = lib.escapeValue
+                pace_speed_index = lib.escapeValue
+                dist_index = self.pull_dist_data( self.race_data.data["dist_index"], dist )
+                baba_index = fv.baba_index( key_baba )
 
-                try:
-                    speed_index = ( self.race_data.data["standard_time"][place_num][dist][kind_num][key_baba] - \
-                                   race_time ) * self.race_data.data["dist_index"][dist]
-                    speed_index += ( loaf_weight - self.base_loaf_weight ) + 80
-                except:
-                    pass
+                if past_cd.birthday() in baba_index_data:
+                    baba_index = baba_index_data[past_cd.birthday()]
 
-                try:
-                    up_speed_index = ( self.race_data.data["up3_standard_time"][place_num][dist][kind_num][key_baba] - \
-                                      up_time ) * self.race_data.data["dist_index"][dist]
-                    up_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / \
-                      self.race_data.data["dist_index"][dist] + 80
-                except:
-                    pass
-
-                try:
-                    pace_speed_index = ( ( self.race_data.data["standard_time"][place_num][dist][kind_num][key_baba] - \
-                                          self.race_data.data["up3_standard_time"][place_num][dist][kind_num][key_baba] ) - \
-                                        ( race_time - up_time ) ) * self.race_data.data["dist_index"][dist]
-                    pace_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / \
-                      self.race_data.data["dist_index"][dist] + 80
-                except:
-                    pass
+                if not dist_index == lib.escapeValue and not baba_index == lib.escapeValue:
+                    standard_time = lib.escapeValue
+                    up3_standard_time = lib.escapeValue
                     
+                    if place_num in self.race_data.data["standard_time"]:
+                        standard_time_data = self.pull_dist_data( self.race_data.data["standard_time"][place_num], dist )
 
-                try:
-                    speed_index += baba_index_data[past_cd.birthday()]
-                    up_speed_index += baba_index_data[past_cd.birthday()] / ( self.race_data.data["dist_index"][dist] + 1 )
-                    pace_speed_index += baba_index_data[past_cd.birthday()] / ( self.race_data.data["dist_index"][dist] + 1 )
-                except:
-                    speed_index += fv.baba_index( key_baba )
-                    up_speed_index += fv.baba_index( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
-                    pace_speed_index += fv.baba_index( key_baba ) / ( self.race_data.data["dist_index"][dist] + 1 )
+                        if not standard_time_data == lib.escapeValue and \
+                           kind_num in standard_time_data and \
+                           key_baba in standard_time_data[kind_num]:
+                            standard_time = standard_time_data[kind_num][key_baba]
+                            speed_index = ( standard_time - race_time ) * dist_index
+                            speed_index += ( loaf_weight - self.base_loaf_weight ) + 80
+                            speed_index += baba_index
 
-                speed_index_data.append( speed_index )
-                up_speed_index_data.append( up_speed_index )
-                pace_speed_index_data.append( pace_speed_index )
+                    if place_num in self.race_data.data["up3_standard_time"]:
+                        up3_standard_time_data = self.pull_dist_data( self.race_data.data["up3_standard_time"][place_num], dist )
+
+                        if not standard_time_data == lib.escapeValue and \
+                           kind_num in up3_standard_time_data and \
+                           key_baba in up3_standard_time_data[kind_num]:
+                            up3_standard_time = up3_standard_time_data[kind_num][key_baba]
+                            up_speed_index = ( up3_standard_time - up_time ) * dist_index
+                            up_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / dist_index + 80
+                            up_speed_index += baba_index / ( dist_index + 1 )
+
+                    if not standard_time == lib.escapeValue and \
+                       not up3_standard_time == lib.escapeValue:
+                        pace_speed_index = ( ( standard_time - up3_standard_time ) - ( race_time - up_time ) ) * dist_index
+                        pace_speed_index += ( ( loaf_weight - self.base_loaf_weight ) * 2 ) / dist_index + 80                    
+                        pace_speed_index += baba_index / ( dist_index + 1 )                
+
+                if not speed_index == lib.escapeValue:
+                    speed_index_data.append( speed_index )
+
+                if not up_speed_index == lib.escapeValue:
+                    up_speed_index_data.append( up_speed_index )
+
+                if not pace_speed_index == lib.escapeValue:
+                    pace_speed_index_data.append( pace_speed_index )
 
         return speed_index_data, up_speed_index_data, pace_speed_index_data
     
