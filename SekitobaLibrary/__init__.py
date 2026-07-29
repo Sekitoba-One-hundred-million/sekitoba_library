@@ -12,6 +12,7 @@ from SekitobaLibrary.name import Name
 from SekitobaLibrary.update import update_id_list_create, link_prod_dev_data
 from SekitobaLibrary.manage_recovery_score import ManageRecoveryScore
 from SekitobaLibrary.constants import *
+from SekitobaLibrary.select_horce import SelectHorce
 
 log = Logger()
 name = Name()

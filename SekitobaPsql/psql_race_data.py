@@ -35,13 +35,16 @@ class RaceData:
                                    "corner_horce_body": "text", \
                                    "predict_netkeiba_deployment": "text", \
                                    "first_up3_halon": "text", \
+                                   "current_first_up3_halon": "text", \
                                    "stride_ablity_analyze": "text", \
                                    "flame_evaluation": "text", \
                                    "before_pace": "text", \
                                    "run_circle_dist": "text",
                                    "blood_type": "text",
                                    "blood_type_score": "text",
-                                   "dev_odds_popular": "text" }
+                                   "dev_odds_popular": "text",
+                                   "run_add_dist": "text",
+                                   "ave_up3": "float(32)" }
         self.json_data = [ "standard_time", \
                            "up3_standard_time", \
                            "up3_analyze", \
@@ -55,13 +58,15 @@ class RaceData:
                            "corner_horce_body", \
                            "predict_netkeiba_deployment", \
                            "first_up3_halon", \
+                           "current_first_up3_halon", \
                            "stride_ablity_analyze", \
                            "flame_evaluation", \
                            "before_pace", \
                            "run_circle_dist", \
                            "blood_type", \
                            "blood_type_score", \
-                           "dev_odds_popular" ]
+                           "dev_odds_popular", \
+                           "run_add_dist" ]
         self.min_str = ""
         self.data = {}
 

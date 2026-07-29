@@ -10,10 +10,10 @@ class BeforeData:
         self.race_data = dm.dl.data_get( "race_data.pickle" )
         self.horce_data = dm.dl.data_get( "horce_data_storage.pickle" )
         self.wrap_data = dm.dl.data_get( "wrap_data.pickle" )
-
+        
     def up3_rank( self, before_cd: lib.CurrentData ):
         if before_cd == None:
-            return 0
+            return lib.escapeValue
         
         before_race_id = before_cd.race_id()
         race_key = "https://race.netkeiba.com/race/shutuba.html?race_id=" + before_race_id
@@ -21,7 +21,7 @@ class BeforeData:
         try:
             horce_id_dict = self.race_data[race_key]
         except:
-            return 0
+            return lib.escapeValue
 
         year = before_race_id[0:4]
         race_place_num = before_race_id[4:6]
@@ -39,7 +39,7 @@ class BeforeData:
 
             before_up3_list.append( cd.up_time() )
 
-        score = 0
+        score = lib.escapeValue
         before_my_up3 = before_cd.up_time()
 
         if not len( before_up3_list ) == 0:
@@ -48,7 +48,6 @@ class BeforeData:
 
             score = before_up3_list.index( before_my_up3 )
 
-        score = max( score, 0 )
         return score
 
     def pace( self, before_race_id, prod_before_wrap = None ):

@@ -19,3 +19,6 @@ class Name:
 
     def memo_name( self ):
         return self.name + "_learn_memo.txt"
+
+    def predict_name( self ):
+        return "predict_" + self.name + ".pickle"

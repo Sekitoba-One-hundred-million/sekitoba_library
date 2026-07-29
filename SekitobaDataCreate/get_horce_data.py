@@ -1,4 +1,8 @@
 import SekitobaLibrary as lib
+import SekitobaDataManage as dm
+
+dm.dl.file_set( "race_money_data.pickle" )
+
 
 class GetHorceData:
     def __init__( self, cd: lib.CurrentData, pd: lib.PastData ):
@@ -21,12 +25,91 @@ class GetHorceData:
         self.before_year = int( self.year ) - 1
         self.key_before_year = str( int( self.before_year ) )
         self.waku_three_key_list = [ "place", "dist", "limb", "baba", "kind" ]
+        self.race_money_data = dm.dl.data_get( "race_money_data.pickle" )
 
         if cd.horce_number() < cd.all_horce_num() / 2:
             self.key_waku = "1"
         else:
             self.key_waku = "2"
 
+    def get_change_before_money_class( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        current_race_money = lib.escapeValue
+        before_race_money = lib.escapeValue
+        race_id = self.cd.race_id()
+        before_race_id = self.before_cd.race_id()
+
+        if race_id in self.race_money_data and \
+           before_race_id in self.race_money_data:
+            current_race_money = self.race_money_data[race_id]
+            before_race_money = self.race_money_data[before_race_id]
+        else:
+            return lib.escapeValue
+        
+        return self.get_chaneg_data( lib.money_class_get( current_race_money ), lib.money_class_get( before_race_money ) )
+            
+    def get_change_before_race_kind( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        return self.get_chaneg_data( self.cd.race_kind(), self.before_cd.race_kind() )
+            
+    def get_change_before_place( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        return self.get_chaneg_data( self.cd.place(), self.before_cd.place() )
+            
+    def get_change_before_weight( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        return self.get_chaneg_data( self.cd.weight(), self.before_cd.weight() )
+
+    def get_change_before_all_horce_num( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        return self.get_chaneg_data( self.cd.all_horce_num(), self.before_cd.all_horce_num() )
+            
+    def get_change_before_burden_weight( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        return self.get_chaneg_data( self.cd.burden_weight(), self.before_cd.burden_weight() )
+
+    def get_change_before_popular( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        return self.get_chaneg_data( self.cd.popular(), self.before_cd.popular() )
+            
+    def get_change_before_dist( self ):
+        if self.before_cd == None:
+            return lib.escapeValue
+
+        return self.get_chaneg_data( self.cd.dist(), self.before_cd.dist() )
+
+    # 前回のレースから対象のデータが変わったかどうか
+    # escapevalue: 存在しない
+    # 1: 同じ
+    # 2: 短い
+    # 3: 長い
+    def get_chaneg_data( self, current_data, before_data ):
+        result = lib.escapeValue
+
+        if current_data == before_data:
+            result = 1
+        elif current_data < before_data:
+            result = 2
+        else:
+            result = 3
+
+        return result
+
+        
     def getCurrentPassingRank( self ):
         last_passing_rank = lib.escapeValue
         first_passing_rank = lib.escapeValue
@@ -141,8 +224,8 @@ class GetHorceData:
         return e_one, e_two, e_three
 
     def getStraightDist( self, race_cource_info ):
-        first_straight_dist = -1000
-        last_straight_dist = -1000
+        first_straight_dist = lib.escapeValue
+        last_straight_dist = lib.escapeValue
 
         try:
             first_straight_dist = race_cource_info[self.key_place][self.key_kind][self.key_dist]["dist"][0]
@@ -179,14 +262,16 @@ class GetHorceData:
 
         if not count == 0:
             score /= count
+        else:
+            score = lib.escapeValue
         
         return score
 
     def getFirstHorceBody( self ):
-        past_min_first_horce_body = -1000
-        past_max_first_horce_body = -1000
-        past_ave_first_horce_body = -1000
-        past_std_first_horce_body = -1000
+        past_min_first_horce_body = lib.escapeValue
+        past_max_first_horce_body = lib.escapeValue
+        past_ave_first_horce_body = lib.escapeValue
+        past_std_first_horce_body = lib.escapeValue
         past_first_horce_body_list = self.pd.past_first_horce_body_list()
 
         if not len( past_first_horce_body_list ) == 0:
@@ -204,10 +289,10 @@ class GetHorceData:
 
 
     def getLastHorceBody( self ):
-        past_min_last_horce_body = -1000
-        past_max_last_horce_body = -1000
-        past_ave_last_horce_body = -1000
-        past_std_last_horce_body = -1000
+        past_min_last_horce_body = lib.escapeValue
+        past_max_last_horce_body = lib.escapeValue
+        past_ave_last_horce_body = lib.escapeValue
+        past_std_last_horce_body = lib.escapeValue
         past_last_horce_body_list = self.pd.past_last_horce_body_list()
 
         if not len( past_last_horce_body_list ) == 0:

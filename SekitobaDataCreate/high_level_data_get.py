@@ -37,6 +37,10 @@ class RaceHighLevel:
 
         for horce_id in next_cd_data.keys():
             if next_cd_data[horce_id].rank() == 1:
+                count += 3
+            elif next_cd_data[horce_id].rank() == 2:
+                count += 2
+            elif next_cd_data[horce_id].rank() == 3:
                 count += 1
 
         return count

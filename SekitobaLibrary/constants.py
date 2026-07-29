@@ -9,6 +9,6 @@ valid_years = [ test_years[0] ]
 score_years = [ test_years[1] ]
 recovery_test_years = [ test_years[0], test_years[1] ]
 simu_years = [ test_years[2], test_years[3] ]
-predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3" ]
+predict_pace_key_list = [ "pace", "pace_regression", "before_pace_regression", "after_pace_regression", "pace_conv", "first_up3", "last_up3", "race_level"]
 prod_check = False
 

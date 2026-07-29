@@ -623,23 +623,39 @@ def pace_teacher_analyze( current_race_data, t_instance = {} ):
 
 def horce_teacher_analyze( current_race_data, t_instance, count ):
     result = {}
+    index_name_list = []
     str_index = "_index"
+
+    for data_key in current_race_data.keys():
+        index_count = data_key.count( str_index )
+
+        if index_count == 2:
+            name = data_key.replace( str_index, "", 1 )
+            index_name_list.append( name )
+            index_name_list.append( name + "_stand" )
+            index_name_list.append( name + "_devi" )
 
     for data_key in current_race_data.keys():
         if not type( current_race_data[data_key] ) == list:
             continue
 
-        if len( current_race_data[data_key] ) == 0 or \
-          data_key in t_instance:
+        if len( current_race_data[data_key] ) == 0 or data_key in t_instance:
             continue
 
-        name = data_key
+        index_count = data_key.count( str_index )
+        
+        if ( index_count == 1 and not data_key in index_name_list ) or index_count == 2:
+            name = data_key.replace( str_index, "", 1 )
+            
+            if not name in current_race_data:
+                continue
+            
+            value = current_race_data[name][count]
 
-        if str_index in data_key:
-            name = data_key.replace( str_index, "" )
-
-            if name in current_race_data:
-                result[data_key] = current_race_data[data_key].index( current_race_data[name][count] )
+            if not value == escapeValue:
+                result[data_key] = current_race_data[data_key].index( value )
+            else:
+                result[data_key] = escapeValue
         else:
             result[data_key] = current_race_data[data_key][count]
 
