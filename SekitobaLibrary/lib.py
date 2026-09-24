@@ -6,117 +6,130 @@ from statistics import stdev
 from SekitobaLibrary.constants import *
 import SekitobaLibrary.current_race_data as crd
 
-def create_category_index( category_list ):
-    f = open( "common/rank_score_data.txt" )
+
+def create_category_index(category_list):
+    f = open("common/rank_score_data.txt")
     category_index_list = []
     str_data_list = f.readlines()
 
-    for i, str_data in enumerate( str_data_list ):
-        str_data = str_data.replace( "\n", "" )
+    for i, str_data in enumerate(str_data_list):
+        str_data = str_data.replace("\n", "")
 
         if str_data in category_list:
-            category_index_list.append( i )
+            category_index_list.append(i)
 
     return category_index_list
 
-def create_year_list( data ):
+
+def create_year_list(data):
     year_list = []
 
-    for i in range( 0, len( data["year"] ) ):
+    for i in range(0, len(data["year"])):
         if data["year"][i] in year_list:
             continue
-        
-        year_list.append( data["year"][i] )
 
-    return sorted( year_list )
+        year_list.append(data["year"][i])
 
-def change_odds_data( data_list ):
+    return sorted(year_list)
+
+
+def change_odds_data(data_list):
     result = {}
 
-    for i in range( 0, len( data_list ) ):
+    for i in range(0, len(data_list)):
         odds = data_list[i]["odds"]
 
         if odds == escapeValue:
             continue
 
-        data_list[i]["odds"] = round( max( odds * random.uniform( 0.9, 1.1 ), 1.1 ), 1 )
+        data_list[i]["odds"] = round(max(odds * random.uniform(0.9, 1.1), 1.1), 1)
 
     popular = 1
-    data_list = sorted( data_list, key = lambda x:x["odds"] )
+    data_list = sorted(data_list, key=lambda x: x["odds"])
 
-    for i in range( 0, len( data_list ) ):
+    for i in range(0, len(data_list)):
         horce_id = data_list[i]["horce_id"]
         odds = data_list[i]["odds"]
 
         if odds == escapeValue:
-            result[horce_id] = { "odds": odds, "popular": escapeValue }
+            result[horce_id] = {"odds": odds, "popular": escapeValue}
         else:
-            result[horce_id] = { "odds": odds, "popular": popular }
+            result[horce_id] = {"odds": odds, "popular": popular}
             popular += 1
 
     return result
 
-def change_win_rate( horce_data_list ):
+
+def change_win_rate(horce_data_list):
     score_list = []
-    
+
     for horce_data in horce_data_list:
-        score_list.append( horce_data["rank_score"] )
-        
-    min_score = min( score_list )
+        score_list.append(horce_data["rank_score"])
+
+    min_score = min(score_list)
     all_score = 0
 
-    for i in range( 0, len( score_list ) ):
-        score_list[i] = max( score_list[i] - min_score * 1.1, 0 )
-        score_list[i] *= ( 2 - ( i / 10 ) )
-        score_list[i] = math.pow( score_list[i], 2 )
+    for i in range(0, len(score_list)):
+        score_list[i] = max(score_list[i] - min_score * 1.1, 0)
+        score_list[i] *= 2 - (i / 10)
+        score_list[i] = math.pow(score_list[i], 2)
         all_score += score_list[i]
 
-    for i in range( 0, len( score_list ) ):
-        score_list[i] = ( score_list[i] / all_score )
+    for i in range(0, len(score_list)):
+        score_list[i] = score_list[i] / all_score
         horce_data_list[i]["rate"] = score_list[i]
 
-def test_year_check( year, state ):
-    if ( state == "optuna" and year in valid_years ) \
-       or ( state == "test" and ( year in valid_years or year in score_years ) ) \
-       or ( state == "prod" and year in simu_years ):
+
+def test_year_check(year, state):
+    if (
+        (state == "optuna" and year in valid_years)
+        or (state == "test" and (year in valid_years or year in score_years))
+        or (state == "prod" and year in simu_years)
+    ):
         return "test"
 
-    if ( state == "optuna" and year in score_years ) or year in simu_years:
+    if (state == "optuna" and year in score_years) or year in simu_years:
         return "None"
 
     return "teacher"
 
-def id_get( url ):
-    s_data = url.split( split_key )
-    return s_data[len(s_data)-1]
 
-def current_check( current_data ):
-    if len( current_data ) == 22:
+def id_get(url):
+    s_data = url.split(split_key)
+    return s_data[len(s_data) - 1]
+
+
+def current_check(current_data):
+    if len(current_data) == 22:
         return True
 
     return False
-    
-def dic_append( dic, word, data ):
+
+
+def dic_append(dic, word, data):
     if not word in dic:
         dic[word] = data
 
-def text_replace( text: str ):
-    return text.replace( " ", "" ).replace( "\n", "" )
 
-def math_check( text: str ):
+def text_replace(text: str):
+    return text.replace(" ", "").replace("\n", "")
+
+
+def math_check(text: str):
     try:
-        return float( text )
+        return float(text)
     except:
         return 0
 
-def recovery_score_check( data: dict ):
+
+def recovery_score_check(data: dict):
     max_score = 5
     result = {}
-    year_list = list( data.keys() )
-    k_list = list( data[year_list[0]].keys() )
-    
+    year_list = list(data.keys())
+    k_list = list(data[year_list[0]].keys())
+
     for k in k_list:
-        dic_append( result, k, 0 )
+        dic_append(result, k, 0)
         for year in year_list:
             score = 0
 
@@ -135,123 +148,128 @@ def recovery_score_check( data: dict ):
             result[k] += score
 
     for k in result.keys():
-        result[k] = max( result[k], 0 )
-        result[k] = min( result[k], max_score )
-
-    return result                
-
-def softmax( data, escape_list = [] ):
-    result = []
-    sum_data = 0
-    value_max = max( data )
-
-    for i in range( 0, len( data ) ):
-        if data[i] in escape_list:
-            continue
-        
-        sum_data += math.exp( data[i] - value_max )
-
-    for i in range( 0, len( data ) ):
-        if data[i] in escape_list:
-            result.append( data[i] )
-        else:
-            result.append( math.exp( data[i] - value_max ) / sum_data )
+        result[k] = max(result[k], 0)
+        result[k] = min(result[k], max_score)
 
     return result
 
-def normalization( data ):
+
+def softmax(data, escape_list=[]):
+    result = []
+    sum_data = 0
+    value_max = max(data)
+
+    for i in range(0, len(data)):
+        if data[i] in escape_list:
+            continue
+
+        sum_data += math.exp(data[i] - value_max)
+
+    for i in range(0, len(data)):
+        if data[i] in escape_list:
+            result.append(data[i])
+        else:
+            result.append(math.exp(data[i] - value_max) / sum_data)
+
+    return result
+
+
+def normalization(data):
     result = []
 
-    if len( data ) == 0:
+    if len(data) == 0:
         return result
-    
-    ave_data = sum( data ) / len( data )
+
+    ave_data = sum(data) / len(data)
     std_data = 0
 
     for d in data:
-        std_data += math.pow( ave_data - d, 2 )
+        std_data += math.pow(ave_data - d, 2)
 
-    std_data /= len( data )
+    std_data /= len(data)
 
     if std_data == 0:
         return data
-    
-    std_data = math.sqrt( std_data )
+
+    std_data = math.sqrt(std_data)
 
     for d in data:
-        result.append( ( d - ave_data ) / std_data )
+        result.append((d - ave_data) / std_data)
 
     return result
 
-def regression_line( data ):
+
+def regression_line(data):
     a = 0
-    #b = 0
+    # b = 0
     y_ave = 0
     x_ave = 0
 
-    for i in range( 0, len( data ) ):
+    for i in range(0, len(data)):
         y_ave += data[i]
         x_ave += i + 1
 
-    y_ave /= len( data )
-    x_ave /= len( data )
+    y_ave /= len(data)
+    x_ave /= len(data)
 
     a1 = 0
     a2 = 0
 
-    for i in range( 0, len( data ) ):
-        a1 += ( i + 1 - x_ave ) * ( data[i] - y_ave )
-        a2 += math.pow( i + 1 - x_ave, 2 )
+    for i in range(0, len(data)):
+        a1 += (i + 1 - x_ave) * (data[i] - y_ave)
+        a2 += math.pow(i + 1 - x_ave, 2)
 
     a = 0
-    
+
     if not a2 == 0:
         a = a1 / a2
-        
+
     b = y_ave - a * x_ave
 
     return a, b
 
-def xy_regression_line( x_data, y_data ):
+
+def xy_regression_line(x_data, y_data):
     a = 0
-    #b = 0
+    # b = 0
     y_ave = 0
     x_ave = 0
-    for i in range( 0, len( x_data ) ):
+    for i in range(0, len(x_data)):
         y_ave += y_data[i]
         x_ave += x_data[i]
 
-    y_ave /= len( y_data )
-    x_ave /= len( x_data )
+    y_ave /= len(y_data)
+    x_ave /= len(x_data)
 
     a1 = 0
     a2 = 0
 
-    for i in range( 0, len( x_data ) ):
-        a1 += ( x_data[i] - x_ave ) * ( y_data[i] - y_ave )
-        a2 += math.pow( x_data[i] - x_ave, 2 )
+    for i in range(0, len(x_data)):
+        a1 += (x_data[i] - x_ave) * (y_data[i] - y_ave)
+        a2 += math.pow(x_data[i] - x_ave, 2)
 
     if not a2 == 0:
         a = a1 / a2
     else:
         a = a1
-        
+
     b = y_ave - a * x_ave
 
     return a, b
 
-def race_check( all_data, race_day ):
+
+def race_check(all_data, race_day):
     current_data = []
     past_data = []
-    current_time = int( race_day["year"] * 365 + race_day["month"] * 30 + race_day["day"] )
+    current_time = int(race_day["year"] * 365 + race_day["month"] * 30 + race_day["day"])
     check = False
 
-    def day_check( str_day ):
+    def day_check(str_day):
         day_result = ""
-        split_day = str_day.split( "/" )
+        split_day = str_day.split("/")
 
         try:
-            race_time = int( int( split_day[0] ) * 365 + int( split_day[1] ) * 30 + int( split_day[2] ) )
+            race_time = int(int(split_day[0]) * 365 + int(split_day[1]) * 30 + int(split_day[2]))
         except:
             return day_result
 
@@ -264,25 +282,27 @@ def race_check( all_data, race_day ):
 
         return day_result
 
-    for i in range( 0, len( all_data ) ):        
+    for i in range(0, len(all_data)):
         str_data = all_data[i]
-        str_day = str_data[0]
-        dc = day_check( str_day )
+        str_day = str_data["day"]
+        dc = day_check(str_day)
 
         if dc == "C":
             current_data = str_data
         elif dc == "P":
-            past_data.append( str_data )
-    
+            past_data.append(str_data)
+
     return current_data, past_data
 
-def minus( data1, data2, abort = [ escapeValue ] ):
+
+def minus(data1, data2, abort=[escapeValue]):
     if data1 in abort or data2 in abort:
         return -1000
 
     return data1 - data2
 
-def average( data, abort = [ escapeValue ] ):
+
+def average(data, abort=[escapeValue]):
     ave = 0
     count = 0
 
@@ -298,42 +318,45 @@ def average( data, abort = [ escapeValue ] ):
 
     return ave / count
 
-def stdev( data, abort = [ escapeValue ] ):
+
+def stdev(data, abort=[escapeValue]):
     std_data = 0
     count = 0
-    ave_data = average( data )
+    ave_data = average(data)
 
     for d in data:
         if d in abort:
             continue
 
-        std_data += math.pow( ave_data - d, 2 )
+        std_data += math.pow(ave_data - d, 2)
         count += 1
 
     if count == 0:
         return -1000
 
-    return math.sqrt( std_data / count )
+    return math.sqrt(std_data / count)
 
-def minimum( data, abort = [ escapeValue ] ):
-    min_data = max_check( data )
+
+def minimum(data, abort=[escapeValue]):
+    min_data = max_check(data)
 
     for d in data:
         if d in abort:
             continue
 
-        min_data = min( min_data, d )
+        min_data = min(min_data, d)
 
     return min_data
 
-def standardization( data, abort = [ escapeValue ] ):
+
+def standardization(data, abort=[escapeValue]):
     result = []
     abort_index = []
 
     ave = 0
     count = 0
 
-    if len( data ) == 0:
+    if len(data) == 0:
         return []
 
     for d in data:
@@ -342,41 +365,42 @@ def standardization( data, abort = [ escapeValue ] ):
             count += 1
 
     if count <= 1:
-        return [0] * len( data )
+        return [0] * len(data)
 
     ave /= count
-    std = stdev( data )
+    std = stdev(data)
 
     if std == 0:
-        return [0] * len( data )
+        return [0] * len(data)
 
-    for i in range( 0, len( data ) ):
+    for i in range(0, len(data)):
         if data[i] in abort:
-            result.append( data[i] )
+            result.append(data[i])
         else:
-            result.append( ( data[i] - ave ) / std )
+            result.append((data[i] - ave) / std)
 
     return result
 
-def deviation_value( data, abort = [ -1000 ] ):
+
+def deviation_value(data, abort=[-1000]):
     result = []
     abort_index = []
 
     ave = 0
     count = 0
 
-    if len( data ) == 0:
+    if len(data) == 0:
         return []
 
     for d in data:
         if d in abort:
             continue
-        
+
         ave += d
         count += 1
 
     if count <= 1:
-        return [50] * len( data )
+        return [50] * len(data)
 
     ave /= count
     conv = 0
@@ -385,39 +409,40 @@ def deviation_value( data, abort = [ -1000 ] ):
         if d in abort:
             continue
 
-        conv += math.pow( ave - d, 2 )
+        conv += math.pow(ave - d, 2)
 
-    conv = math.sqrt( conv / count )
+    conv = math.sqrt(conv / count)
 
     if conv == 0:
-        return [50] * len( data )
+        return [50] * len(data)
 
-    for i in range( 0, len( data ) ):
+    for i in range(0, len(data)):
         if data[i] in abort:
-            result.append( data[i] )
+            result.append(data[i])
         else:
-            result.append( ( ( data[i] - ave ) / conv ) * 10 + 50 )
+            result.append(((data[i] - ave) / conv) * 10 + 50)
 
     return result
 
-def next_race( all_data, ymd ) -> crd.CurrentData:
+
+def next_race(all_data, ymd) -> crd.CurrentData:
     next_cd = None
-    
+
     for str_data in all_data:
-        cd = crd.CurrentData( str_data )
+        cd = crd.CurrentData(str_data)
 
         if not cd.race_check():
             continue
 
         birthday = cd.birthday()
-        birthday = birthday.split( "/" )
+        birthday = birthday.split("/")
 
-        if len( birthday ) < 3:
+        if len(birthday) < 3:
             continue
-        
-        y = int( birthday[0] )
-        m = int( birthday[1] )
-        d = int( birthday[2] )
+
+        y = int(birthday[0])
+        m = int(birthday[1])
+        d = int(birthday[2])
 
         if y == ymd["year"] and m == ymd["month"] and d == ymd["day"]:
             break
@@ -426,234 +451,243 @@ def next_race( all_data, ymd ) -> crd.CurrentData:
 
     return next_cd
 
-def place_check( place_num ):
-    if int( place_num ) == 1:
+
+def place_check(place_num):
+    if int(place_num) == 1:
         return "札幌"
-    elif int( place_num ) == 2:
+    elif int(place_num) == 2:
         return "函館"
-    elif int( place_num ) == 3:
+    elif int(place_num) == 3:
         return "福島"
-    elif int( place_num ) == 4:
+    elif int(place_num) == 4:
         return "新潟"
-    elif int( place_num ) == 5:
-        return "東京"    
-    elif int( place_num ) == 6:
+    elif int(place_num) == 5:
+        return "東京"
+    elif int(place_num) == 6:
         return "中山"
-    elif int( place_num ) == 7:
+    elif int(place_num) == 7:
         return "中京"
-    elif int( place_num ) == 8:
-        return "京都"    
-    elif int( place_num ) == 9:
+    elif int(place_num) == 8:
+        return "京都"
+    elif int(place_num) == 9:
         return "阪神"
-    elif int( place_num ) == 10:
+    elif int(place_num) == 10:
         return "小倉"
 
     return "None"
 
-def conv( data_list, ave = None ):
-    if len( data_list ) == 0:
+
+def conv(data_list, ave=None):
+    if len(data_list) == 0:
         return -1000
-    
+
     result = 0
 
     if ave == None:
-        ave = sum( data_list ) / len( data_list )
+        ave = sum(data_list) / len(data_list)
 
     for d in data_list:
-        result += math.pow( d - ave, 2 )
+        result += math.pow(d - ave, 2)
 
-    result /= len( data_list )
-    result = math.sqrt( result )
+    result /= len(data_list)
+    result = math.sqrt(result)
 
     return result
 
-def max_check( data ):
+
+def max_check(data):
     try:
-        return max( data )
+        return max(data)
     except:
         return -1000
 
-def minCheck( data ):
+
+def minCheck(data):
     try:
-        return min( data )
+        return min(data)
     except:
         return 1000
 
-def one_hundred_pace( wrap_data ):
+
+def one_hundred_pace(wrap_data):
     wrap_list = []
-        
-    if len( wrap_data ) == 0:
+
+    if len(wrap_data) == 0:
         return 0
-            
+
     ave_wrap = 0
     all_wrap = 0
 
     for key in wrap_data.keys():
         wrap = wrap_data[key]
-    
-        if key == '100':
+
+        if key == "100":
             wrap *= 2
 
         ave_wrap += wrap
         all_wrap += wrap
-            
-    ave_wrap /= len( wrap_data )
+
+    ave_wrap /= len(wrap_data)
     before_wrap = ave_wrap
     w = 0
 
     for key in wrap_data.keys():
-        if key == '100':
-            wrap_list.append( wrap_data[key] )
+        if key == "100":
+            wrap_list.append(wrap_data[key])
             before_wrap = wrap_data[key] * 2
             continue
 
         current_wrap = wrap_data[key]
-        a = ( before_wrap - current_wrap ) / -200
+        a = (before_wrap - current_wrap) / -200
         b = before_wrap
         middle_wrap = a * 100 + b
-        wrap_list.append( middle_wrap / 2 )
-        wrap_list.append( current_wrap / 2 )
+        wrap_list.append(middle_wrap / 2)
+        wrap_list.append(current_wrap / 2)
         before_wrap = current_wrap
 
     return wrap_list
 
-def pace_regression( wrap_data ):
-    N = len( wrap_data )
-    a, b = regression_line( wrap_data )
-    berfore_a, _ = regression_line( wrap_data[0:int(N/2)] )
-    after_a, _ = regression_line( wrap_data[int(N/2):N] )
+
+def pace_regression(wrap_data):
+    N = len(wrap_data)
+    a, b = regression_line(wrap_data)
+    berfore_a, _ = regression_line(wrap_data[0 : int(N / 2)])
+    after_a, _ = regression_line(wrap_data[int(N / 2) : N])
     return a, berfore_a, after_a
 
-def pace_data( current_wrap ):
-    wrap_key_list = list( current_wrap.keys() )
-    n = len( wrap_key_list )
+
+def pace_data(current_wrap):
+    wrap_key_list = list(current_wrap.keys())
+    n = len(wrap_key_list)
 
     if n == 0:
         return 0
 
-    s1 = int( n / 2 )
+    s1 = int(n / 2)
     before_wrap_key_list = wrap_key_list[0:s1]
     after_wrap_key_list = wrap_key_list[s1:n]
 
-    if not len( before_wrap_key_list ) == len( after_wrap_key_list ):
-        after_wrap_key_list.pop( 0 )
+    if not len(before_wrap_key_list) == len(after_wrap_key_list):
+        after_wrap_key_list.pop(0)
 
     before_time = 0
     after_time = 0
 
     for key in before_wrap_key_list:
         before_time += current_wrap[key]
-        
+
     for key in after_wrap_key_list:
         after_time += current_wrap[key]
 
     if before_wrap_key_list[0] == "100":
-        after_time -= round( current_wrap[after_wrap_key_list[0]] / 2 )
+        after_time -= round(current_wrap[after_wrap_key_list[0]] / 2)
 
     return before_time - after_time
 
-def before_after_pace( current_wrap ):
-    wrap_key_list = list( current_wrap.keys() )
-    n = len( wrap_key_list )
+
+def before_after_pace(current_wrap):
+    wrap_key_list = list(current_wrap.keys())
+    n = len(wrap_key_list)
 
     if n == 0:
         return 0
 
-    s1 = int( n / 2 )
+    s1 = int(n / 2)
     before_wrap_key_list = wrap_key_list[0:s1]
     after_wrap_key_list = wrap_key_list[s1:n]
 
-    if not len( before_wrap_key_list ) == len( after_wrap_key_list ):
-        after_wrap_key_list.pop( 0 )
+    if not len(before_wrap_key_list) == len(after_wrap_key_list):
+        after_wrap_key_list.pop(0)
 
     before_time = 0
     after_time = 0
 
     for key in before_wrap_key_list:
         before_time += current_wrap[key]
-        
+
     for key in after_wrap_key_list:
         after_time += current_wrap[key]
 
     if before_wrap_key_list[0] == "100":
-        after_time -= round( current_wrap[after_wrap_key_list[0]] / 2 )
+        after_time -= round(current_wrap[after_wrap_key_list[0]] / 2)
 
     return before_time, after_time
 
-def pace_teacher_analyze( current_race_data, t_instance = {} ):
+
+def pace_teacher_analyze(current_race_data, t_instance={}):
     result = {}
-    
+
     for data_key in current_race_data.keys():
-        if not type( current_race_data[data_key] ) is list or \
-          len( current_race_data[data_key] ) == 0:
+        if not type(current_race_data[data_key]) is list or len(current_race_data[data_key]) == 0:
             continue
 
         if data_key in t_instance:
             continue
-        
-        instanceData = [v for v in current_race_data[data_key] if not v == escapeValue ]
-        sort_data = sorted( instanceData )
-        reverse_sort_data = sorted( instanceData, reverse = True )
 
-        if not "ave_"+data_key in t_instance:
-            result["ave_"+data_key] = average( instanceData )
+        instanceData = [v for v in current_race_data[data_key] if not v == escapeValue]
+        sort_data = sorted(instanceData)
+        reverse_sort_data = sorted(instanceData, reverse=True)
 
-        if not "max_"+data_key in t_instance:
-            result["max_"+data_key] = max_check( instanceData )
+        if not "ave_" + data_key in t_instance:
+            result["ave_" + data_key] = average(instanceData)
 
-        if not "min_"+data_key in t_instance:
-            result["min_"+data_key] = minimum( instanceData )
+        if not "max_" + data_key in t_instance:
+            result["max_" + data_key] = max_check(instanceData)
 
-        if not "std_"+data_key in t_instance:
-            result["std_"+data_key] = stdev( instanceData )
+        if not "min_" + data_key in t_instance:
+            result["min_" + data_key] = minimum(instanceData)
 
-        for i in range( 0, 3 ):
+        if not "std_" + data_key in t_instance:
+            result["std_" + data_key] = stdev(instanceData)
+
+        for i in range(0, 3):
             try:
-                result[data_key+"_{}".format(i+1)] = sort_data[i]
+                result[data_key + "_{}".format(i + 1)] = sort_data[i]
             except:
-                result[data_key+"_{}".format(i+1)] = escapeValue
-                
-        for i in range( 0, 3 ):
+                result[data_key + "_{}".format(i + 1)] = escapeValue
+
+        for i in range(0, 3):
             try:
-                result[data_key+"_reverse_{}".format(i+1)] = reverse_sort_data[i]
+                result[data_key + "_reverse_{}".format(i + 1)] = reverse_sort_data[i]
             except:
-                result[data_key+"_reverse_{}".format(i+1)] = escapeValue
+                result[data_key + "_reverse_{}".format(i + 1)] = escapeValue
 
     return result
 
-def horce_teacher_analyze( current_race_data, t_instance, count ):
+
+def horce_teacher_analyze(current_race_data, t_instance, count):
     result = {}
     index_name_list = []
     str_index = "_index"
 
     for data_key in current_race_data.keys():
-        index_count = data_key.count( str_index )
+        index_count = data_key.count(str_index)
 
         if index_count == 2:
-            name = data_key.replace( str_index, "", 1 )
-            index_name_list.append( name )
-            index_name_list.append( name + "_stand" )
-            index_name_list.append( name + "_devi" )
+            name = data_key.replace(str_index, "", 1)
+            index_name_list.append(name)
+            index_name_list.append(name + "_stand")
+            index_name_list.append(name + "_devi")
 
     for data_key in current_race_data.keys():
-        if not type( current_race_data[data_key] ) == list:
+        if not type(current_race_data[data_key]) == list:
             continue
 
-        if len( current_race_data[data_key] ) == 0 or data_key in t_instance:
+        if len(current_race_data[data_key]) == 0 or data_key in t_instance:
             continue
 
-        index_count = data_key.count( str_index )
-        
-        if ( index_count == 1 and not data_key in index_name_list ) or index_count == 2:
-            name = data_key.replace( str_index, "", 1 )
-            
+        index_count = data_key.count(str_index)
+
+        if (index_count == 1 and not data_key in index_name_list) or index_count == 2:
+            name = data_key.replace(str_index, "", 1)
+
             if not name in current_race_data:
                 continue
-            
+
             value = current_race_data[name][count]
 
             if not value == escapeValue:
-                result[data_key] = current_race_data[data_key].index( value )
+                result[data_key] = current_race_data[data_key].index(value)
             else:
                 result[data_key] = escapeValue
         else:
@@ -661,17 +695,19 @@ def horce_teacher_analyze( current_race_data, t_instance, count ):
 
     return result
 
-def padding_str_math( str_math ):
-    if len( str_math ) > 1:
+
+def padding_str_math(str_math):
+    if len(str_math) > 1:
         return str_math
 
     return "0" + str_math
 
-def str_math_pull( text: str ):
+
+def str_math_pull(text: str):
     result = ""
 
     for t in text:
-        if str.isdecimal( t ):
+        if str.isdecimal(t):
             result += t
 
     return result

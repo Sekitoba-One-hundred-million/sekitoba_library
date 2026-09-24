@@ -6,11 +6,14 @@ import subprocess
 import warnings
 import timeout_decorator
 from os.path import expanduser
+from typing import cast, Any
 from requests.exceptions import Timeout
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
+from func_timeout import func_timeout, FunctionTimedOut
 
 warnings.simplefilter("ignore")
 
@@ -52,19 +55,28 @@ def netkeiba_login():
 
 
 def wait_proxy(remove=False):
+    global DOMAIN_NAME
+    domainName = ""
+
     if remove:
         if os.path.isfile(domainFilePath):
             os.remove(domainFilePath)
+            time.sleep(2)
 
     while 1:
         if not os.path.isfile(domainFilePath):
-            time.sleep(1)
+            time.sleep(5)
         else:
-            break
+            try:
+                f = open(domainFilePath)
+                strData = f.readlines()
+                domainName = strData[0].replace("\n", "")
+                DOMAIN_NAME = domainName
+                break
+            except:
+                time.sleep(2)
+                continue
 
-    f = open(domainFilePath)
-    strData = f.readlines()
-    domainName = strData[0].replace("\n", "")
     return domainName
 
 
@@ -100,7 +112,8 @@ def request(setUrl, cookie=None):
                 continue
 
             return r, True
-        except:
+        except Exception as e:
+            print(e)
             if proxyUse:
                 DOMAIN_NAME = wait_proxy()
 
@@ -127,21 +140,56 @@ def driver_start(headress=True):
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--disable-gpu")
 
+    options.add_argument("--disable-application-cache")
+    options.add_argument("--disk-cache-size=0")
     options.add_argument('--js-flags="--max-old-space-size=4096"')
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--no-sandbox")
     options.page_load_strategy = "eager"
     options.set_capability("acceptInsecureCerts", True)
-    # service = Service( executable_path = os.environ['HOME'] + "/chrome/chromedriver" )
-    driver = webdriver.Chrome(options=options)
+    service = Service(port=0)
+    driver = webdriver.Chrome(options=options, service=service)
+    driver.set_page_load_timeout(20)
     return driver
 
 
 def driver_restart(driver, headress=True):
     global DOMAIN_NAME
     driver.quit()
-    driver = driver_start(headress=headress)
-    return driver
+    return driver_start(headress=headress)
+
+
+def get_driver_soup(driver, url, netkeiba_login=False):
+    def soup_get(driver):
+        html = driver.execute_script("return document.documentElement.outerHTML;")
+        soup = BeautifulSoup(html, "html.parser")
+        return soup, driver
+
+    for i in range(0, 10):
+        try:
+            driver.get(url)
+            time.sleep(7)
+        except Exception as e:
+            driver = driver_restart(driver)
+
+            if netkeiba_login:
+                driver = login(driver)
+
+            continue
+
+        try:
+            result = func_timeout(10, soup_get, [driver])
+            soup, driver = cast(tuple[Any, Any], result)
+            return soup, driver
+        except (FunctionTimedOut, Exception) as e:
+            driver = driver_restart(driver)
+
+            if netkeiba_login:
+                driver = login(driver)
+
+            continue
+
+    return "", driver
 
 
 @timeout_decorator.timeout(15)
@@ -151,7 +199,7 @@ def driverGet(driver, url):
 
 
 def driver_request(driver, url):
-    driver.set_page_load_timeout(30)
+    driver.set_page_load_timeout(20)
 
     for i in range(0, 10):
         try:

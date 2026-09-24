@@ -1,18 +1,20 @@
 from SekitobaLibrary.constants import *
 
-def dist_check( di ):
-    if di < 1400:#短距離
+
+def dist_check(di):
+    if di < 1400:  # 短距離
         return 1
-    elif di < 1800:#マイル
+    elif di < 1800:  # マイル
         return 2
-    elif di < 2200:#中距離
+    elif di < 2200:  # 中距離
         return 3
-    elif di < 2800:#中長距離
+    elif di < 2800:  # 中長距離
         return 4
-    else:#長距離
+    else:  # 長距離
         return 5
 
-def weather( we ):
+
+def weather(we):
     if we == "晴":
         return 1
     elif we == "曇":
@@ -24,7 +26,8 @@ def weather( we ):
     else:
         return escapeValue
 
-def baba_index( baba ):
+
+def baba_index(baba):
     if baba == "良":
         return -10
     elif baba == "稍":
@@ -36,7 +39,8 @@ def baba_index( baba ):
 
     return escapeValue
 
-def sex_num( str_sex ):
+
+def sex_num(str_sex):
     if str_sex == "牡":
         return 1
     elif str_sex == "牝":
@@ -44,7 +48,8 @@ def sex_num( str_sex ):
 
     return 0
 
-def money_class_get( money ):
+
+def money_class_get(money):
     money_class = 0
 
     if money <= 501:
@@ -56,75 +61,79 @@ def money_class_get( money ):
     else:
         money_class = 4
 
-    return money_class    
+    return money_class
 
-def k_dist( kd ):
+
+def k_dist(kd):
     str_d = ""
     d = 0.0
 
-    for i in range( 0, len( kd ) ):
-        if str.isdecimal( kd[i] ):
+    for i in range(0, len(kd)):
+        if str.isdecimal(kd[i]):
             str_d += kd[i]
-            
-    if not len( str_d ) == 0:
-        d = float( str_d ) / 1000
-        
+
+    if not len(str_d) == 0:
+        d = float(str_d) / 1000
+
     return d
 
-def dist( d ):
+
+def dist(d):
     if d == "":
         return 0, 0
-    
-    d_type = d[0]
-    di = ""#float( d[1:len(d)] )
 
-    for i in range( 0, len( d ) ):
-        if str.isdecimal( d[i] ):
+    d_type = d[0]
+    di = ""  # float( d[1:len(d)] )
+
+    for i in range(0, len(d)):
+        if str.isdecimal(d[i]):
             di += d[i]
 
-    if len( di ) == 0:
+    if len(di) == 0:
         return 0, 0
 
-    di = float( di )
+    di = float(di)
 
-    t = escapeValue#芝は1
+    t = escapeValue  # 芝は1
 
-    if d_type == "ダ":#ダートかどうかの判断
-        t = 2#ダートなら2
+    if d_type == "ダ":  # ダートかどうかの判断
+        t = 2  # ダートなら2
     elif d_type == "障":
         t = 3
     elif d_type == "芝":
         t = 1
 
-    if di < 1400:#短距離
+    if di < 1400:  # 短距離
         return 1, t
-    elif di < 1800:#マイル
+    elif di < 1800:  # マイル
         return 2, t
-    elif di < 2200:#中距離
+    elif di < 2200:  # 中距離
         return 3, t
-    elif di < 2800:#中長距離
+    elif di < 2800:  # 中長距離
         return 4, t
-    else:#長距離
+    else:  # 長距離
         return 5, t
 
-def time( t ):
+
+def time(t):
     if t == "":
         return 0
-    
-    tt = t.split( ":" )
 
-    if not str.isdecimal( tt[0] ):
+    tt = t.split(":")
+
+    if not str.isdecimal(tt[0]):
         return 0
-    m = float( tt[0] )
-    m += float( tt[1] ) / 60
-    m = round( m, 4 )
+    m = float(tt[0])
+    m += float(tt[1]) / 60
+    m = round(m, 4)
     return m
 
-def place_num( place ):
+
+def place_num(place):
     pl = ""
-    
-    for i in range( 0, len( place ) ):
-        if not str.isdecimal( place[i] ):
+
+    for i in range(0, len(place)):
+        if not str.isdecimal(place[i]):
             pl += place[i]
 
     if pl == "札幌":
@@ -147,21 +156,22 @@ def place_num( place ):
         return 9
     elif pl == "小倉":
         return 10
-    
+
     return escapeValue
 
-def stright_slope( place_num ):
-    if place_num == 1 or place_num == 2 or place_num == 3 or \
-      place_num == 4 or place_num == 8 or place_num == 10:
-        return 1 # 平坦
+
+def stright_slope(place_num):
+    if place_num == 1 or place_num == 2 or place_num == 3 or place_num == 4 or place_num == 8 or place_num == 10:
+        return 1  # 平坦
     elif place_num == 5:
-        return 2 # やや坂
+        return 2  # やや坂
     elif place_num == 6 or place_num == 7 or place_num == 9:
-        return 2 # 急坂
+        return 2  # 急坂
 
     return 0
 
-def baba( b ):
+
+def baba(b):
     if b == "良":
         return 1
     elif b == "重":
@@ -170,36 +180,39 @@ def baba( b ):
         return 3
     elif b == "不":
         return 4
-    
+
     return escapeValue
 
-def weight( w ):
-    w = w.replace( ")", "" )
-    ww = w.split( "(" )
 
-    if len( ww ) != 2:
+def weight(w):
+    w = w.replace(")", "")
+    ww = w.split("(")
+
+    if len(ww) != 2:
         return 0
 
     if ww[1][0] == "0":
         return 0
-    
-    if str.isdecimal( ww[1][1] ):
-        return float( ww[1] )
+
+    if str.isdecimal(ww[1][1]):
+        return float(ww[1])
 
     return 0
 
-def data_check( d ):
-    try:
-        return float( d )
-    except:
-        return 0
 
-def netkeiba_pace( str_pace ):
+def data_check(d):
+    try:
+        return float(d)
+    except:
+        return escapeValue
+
+
+def netkeiba_pace(str_pace):
     if str_pace == "S":
         return 1
     elif str_pace == "M":
         return 2
     elif str_pace == "H":
         return 3
-    
+
     return escapeValue
